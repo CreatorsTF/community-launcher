@@ -50,13 +50,27 @@ body {
 }
 
 .patchTitle {
-    font-size: 35px;
+    font-size: 30px;
     font-family: Roboto Medium, Arial, sans-serif;
+    text-decoration: underline;
 }
 
 .patchNotes {
-    font-size: 22px;
+    font-size: 20px;
     font-family: Roboto Thin, Arial, sans-serif;
+}
+
+.patchNotes li
+{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+a{
+  color:white;
+  text-decoration: underline;
+  font-weight: bold;
+
 }
 
 ul { list-style-image: url(../images/thatarrowfromthetfblog.png); }
