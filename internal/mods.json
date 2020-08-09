@@ -1,0 +1,27 @@
+{
+    "mods":
+    [
+        {
+            "name": "Creators.TF",
+            "blurb": "A TF2 celebration project",
+            "icon": "images/logos/modcirclelogos/creatorstf_circle.png",
+            "titleimage": "images/logos/modlogos/creatorstf_full.png",
+            "backgroundimage": "images/backgrounds/creatorstf.png",
+            "bordercolor": "orange",
+            "backgroundpos": "left",
+            "website": "https://creators.tf",
+            "github": "",
+            "twitter": "https://creators.tf/twitter",
+            "instagram": "https://creators.tf/instagram",
+            "discord": "https://creators.tf/discord",
+            "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
+            "install": {
+                "type": "jsonlist",
+                "get_url": "https://fastdl.creators.tf/launcher/ctfpack.json",
+                "targetdirectory": "{tf2_dir}/tf/download/",
+                "version_property_name": "Version",
+                "install_url_property_name": "DownloadLink"
+            }
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "creators-tf-launcher",
+  "version": "0.0.5",
+  "description": "An easier way to install and update TF2 content.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "buildwindows": "electron-builder build --win --x64 --ia32 --publish never",
+    "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
+    "deploy": "electron-builder build --win --x64 --ia32 --publish always"
+  },
+  "keywords": [
+    "TF2",
+    "Creators.TF",
+    "Team Fortress"
+  ],
+  "author": {
+    "name": "Creators.TF",
+    "email": "support@creators.tf",
+    "url": "https://creators.tf/launcher"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ampersoftware/Creators.TF-Community-Launcher.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^8.5.0",
+    "electron-builder": "^22.8.0"
+  },
+  "dependencies": {
+    "@mdi/font": "^5.4.55",
+    "electron-log": "^4.2.2",
+    "electron-progressbar": "^1.2.0",
+    "electron-updater": "^4.3.4",
+    "jszip": "^3.5.0"
+  }
+}

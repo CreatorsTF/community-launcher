@@ -1,0 +1,62 @@
+html, body { height: 97%; }
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222;
+    background-image: url(../images/backgrounds/creatorstf.png);
+    background-blend-mode: soft-light;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    user-select: none;
+    -webkit-user-select: none;
+    animation-name: fadeInSuperFancyTransition;
+    animation-fill-mode: both;
+    animation-timing-function: ease-in;
+    animation-iteration-count: 1;
+    animation-duration: 0.25s;
+}
+
+@keyframes fadeInSuperFancyTransition {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #222; }
+::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #888; }
+
+#wrapper {
+    margin: 25px auto;
+    width: 90%;
+    color: #FFF;
+}
+
+#modname {
+    margin: 0;
+    font-size: 60px;
+    font-family: Roboto Bold, Arial, sans-serif;
+    text-align: center;
+}
+
+.patch {
+    margin: 20px 0px 0px 0px;
+    background-color: rgba(0,0,0,0.8);
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.patchTitle {
+    font-size: 35px;
+    font-family: Roboto Medium, Arial, sans-serif;
+}
+
+.patchNotes {
+    font-size: 22px;
+    font-family: Roboto Thin, Arial, sans-serif;
+}
+
+ul { list-style-image: url(../images/thatarrowfromthetfblog.png); }

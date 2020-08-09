@@ -1,0 +1,120 @@
+html, body { height: 100%; margin: 0; }
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgb(2,0,36);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(5,5,56,1) 50%, rgba(0,23,28,1) 100%);
+  background-size: cover;
+  background-position: center;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 1;
+  animation-name: fadeInSuperFancyTransition;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in;
+  animation-duration: 0.2s;
+}
+
+@keyframes fadeInSuperFancyTransition {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #333; }
+::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #888; }
+
+h1, h2, p { color: lightgrey; }
+
+h1 {
+    font-family: Roboto Black, Arial, sans-serif;
+    font-size: 70px;
+    margin: -8px 0px 10px 0px;
+}
+
+h2 {
+    font-family: Roboto Regular, Arial, sans-serif;
+    font-size: 25px;
+    margin: 0px 0px 10px 0px;
+}
+
+p {
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 20px;
+    margin: 5px 0px;
+}
+
+.dirconfig {
+    width: 55%;
+    text-align: center;
+    margin: 0px 0px 10px 0px;
+}
+
+.dirconfig input {
+    width: 90%;
+    margin-top: 5px;
+    padding: 5px;
+    border: 0px;
+    border-radius: 5px;
+    box-shadow: inset 0px 0px 3px #000;
+}
+
+#config-debug {
+    display: none;
+    text-align: center;
+    background: radial-gradient(ellipse at bottom left, #555, #222);
+    padding: 10px;
+    border-radius: 10px;
+    width: 75%;
+}
+
+#config-debug p {
+    margin: 0 auto;
+    font-family: monospace;
+    color: #212121;
+    background-color: #FAFAFA;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 15px;
+    word-break: break-all;
+    user-select: text;
+}
+
+#boxofbuttons {
+    margin: 15px 0px;
+}
+
+.config-button {
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 0;
+    outline: 0;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 18px;
+    margin-left: 10px;
+    box-shadow: inset 0px 0px 3px #000;
+}
+
+.config-button:nth-child(1) {
+  margin-left: 0px;
+}
+
+.config-button:hover {
+    background-color: #999;
+}
+
+#config-dontshow-button {
+    display: flex;
+    position: absolute;
+    padding: 5px 8px;
+    font-size: 16px;
+    font-family: Roboto Light, Arial, sans-serif;
+}
+
+#config-dontshow-button:hover { background-color: #999; }
