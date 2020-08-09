@@ -19,10 +19,10 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 640,
-        minHeight: 500,
-        width: 700,
-        height: 550
+        minWidth: 800,
+        minHeight: 450,
+        width: 800,
+        height: 450
     });
 
     patchNotesWindow.removeMenu();
