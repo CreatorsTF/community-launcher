@@ -109,6 +109,10 @@ document.getElementById("patchnotes-button").addEventListener("click", (a,b) => 
     ipcRenderer.send("PatchNotesWindow", "");
 });
 
+document.getElementById("serverlist").addEventListener("click", (a, b) => {
+    ipcRenderer.send("ServerListWindow", "");
+});
+
 installButton.addEventListener("click", (e) => {
     installButton.innerText = "... STARTING ...";
     installButton.disabled = true;

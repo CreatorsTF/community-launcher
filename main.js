@@ -10,6 +10,7 @@ const settingsPage = require("./settings-page/settingspage");
 const patchnotesPage = require("./patchnotes-page/patchnotespage");
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
+const serverlistPage = require("./serverlist-page/serverlist")
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
@@ -160,6 +161,10 @@ ipcMain.on("SettingsWindow", async (event, someArgument) => {
 
 ipcMain.on("PatchNotesWindow", async (event, someArgument) => {
     patchnotesPage.OpenWindow();
+});
+
+ipcMain.on("ServerListWindow", async (event, someArgument) => {
+    serverlistPage.OpenWindow();
 });
 
 ipcMain.on("app_version", (event) => {
