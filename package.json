@@ -1,7 +1,7 @@
 {
   "name": "creators-tf-launcher",
   "version": "0.0.5",
-  "description": "An easier way to install and update TF2 content.",
+  "description": "An easier way to install, update and play TF2 content.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
