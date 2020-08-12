@@ -2,6 +2,7 @@ const fs = global.fs;
 const path = global.path;
 const os = global.os;
 
+require('../typedefs.js')
 const { dialog } = require('electron');
 const https = require('https');
 const JSZip = require('jszip');
@@ -48,6 +49,7 @@ module.exports =
 
 //Export variables.
 all_mods_data: null,
+modDefinitions: {"_blank": {"name":"_blank","version":0.1}},
 currentModData: null,
 currentModVersion: 0,
 currentModState: State.NOT_INSTALLED,
@@ -57,10 +59,15 @@ files_object: null,
 source_manager: null,
 
 //Sets up the module.
-Setup(){
+async Setup(){
     this.all_mods_data = JSON.parse(fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json")));
 
+    //JS-magic to turn the list into a dictionary for easier lookup
+    //maybe should be saved this way?
+    this.modDefinitions = Object.assign({}, ...this.all_mods_data.mods.map((x) => ({[x.name]: x})));
+
     filemanager.Init();
+    await MigrateDepricatedLocations();
 },
 
 //Change the currently selected mod, return its installation button text.
@@ -475,8 +482,8 @@ GetRealTF2Path(){
     }
 
     realPath = path.normalize(realPath);
-
-    return path.normalize(realPath.replace("{tf2_dir}", global.config.tf2_directory));
+    
+    return config.ExpandVariables(realPath);
 },
 
 InstallFiles(files){
@@ -533,6 +540,124 @@ FakeClickMod(){
 
 //END OF EXPORT FUNCTIONS ############
 }// END OF EXPORT OBJECT. ##########################
+
+/**
+ * checks and fixes depricated file locations for all installed mods
+ */
+async function MigrateDepricatedLocations(){
+    
+    for (const modVersionInfo of config.GetModVersionInfos()) {
+        try {
+            await MigrateDepricatedModLocations(modVersionInfo);
+        } catch (e) {
+            global.log.error(e, "unexpected error while migrating depricated locations for mod", modVersionInfo);
+        }
+    }
+}
+
+/**
+ * checks and fixes depricated file locations for the provided mod
+ * @param {ModVersionInfo} modVersionInfo list of filepaths to check
+ */
+async function MigrateDepricatedModLocations(modVersionInfo){
+
+    var fileList = await filemanager.GetFileList(modVersionInfo.name);
+    let modDefinition = module.exports.modDefinitions[modVersionInfo.name];
+    if (!modDefinition)
+    {
+        global.log.warn("no mod definition found for installed mod", modVersionInfo);
+        return;
+    }
+    if (!modDefinition.install.depricated_targetdirectory)
+    {
+        global.log.debug("skipped fixing location for mod, because no depricated_targetdirectory is defined", modDefinition);
+        return;
+    }
+
+    let depricated_targetdirectory = config.ExpandVariables(modDefinition.install.depricated_targetdirectory);
+    let targetdirectory = config.ExpandVariables(modDefinition.install.targetdirectory);
+    //create generator to iterate over new file-locations one-by-one
+    let migrationGenerator = () => PlanMigration(fileList.files, depricated_targetdirectory, targetdirectory);
+    
+    let summary = GetMigrationSummary(migrationGenerator());
+
+    //following commented-out code skips migration, if only some (not all) files had depricated locations
+    //commented-out since not blocking partial migrations helps picking up failed migrations
+    // if (summary.migrationsFound && summary.nonMigrationsFound)
+    // {
+    //     global.log.warn("skipped fixing location for mod, because only some files had depricated locations", modDefinition);
+    //     return;
+    // }
+    if (!summary.migrationsFound)
+    {
+        global.log.debug("skipped fixing location for mod, because no depricated locations where found", modDefinition, summary);
+        return;
+    }
+    
+    //use complete list of migrations from here on
+    const planedMigrations = Array.from(migrationGenerator());
+    await MoveFiles(planedMigrations);
+
+    const newFileList = { files: planedMigrations.map(move => move.new ? move.new : move.old) };
+    await filemanager.SaveFileList(newFileList, modDefinition.name);
+    global.log.info("fixed location for mod with", planedMigrations.length, "files", modDefinition);
+}
+/**
+ * Generator for needed file-migrations
+ * @param {string[]} files list of filepaths to check
+ * @param {string} depricated_targetdirectory used to recognize depricated filepaths 
+ * @param {string} targetdirectory used to generate new filepaths
+ * @yields {FileMigration} designated migration
+ */
+function* PlanMigration(files, depricated_targetdirectory, targetdirectory)
+{
+    for (const file of files) {
+        if (!file.startsWith(depricated_targetdirectory))
+        {
+            yield {old: file, new: null};
+            continue;
+        }
+
+        yield {old: file, new: file.replace(depricated_targetdirectory, targetdirectory)};
+    }
+}
+/**
+ * creates summary of migrations
+ * only generates migration-plans until a partial migration is detected
+ * if only some (not all) files get migrated it's considered a partial migration
+ * @param {FileMigration[]} migrations list of filepaths to check
+ * @returns {MigrationSummary} summary
+ */
+function GetMigrationSummary(migrations){
+    var migrationsFound = false;
+    var nonMigrationsFound = false;
+    for (const migration of migrations) {
+        if (migration.new)
+        {
+            migrationsFound = true;
+        }
+        else
+        {
+            nonMigrationsFound = true;
+        }
+
+        if (migrationsFound && nonMigrationsFound)
+        {
+            break;
+        }
+    }
+
+    return {migrationsFound: migrationsFound, nonMigrationsFound: nonMigrationsFound};
+}
+/**
+ * moves files in the filesystem according to the planned migrations
+ * @param {FileMigration[]} migrations list of filepaths to check
+ */
+async function MoveFiles(planedMigrations){
+    for (const migration of planedMigrations) {
+        await filemanager.Move(migration.old, migration.new);
+    }
+}
 
 function DownloadFiles_UI(urls){
     var currentIndex = 0;

@@ -1,3 +1,4 @@
+require('../typedefs.js')
 const process = global.process;
 const fs = global.fs;
 const os = global.os;
@@ -125,6 +126,25 @@ module.exports = {
     
         let fullpath = path.join(_path, configname);
         return fullpath;
+    },
+
+    /**
+     * replaces known variable (i.e. {tf2_dir}) and normalizes the path
+     * @param {string} p path tp expand
+     * @returns {string} replaced and normalized path
+     */
+    ExpandVariables(p){
+        return path.normalize(p.replace("{tf2_dir}", this.config.tf2_directory));
+    },
+
+    /**
+     * returnes actually installad mods
+     * 
+     * filters out the _blank-mod
+     * @returns {ModVersionInfo[]} list of installed mods
+     */
+    GetModVersionInfos(){
+        return this.config.current_mod_versions.filter(modVersionInfo => modVersionInfo.name !== "_blank");
     }
 };
 

@@ -18,6 +18,7 @@
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/ctfpack.json",
+                "depricated_targetdirectory": "{tf2_dir}/tf/custom/creators.tf assetpack_automaticdownload",
                 "targetdirectory": "{tf2_dir}/tf/custom/Creators.TF-Community-Launcher",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
