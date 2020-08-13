@@ -1,6 +1,10 @@
 html, body { height: 100%; margin: 0; }
 
 body {
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; */
   background: rgb(2,0,36);
   background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(5,5,56,1) 50%, rgba(0,23,28,1) 100%);
   background-size: cover;
@@ -24,12 +28,11 @@ body {
 ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: #888; }
 
-h1, h2, p { color: lightgrey; }
+h1, h2, p { color: lightgrey; margin: 0; text-align: center; }
 
 h1 {
     font-family: Roboto Black, Arial, sans-serif;
     font-size: 70px;
-    /*margin: 10px 0px 10px 0px;*/
 }
 
 h2 {

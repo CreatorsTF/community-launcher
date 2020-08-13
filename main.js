@@ -8,9 +8,9 @@ const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("./modules/config");
 const settingsPage = require("./settings-page/settingspage");
 const patchnotesPage = require("./patchnotes-page/patchnotespage");
+const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
-const serverlistPage = require("./serverlist-page/serverlist")
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
