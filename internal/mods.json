@@ -4,8 +4,8 @@
         {
             "name": "Creators.TF",
             "blurb": "A TF2 celebration project",
-            "icon": "images/logos/modcirclelogos/creatorstf_circle.png",
-            "titleimage": "images/logos/modlogos/creatorstf_full.png",
+            "icon": "images/logos/modcirclelogos/creatorstf.png",
+            "titleimage": "images/logos/modlogos/creatorstf.png",
             "backgroundimage": "images/backgrounds/creatorstf.png",
             "bordercolor": "orange",
             "backgroundpos": "left",

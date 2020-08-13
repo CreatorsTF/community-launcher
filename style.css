@@ -5,8 +5,7 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    background: rgb(0,0,0);
-    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(40,40,40,1) 100%);
+    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 100%);
     user-select: none;
 }
 
@@ -167,7 +166,12 @@ body {
 }
 
 #contentdummy {
+  background-image: url(images/logos/tf2logo_dark_fade.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 115%;
   width: 78.5%;
+  opacity: 0.2;
 }
 
 #content {
@@ -300,14 +304,21 @@ body {
     text-transform: uppercase;
     font-family: Roboto Light, Arial, sans-serif;
     border: none;
-    color: black;
-    text-shadow: 1px 1px 25px #000;
+    color: #000;
+    text-shadow: 1px 1px 20px #000;
     position: relative;
     bottom: 235px;
     left: 0;
     transition: .2s;
     float: right;
     z-index: 1;
+}
+
+#remove-mod:hover {
+    background-color: #CC4747;
+    color: #FFF;
+    cursor: pointer;
+    filter: brightness(0.8);
 }
 
 /*

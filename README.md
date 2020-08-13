@@ -13,9 +13,8 @@
 * [License](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/LICENSE)
 * [Code of conduct](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/CODE_OF_CONDUCT.md) (TL;DR; common sense)
 
-
 ### Maintainers
-* [Jota](https://github.com/jota11)
-* [rob5300](https://github.com/rob5300)
+* [Jota](https://github.com/jota11) - jota@creators.tf
+* [rob5300](https://github.com/rob5300) - rob5300@creators.tf
 
 ### Feel free to make pull requests and contribute to this repository. The launcher is currently in an alpha state so any help is appreciated.
