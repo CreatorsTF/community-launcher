@@ -345,6 +345,7 @@ body {
 }
 
 [tooltip]:after {
+  width: 200%;
   content: attr(tooltip);
   background-color: #111;
   border-radius: 5px;
@@ -353,9 +354,9 @@ body {
   font-size: 16px;
   position: absolute;
   padding: 5px;
-  bottom: -2em;
+  bottom: -3.3em;
   left: 0;
-  white-space: nowrap;
+  /* white-space: nowrap; */
   box-shadow: 0px 0px 20px rgba(50,50,50,0.5);
   z-index: 9999999;
   visibility: hidden;

@@ -26,11 +26,9 @@ function OpenWindow() {
         width: 700,
         height: 550
     });
-
     settingsWindow.removeMenu();
-
     settingsWindow.loadFile("./settings-page/settings.html");
-
+    
     settingsWindow.once("ready-to-show", () => {
         settingsWindow.show();
 

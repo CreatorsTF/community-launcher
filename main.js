@@ -167,11 +167,11 @@ ipcMain.on("PatchNotesWindow", async (event, someArgument) => {
     patchnotesPage.OpenWindow();
 });
 
-ipcMain.on("app_version", (event) => {
-  event.sender.send("app_version", {
-    version: app.getVersion()
-  });
-});
+// ipcMain.on("app_version", (event) => {
+//   event.sender.send("app_version", {
+//     version: app.getVersion()
+//   });
+// });
 
 ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
