@@ -59,7 +59,7 @@ files_object: null,
 source_manager: null,
 
 //Sets up the module.
-async Setup(){
+Setup(){
     this.all_mods_data = JSON.parse(fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json")));
 
     //JS-magic to turn the list into a dictionary for easier lookup
@@ -67,7 +67,7 @@ async Setup(){
     this.modDefinitions = Object.assign({}, ...this.all_mods_data.mods.map((x) => ({[x.name]: x})));
 
     filemanager.Init();
-    await MigrateDepricatedLocations();
+    return MigrateDepricatedLocations();
 },
 
 //Change the currently selected mod, return its installation button text.

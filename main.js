@@ -26,7 +26,7 @@ const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsuppo
 
 var mainWindow;
 
-async function createWindow() {
+function createWindow() {
     try {
         mainWindow = new BrowserWindow({
             minWidth: 960,
@@ -53,20 +53,35 @@ async function createWindow() {
 
         //Load copy of mods data for this process. The rendering process will load its own.
 
-        await loadConfig();
-        // and load the index.html of the app.
-        //Also setup the mod manager.
-        await startMainWindow();
-    } 
+        //Lets load the config file.
+        config.GetConfig().then((c) => {
+            //Make sure the config is loaded in.
+            global.config = c;
+            // and load the index.html of the app.
+            //Also setup the mod manager.
+            return mod_manager.Setup().then(() => {
+                try {
+                    mainWindow.loadFile(path.resolve(__dirname, "index.html"));                        
+                }
+                catch(e) {
+                    handleMajorError("Startup Error - Main Window Load", e);
+                }
+            })
+            .catch((e) => {
+                handleMajorError("Startup Error - Mod Manager Setup", e);
+            });
+        })
+        .catch((e) => {
+            handleMajorError("Startup Error - Config Load", e);
+        });
+    }
     catch(majorE) {
         handleMajorError("Startup Error - Major Initial Error", e);
     }
 }
 
 
-app.whenReady().then(async () => {
-    await createWindow();
-});
+app.whenReady().then(createWindow);
 
 autoUpdater.checkForUpdatesAndNotify();
 log.info("The launcher was opened and is currently checking for updates");
@@ -198,27 +213,7 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
         });
     }
 });
-async function loadConfig() {
-    try {
-        //Lets load the config file.
-        let c = await config.GetConfig();
-        //Make sure the config is loaded in.
-        global.config = c;
-    }
-    catch (e) {
-        handleMajorError("Startup Error - Config Load", e);
-    }
-}
 
-async function startMainWindow() {
-    try {
-        await mod_manager.Setup();
-        mainWindow.loadFile(path.resolve(__dirname, "index.html"));
-    }
-    catch(e) {
-        handleMajorError("Startup Error - Main Window Load", e);
-    }
-}
 function handleMajorError(msg, e) {
     global.log.error(e, msg);
     
