@@ -41,10 +41,11 @@ GetFileListSync(modName){
         });
     }
 },
-
-async SaveFileList(filelist, modName){
-    let path = fileListPath + modName + "_files.json";
-    await fsPromises.writeFile(path, JSON.stringify(filelist), "utf8");
+SaveFileList(filelist, modName){
+    return new Promise((resolve) => {
+        SaveFileListSync(filelist, modName);
+        resolve();
+    });
 },
 
 SaveFileListSync(filelist, modName){
