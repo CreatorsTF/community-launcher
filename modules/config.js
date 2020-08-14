@@ -133,7 +133,7 @@ module.exports = {
      * @param {string} p path tp expand
      * @returns {string} replaced and normalized path
      */
-    ExpandVariables(p){
+    ResolveVariables(p){
         return path.normalize(p.replace("{tf2_dir}", this.config.tf2_directory));
     },
 

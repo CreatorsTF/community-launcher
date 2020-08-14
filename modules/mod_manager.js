@@ -483,7 +483,7 @@ GetRealTF2Path(){
 
     realPath = path.normalize(realPath);
     
-    return config.ExpandVariables(realPath);
+    return config.ResolveVariables(realPath);
 },
 
 InstallFiles(files){
@@ -574,8 +574,8 @@ async function MigrateDepricatedModLocations(modVersionInfo){
         return;
     }
 
-    let depricated_targetdirectory = config.ExpandVariables(modDefinition.install.depricated_targetdirectory);
-    let targetdirectory = config.ExpandVariables(modDefinition.install.targetdirectory);
+    let depricated_targetdirectory = config.ResolveVariables(modDefinition.install.depricated_targetdirectory);
+    let targetdirectory = config.ResolveVariables(modDefinition.install.targetdirectory);
     //create generator to iterate over new file-locations one-by-one
     let migrationGenerator = () => PlanMigration(fileList.files, depricated_targetdirectory, targetdirectory);
     
