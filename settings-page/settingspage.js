@@ -28,7 +28,7 @@ function OpenWindow() {
     });
     settingsWindow.removeMenu();
     settingsWindow.loadFile("./settings-page/settings.html");
-    
+
     settingsWindow.once("ready-to-show", () => {
         settingsWindow.show();
 
