@@ -2,7 +2,8 @@ const fs = global.fs;
 const path = global.path;
 const os = global.os;
 
-require('../typedefs.js')
+require('../typedefs.js');
+const fsPromises = require('./fs_extensions');
 const { dialog } = require('electron');
 const https = require('https');
 const JSZip = require('jszip');
@@ -655,7 +656,7 @@ function GetMigrationSummary(migrations){
  */
 async function MoveFiles(planedMigrations){
     for (const migration of planedMigrations) {
-        await filemanager.Move(migration.old, migration.new);
+        await fsPromises.move(migration.old, migration.new);
     }
 }
 

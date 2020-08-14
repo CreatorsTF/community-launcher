@@ -43,7 +43,7 @@ GetFileListSync(modName){
 },
 SaveFileList(filelist, modName){
     return new Promise((resolve) => {
-        SaveFileListSync(filelist, modName);
+        this.SaveFileListSync(filelist, modName);
         resolve();
     });
 },
@@ -65,66 +65,6 @@ GetPath(){
 
     let fullpath = path + "/";
     return fullpath;
-},
-
-/**
- * moves a file to a new location
- * returns if oldPath is not a file
- * creates directories if needed
- * @param {string} oldPath origin path
- * @param {string} newPath destination path
- */
-async Move(oldPath, newPath) {
-    if (!await FileExists(oldPath))
-        return;
-
-    let newDirectory = global.path.dirname(newPath);
-    if (!await PathExists(newDirectory))
-        await fsPromises.mkdir(newDirectory, { recursive: true });
-
-    await fsPromises.rename(oldPath, newPath);
 }
 
 };
-
-/**
- * checks if a file exists
- * (and is a file)
- * @param {string} path path to check
- * @returns {boolean} true if file exists (and is a file), otherwise false
- */
-async function FileExists(path) {
-    return await Exists(async () => {
-        const stats = await fsPromises.stat(path);
-        return stats && stats.isFile();
-    });
-}
-
-/**
- * checks if a path exists
- * @param {string} path path to check
- * @returns {boolean} true if path exists, otherwise false
- */
-async function PathExists(path) {
-    return await Exists(async () => { await fsPromises.stat(path); return true; });
-}
-/**
- * catches NotFound-errors 
- * 
- * used to check files/pathes and handle NotFound-errors as 'does not exist'
- * @param {BoolAction} func function to execute
- * @returns {boolean} false if NotFound-error occoured, otherwise result from func will be returned
- */
-async function Exists(func) {
-    try {
-        return await func();
-    } catch (e) {
-        if (!IsNotFoundError(e))
-            throw e;
-        return false;
-    }
-}
-
-function IsNotFoundError(e) {
-    return e.code === "ENOENT";
-}
