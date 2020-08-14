@@ -1080,20 +1080,25 @@ function ValidateTF2Dir(){
     }
 
     //Check if the directory contains an hl2 win32 executable if we are on windows.
-    if(os.platform() == "win32"){
+    const plat = os.platform();
+    if(plat == "win32"){
         if(fs.existsSync(path.join(global.config.tf2_directory, "hl2.exe"))){
             return true;
         }
     }
-    else{
-        //Check if the directory has the app id txt and it has 440 in it.
-        let appid_path = path.join(global.config.tf2_directory, "steam_appid.txt");
-        if(fs.existsSync(appid_path)){
-            let content = fs.readFileSync(appid_path, "utf-8");
-            let appid = content.split("\n")[0];
-            if(appid != null && appid == "440"){
-                return true;
-            }
+    else if (plat == "linux" || plat == "freebsd" || plat == "openbsd"){
+        if(fs.existsSync(path.join(global.config.tf2_directory, "hl2_linux"))){
+            return true;
+        }
+    }
+
+    //Check if the directory has the app id txt and it has 440 in it.
+    let appid_path = path.join(global.config.tf2_directory, "steam_appid.txt");
+    if(fs.existsSync(appid_path)){
+        let content = fs.readFileSync(appid_path, "utf-8");
+        let appid = content.split("\n")[0];
+        if(appid != null && appid == "440"){
+            return true;
         }
     }
 
