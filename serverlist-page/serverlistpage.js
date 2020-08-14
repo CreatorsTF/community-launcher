@@ -10,7 +10,7 @@ function OpenWindow() {
     serverlistWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "serverpage-preload.js"),
             nodeIntegration: false
         },
         modal: true,

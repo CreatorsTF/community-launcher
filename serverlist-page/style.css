@@ -5,22 +5,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column; */
-  background: rgb(2,0,36);
-  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(5,5,56,1) 50%, rgba(0,23,28,1) 100%);
-  background-size: cover;
-  background-position: center;
-  user-select: none;
-  -webkit-user-select: none;
-  opacity: 1;
-  animation-name: fadeInSuperFancyTransition;
-  animation-fill-mode: both;
-  animation-timing-function: ease-in;
-  animation-duration: 0.2s;
-}
-
-@keyframes fadeInSuperFancyTransition {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+    background-color: #111111;
 }
 
 ::-webkit-scrollbar { width: 8px; }
@@ -32,22 +17,22 @@ h1, h2, p { color: lightgrey; margin: 0; text-align: center; }
 
 h1 {
     font-family: Roboto Black, Arial, sans-serif;
-    font-size: 70px;
+    font-size: 30px;
 }
 
 h2 {
     font-family: Roboto Regular, Arial, sans-serif;
-    font-size: 25px;
+    font-size: 20px;
     margin: 0px 0px 10px 0px;
 }
 
 p {
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 20px;
+    font-size: 14px;
     margin: 5px 0px;
 }
 
-.config-button {
+button {
     padding: 8px;
     border-radius: 5px;
     cursor: pointer;
@@ -58,8 +43,37 @@ p {
     font-size: 18px;
     margin-left: 10px;
     box-shadow: inset 0px 0px 3px #000;
+    width: 100%;
 }
 
-.config-button:hover {
+table{
+    width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+tr {
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+
+.id{
+    width: 10%;
+}
+
+.name{
+    width: 50%;
+}
+
+.map {
+    width: 20%;
+}
+
+.connect {
+    width: 20%;
+}
+
+button:hover {
     background-color: #999;
 }

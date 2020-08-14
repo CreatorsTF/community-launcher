@@ -1,4 +1,4 @@
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, shell } = require("electron");
 
 const log = require("electron-log");
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
-    if(serverListData.result == "SUCCESS"){
+    if (serverListData.result == "SUCCESS") {
         var servers = serverListData.servers;
 
         //Remove the old server list if its there.
@@ -24,14 +24,14 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
         //if(oldServerList != null) oldServerList.parentElement.removeChild(oldServerList);
 
         var serverRegionMap = new Map();
-        for (let server of servers){
+        for (let server of servers) {
             var regionArray;
-            if(!serverRegionMap.has(server.region)){
+            if (!serverRegionMap.has(server.region)) {
                 //Add this region to the map.
                 regionArray = [];
                 serverRegionMap.set(server.region, regionArray);
             }
-            else{
+            else {
                 regionArray = serverRegionMap.get(server.region);
             }
 
@@ -40,7 +40,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
 
         for (const region of serverRegionMap) {
             var heading = document.createElement("h2");
-            
+
             container.appendChild(heading);
             heading.innerText = region[0];
 
@@ -49,20 +49,32 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             table.id = "serverlist-" + region[0];
             container.appendChild(table);
 
-            for (let server of region[1]){
+            for (let server of region[1]) {
                 let tr = document.createElement("tr");
 
                 let id = document.createElement("td");
                 id.innerHTML = `<p>${server.id}</p>`;
+                id.className = "id";
                 tr.appendChild(id);
 
                 let hostname = document.createElement("td");
                 hostname.innerHTML = `<p>${server.hostname}</p>`;
+                hostname.className = "name";
                 tr.appendChild(hostname);
 
                 let map = document.createElement("td");
                 map.innerHTML = `<p>${server.map}</p>`;
+                map.className = "map";
                 tr.appendChild(map);
+
+                let connectButtonHolder = document.createElement("td");
+                connectButtonHolder.className = "connect";
+                let button = document.createElement("button");
+                tr.appendChild(connectButtonHolder);
+                connectButtonHolder.appendChild(button);
+                button.innerText = `Connect\n(${server.online}/${server.maxplayers})`;
+
+                SetButtonEventListner(button, server.ip, server.port);
 
                 table.appendChild(tr);
             }
@@ -70,15 +82,28 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             table.style.display = "none";
         }
     }
-    else{
+    else {
         document.getElementById("server-container").innerText = "Failed to get servers";
     }
 });
 
-function HeadingClicked(event, table){
+function HeadingClicked(event, table) {
     table.style.display = table.style.display == "block" ? "none" : "block";
 }
 
-function SetEventListner(heading, table){
+function SetEventListner(heading, table) {
     heading.addEventListener("click", (e) => { HeadingClicked(e, table); });
+}
+
+function SetButtonEventListner(button, ip, port){
+    var serverURL = GetServerURL(ip, port);
+    button.addEventListener("click", (e) => { ConnectToServer(serverURL); });
+}
+
+function ConnectToServer(server) {
+    shell.openExternal(server);
+}
+
+function GetServerURL(ip, port) {
+    return `steam://connect/${ip}:${port}`;
 }
