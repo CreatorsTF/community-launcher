@@ -24,7 +24,6 @@ function OpenWindow() {
         width: 700,
         height: 550
     });
-
     patchNotesWindow.removeMenu();
     patchNotesWindow.loadFile(path.resolve(__dirname, "patchnotes.html"));
     patchNotesWindow.once("ready-to-show", () => {

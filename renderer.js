@@ -46,7 +46,7 @@ function OnClick_Mod(data) {
     installButton.style.background = "";
     installButton.style.backgroundColor = "grey";
     installButton.style.color = "black";
-    installButton.innerText = "... LOADING ...";
+    installButton.innerText = "LOADING...";
     installButton.disabled = true;
 
     website.style.display = data.website != "" ? "block" : "none";
@@ -110,7 +110,7 @@ document.getElementById("patchnotes-button").addEventListener("click", (a,b) => 
 });
 
 installButton.addEventListener("click", (e) => {
-    installButton.innerText = "... STARTING ...";
+    installButton.innerText = "STARTING...";
     installButton.disabled = true;
     ipcRenderer.send("install-play-click", e);
 });
