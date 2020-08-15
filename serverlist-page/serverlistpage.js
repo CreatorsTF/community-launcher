@@ -23,7 +23,7 @@ function OpenWindow() {
         minWidth: 640,
         minHeight: 500,
         width: 900,
-        height: 550
+        height: 1000
     });
 
     //serverlistWindow.removeMenu();

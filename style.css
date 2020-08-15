@@ -288,6 +288,31 @@ body {
     z-index: 1;
 }
 
+#serverlist {
+    width: 170px;
+    height: 50px;
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-family: Roboto Medium, Arial, sans-serif;
+    display: block;
+    border: none;
+    text-shadow: 1px 1px 25px #000;
+    background-color: #ff8e37;
+    color: whitesmoke;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    transition: .2s;
+    z-index: 5;
+}
+
+#serverlist:hover {
+    cursor: pointer;
+    filter: brightness(0.8);
+}
+
 #install-play-update:hover {
     cursor: pointer;
     filter: brightness(0.8);

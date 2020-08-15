@@ -24,6 +24,9 @@ h2 {
     font-family: Roboto Regular, Arial, sans-serif;
     font-size: 20px;
     margin: 0px 0px 10px 0px;
+    cursor: pointer;
+    display: block;
+    width: auto;
 }
 
 p {
@@ -40,7 +43,7 @@ button {
     border: 0;
     outline: 0;
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     margin-left: 10px;
     box-shadow: inset 0px 0px 3px #000;
     width: 100%;
@@ -57,6 +60,9 @@ tr {
     padding: 2px;
     text-align: center;
 }
+
+tr:nth-child(even){background-color: #292929;}
+tr:nth-child(odd){background-color: #161616;}
 
 .id{
     width: 10%;

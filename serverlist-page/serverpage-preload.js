@@ -8,7 +8,16 @@ log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
 log.silly("Testing log - PRELOAD OF SETTINGS PAGE");
 
+const arrowHTML = ' <img src="../images/icons/arrow-down-bold-box-outline.png"/>';
+
 var container;
+//Simple way to make server names look better for now.
+var serverNames = new Map();
+serverNames.set("eu", "Europe");
+serverNames.set("us", "North America");
+serverNames.set("ru", "Russia");
+serverNames.set("au", "Australia");
+serverNames.set("sg", "Singapore");
 
 window.addEventListener("DOMContentLoaded", () => {
     ipcRenderer.send("GetServerList", "");
@@ -42,7 +51,15 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             var heading = document.createElement("h2");
 
             container.appendChild(heading);
-            heading.innerText = region[0];
+            var regionName = region[0].toLowerCase();
+            if(serverNames.has(regionName)){
+                heading.innerText = serverNames.get(regionName);
+            }
+            else {
+                heading.innerText = regionName.toUpperCase();
+            }
+
+            heading.innerHTML += arrowHTML;
 
             var table = document.createElement("table");
             SetEventListner(heading, table);
