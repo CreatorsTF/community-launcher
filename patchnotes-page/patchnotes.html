@@ -2,29 +2,18 @@
     <head>
         <meta charset="utf-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://raw.githubusercontent.com/; script-src 'self'">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
         <link href="style.css" rel="stylesheet">
         <link href="../fonts/fonts.css" rel="stylesheet">
         <title>Patch Notes</title>
     </head>
     <body>
+        <h1 id="modname">Launcher Changelogs</h1>
         <div id="wrapper">
-            <h1 id="modname">Creators.TF Launcher</h1>
-            <div class="patch">
-                <div class="patchTitle">Changelogs — 23/06/2020</div>
-                <div class="patchNotes">
-                    <ul>
-                        <li>Moved something</li>
-                        <li>Really long note to see how it goes Moved somethingMoved something</li>
-                        <li>Moved somethingMoved somethingMoved somethingMoved somethingMoved somethingMoved somethingMoved something</li>
-                        <ul>
-                            <li>Moved somethingMoved somethingMoved somethingMoved somethingMoved something</li>
-                        </ul>
-                    </ul>
-                </div>
-            </div>
+            <div id="patchnotes"></div>
         </div>
+        <script src="patch.js"></script>
         <script src="../consolewarning.js"></script>
     </body>
 </html>
