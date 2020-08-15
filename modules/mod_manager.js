@@ -50,7 +50,7 @@ module.exports =
 
 //Export variables.
 all_mods_data: null,
-modDefinitions: {"_blank": {"name":"_blank","version":0.1}},
+modDefinitions: {},
 currentModData: null,
 currentModVersion: 0,
 currentModState: State.NOT_INSTALLED,

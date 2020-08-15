@@ -138,7 +138,7 @@ module.exports = {
     /**
      * returnes actually installad mods
      * 
-     * filters out the _blank-mod
+     * filters out the _blank-mod, which was present in early development
      * @returns {ModVersionInfo[]} list of installed mods
      */
     GetModVersionInfos(){
