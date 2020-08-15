@@ -35,9 +35,7 @@ module.exports = {
                     this.config = {
                         steam_directory: "",
                         tf2_directory: "",
-                        current_mod_versions: [
-                            {name: "_blank", version: 0.1}
-                        ]
+                        current_mod_versions: []
                     }
 
                     //Try to populate the default values of the steam directory and tf2 directory automatically.
