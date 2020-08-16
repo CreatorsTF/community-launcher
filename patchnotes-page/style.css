@@ -29,34 +29,56 @@ body {
 ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: #888; }
 
-#wrapper {
+#modname {
     margin: 25px auto;
-    width: 90%;
+    font-family: Roboto Bold, Arial, sans-serif;
+    font-size: 60px;
+    text-align: center;
+    text-shadow: 0px 0px 20px #000;
+    color: #EEE;
+}
+
+#wrapper {
+    margin: 0px auto;
+    width: 75%;
     color: #FFF;
 }
 
-#modname {
-    margin: 0;
-    font-size: 60px;
-    font-family: Roboto Bold, Arial, sans-serif;
-    text-align: center;
-}
-
-.patch {
-    margin: 20px 0px 0px 0px;
-    background-color: rgba(0,0,0,0.8);
-    padding: 20px;
+#patchnotes {
+    margin: 20px auto 0px auto;
+    background-color: rgba(0,0,0,0.65);
+    padding: 25px 25px 10px 25px;
     border-radius: 5px;
 }
 
-.patchTitle {
-    font-size: 35px;
+h2 {
+    margin: 0;
+    padding-top: 25px;
+    font-size: 39px;
     font-family: Roboto Medium, Arial, sans-serif;
+    border-top: 1px solid rgba(255,255,255,0.5);
 }
-
-.patchNotes {
-    font-size: 22px;
+h3 {
+    margin: 0;
+    font-size: 15px;
     font-family: Roboto Thin, Arial, sans-serif;
 }
 
-ul { list-style-image: url(../images/thatarrowfromthetfblog.png); }
+h2:first-of-type {
+    border-top: 0px;
+    padding-top: 0px;
+}
+
+ul {
+    list-style-image: url(../images/thatarrowfromthetfblog.svg);
+    font-size: 20px;
+    font-family: Roboto Light, Arial, sans-serif;
+}
+
+code {
+    background-color: rgba(25,25,25,0.9);
+    padding: 0px 5px;
+    border-radius: 5px;
+    font-family: Roboto Thin, Arial, sans-serif;
+    font-size: 19px;
+}
