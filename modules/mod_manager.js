@@ -547,13 +547,23 @@ FakeClickMod(){
  */
 async function MigrateDepricatedLocations(){
     
-    for (const modVersionInfo of config.GetModVersionInfos()) {
+    for (const modVersionInfo of GetModVersionInfos()) {
         try {
             await MigrateDepricatedModLocations(modVersionInfo);
         } catch (e) {
             global.log.error(e, "unexpected error while migrating depricated locations for mod", modVersionInfo);
         }
     }
+}
+
+/**
+ * returnes actually installad mods
+ * 
+ * filters out mods, that are not present in this.modDefinitions
+ * @returns {ModVersionInfo[]} list of installed mods
+ */
+function GetModVersionInfos(){
+    return config.config.current_mod_versions.filter(modVersionInfo => module.exports.modDefinitions[modVersionInfo.name]);
 }
 
 /**

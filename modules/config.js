@@ -133,16 +133,6 @@ module.exports = {
      */
     ResolveVariables(p){
         return path.normalize(p.replace("{tf2_dir}", this.config.tf2_directory));
-    },
-
-    /**
-     * returnes actually installad mods
-     * 
-     * filters out the _blank-mod, which was present in early development
-     * @returns {ModVersionInfo[]} list of installed mods
-     */
-    GetModVersionInfos(){
-        return this.config.current_mod_versions.filter(modVersionInfo => modVersionInfo.name !== "_blank");
     }
 };
 
