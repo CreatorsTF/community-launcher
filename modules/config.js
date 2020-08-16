@@ -44,24 +44,17 @@ module.exports = {
                 //Try to find the users tf2 directory automatically.
                 try {
                     let result = await this.GetTF2Directory(this.config.steam_directory)
-                    .catch((e) => {
-                        //We failed to get the tf2 dir. Finish anyway.
-                        //The user is notified later if it is left blank.
-                        global.log.error("TF2 directory was not found automatically");
-                    });
 
                     global.log.log("TF2 directory was found successfully at: " + result);
                     this.config.tf2_directory = result;
-                } finally {
-                    this.SaveConfig(this.config);
-                    return this.config;
+                } catch {
+                    global.log.error("TF2 directory was not found automatically");
                 }
-            } else {
-                //Resolve now without the steam dir or a tf2 dir.
-                //User is told later anyway.
-                this.SaveConfig(this.config);
-                return this.config;
             }
+            //Return whether or not the TF2/Steam directory was found
+            //User is told later anyway.
+            this.SaveConfig(this.config);
+            return this.config;
         }
     },
 
