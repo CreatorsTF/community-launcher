@@ -59,24 +59,21 @@ function createWindow() {
             global.config = c;
             // and load the index.html of the app.
             //Also setup the mod manager.
-            return mod_manager.Setup().then(() => {
-                try {
-                    mainWindow.loadFile(path.resolve(__dirname, "index.html"));                        
-                }
-                catch(e) {
-                    handleMajorError("Startup Error - Main Window Load", e);
-                }
-            })
-            .catch((e) => {
-                handleMajorError("Startup Error - Mod Manager Setup", e);
-            });
+            try {    
+                mod_manager.Setup();
+                mainWindow.loadFile(path.resolve(__dirname, "index.html"))
+                    .then(() => mod_manager.MigrateDepricatedLocations());                    
+            }
+            catch(e) {
+                handleMajorError("Startup Error - Main Window Load", e);
+            }
         })
         .catch((e) => {
             handleMajorError("Startup Error - Config Load", e);
         });
     }
     catch(majorE) {
-        handleMajorError("Startup Error - Major Initial Error", e);
+        handleMajorError("Startup Error - Major Initial Error", majorE);
     }
 }
 

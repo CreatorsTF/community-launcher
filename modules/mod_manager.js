@@ -11,6 +11,7 @@ const url = require("url");
 const ProgressBar = require('electron-progressbar');
 const config = require('./config');
 const filemanager = require("./file_manager");
+const progressBarFactory = require("./progressBarFactory");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
@@ -68,7 +69,6 @@ Setup(){
     this.modDefinitions = Object.assign({}, ...this.all_mods_data.mods.map((x) => ({[x.name]: x})));
 
     filemanager.Init();
-    return MigrateDepricatedLocations();
 },
 
 //Change the currently selected mod, return its installation button text.
@@ -537,16 +537,12 @@ FakeClickMod(){
     setTimeout(() => {
         global.mainWindow.webContents.send("FakeClickMod", this.currentModData);
     }, 50);
-}
-
-//END OF EXPORT FUNCTIONS ############
-}// END OF EXPORT OBJECT. ##########################
-
+},
 /**
  * checks and fixes depricated file locations for all installed mods
  */
-async function MigrateDepricatedLocations(){
-    
+async MigrateDepricatedLocations(){
+
     for (const modVersionInfo of GetModVersionInfos()) {
         try {
             await MigrateDepricatedModLocations(modVersionInfo);
@@ -555,6 +551,10 @@ async function MigrateDepricatedLocations(){
         }
     }
 }
+
+//END OF EXPORT FUNCTIONS ############
+}// END OF EXPORT OBJECT. ##########################
+
 
 /**
  * returnes actually installad mods
@@ -607,11 +607,26 @@ async function MigrateDepricatedModLocations(modVersionInfo){
     
     //use complete list of migrations from here on
     const planedMigrations = Array.from(migrationGenerator());
-    await MoveFiles(planedMigrations);
+    async function work(progressBar){
+        await MoveFiles(planedMigrations, progressBar);
+    
+        const newFileList = { files: planedMigrations.map(move => move.new ? move.new : move.old) };
+        await filemanager.SaveFileList(newFileList, modDefinition.name);
+        progressBar.value += 1;
 
-    const newFileList = { files: planedMigrations.map(move => move.new ? move.new : move.old) };
-    await filemanager.SaveFileList(newFileList, modDefinition.name);
-    global.log.info("fixed location for mod with", planedMigrations.length, "files", modDefinition);
+        global.log.info("fixed location for mod with", planedMigrations.length, "files", modDefinition);
+    }
+    await progressBarFactory.ShowProgressBarAndRejectOnAbort("Mod-Migration", 
+                                                             "Mod-Migration", 
+                                                             "migrating " + modVersionInfo.name, 
+                                                             planedMigrations.length + 1, 
+                                                             loadingTextStyle, 
+                                                             work, 
+                                                             null,
+                                                             () => {}, 
+                                                             (value, progressBar) => {
+                                                                 progressBar.detail = "migrating " + modVersionInfo.name + ": " + value + "/" + progressBar.getOptions().maxValue + " files"
+                                                             });
 }
 /**
  * Generator for needed file-migrations
@@ -663,10 +678,12 @@ function GetMigrationSummary(migrations){
 /**
  * moves files in the filesystem according to the planned migrations
  * @param {FileMigration[]} migrations list of filepaths to check
+ * @param {ProgressBar} progressBar progressBar used to show migration
  */
-async function MoveFiles(planedMigrations){
+async function MoveFiles(planedMigrations, progressBar){
     for (const migration of planedMigrations) {
         await fsPromises.move(migration.old, migration.new);
+        if (progressBar) progressBar.value += 1;
     }
 }
 

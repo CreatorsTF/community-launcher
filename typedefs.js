@@ -17,3 +17,13 @@
  * @callback BoolAction
  * @returns {boolean}
  */
+/**
+ * @callback ResolveAction
+ * @param {T | PromiseLike<T>} value
+ * @returns {void}
+ */
+/**
+ * @callback RejectAction
+ * @param {*} reason
+ * @returns {void}
+ */
