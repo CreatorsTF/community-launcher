@@ -5,8 +5,7 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    background: rgb(0,0,0);
-    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(40,40,40,1) 100%);
+    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 100%);
     user-select: none;
 }
 
@@ -170,7 +169,12 @@ button {
 }
 
 #contentdummy {
-    width: 78.5%;
+  background-image: url(images/logos/tf2logo_dark_fade.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 115%;
+  width: 78.5%;
+  opacity: 0.2;
 }
 
 #content {

@@ -96,16 +96,21 @@ function createWindow() {
     }
 }
 
-app.whenReady().then(createWindow);
-
-autoUpdater.checkForUpdatesAndNotify();
-log.info("The launcher was opened and is currently checking for updates");
+// app.whenReady().then(createWindow);
+app.on("ready", () => {
+    createWindow();
+    autoUpdater.checkForUpdatesAndNotify();
+    log.info("Launcher was opened and is currently checking for updates.");
+});
 
 app.on("window-all-closed", function() {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') app.quit()
-})
+    if (process.platform !== "darwin") {
+      app.quit();
+      log.info("Launcher was closed");
+    }
+});
 
 app.on("activate", function() {
     // On macOS it's common to re-create a window in the app when the
@@ -165,11 +170,11 @@ ipcMain.on("ServerListWindow", async (event, someArgument) => {
     serverlistPage.OpenWindow();
 });
 
-ipcMain.on("app_version", (event) => {
-  event.sender.send("app_version", {
-    version: app.getVersion()
-  });
-});
+//ipcMain.on("app_version", (event) => {
+//  event.sender.send("app_version", {
+//    version: app.getVersion()
+//  });
+//});
 
 ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
