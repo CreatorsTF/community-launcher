@@ -70,7 +70,6 @@ updateButton_Update.onclick = (closeProgramAndUpdate) => {
   global.log.info("The launcher was restarted to update" + closeProgramAndUpdate);
 }
 
-// this is disgusting
 ipcRenderer.on("update_not_available", () => {
   ipcRenderer.removeAllListeners("update_not_available");
   updateButton_Updated.classList.remove("hidden");
@@ -109,6 +108,10 @@ document.getElementById("patchnotes-button").addEventListener("click", (a,b) => 
     ipcRenderer.send("PatchNotesWindow", "");
 });
 
+document.getElementById("serverlist").addEventListener("click", (a, b) => {
+    ipcRenderer.send("ServerListWindow", "");
+});
+
 installButton.addEventListener("click", (e) => {
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
@@ -128,7 +131,6 @@ ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
 
     switch(arg) {
         case "installed":
-            // installButton.style.backgroundColor = "#4CAF50";
             installButton.style.background = "linear-gradient(to right, #009028 25%, #007520 75%)"; //Green (light-to-dark)
             installButton.style.color = "white";
             removeButton.style.display = "block";
@@ -140,7 +142,6 @@ ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             removeButton.style.display = "none";
             break;
         case "update":
-            // installButton.style.backgroundColor = "#0affa9";
             installButton.style.background = "linear-gradient(to left, #1A96FF 25%, #1A70FF 75%)"; //Blue (dark-to-light)
             installButton.style.color = "white";
             removeButton.style.display = "block";

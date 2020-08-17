@@ -8,6 +8,7 @@ const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("./modules/config");
 const settingsPage = require("./settings-page/settingspage");
 const patchnotesPage = require("./patchnotes-page/patchnotespage");
+const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
 
@@ -48,9 +49,7 @@ function createWindow() {
         global.mainWindow = mainWindow;
         global.app = app;
         mainWindow.removeMenu();
-
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
-
         //Load copy of mods data for this process. The rendering process will load its own.
 
         //Lets load the config file.
@@ -167,11 +166,15 @@ ipcMain.on("PatchNotesWindow", async (event, someArgument) => {
     patchnotesPage.OpenWindow();
 });
 
-// ipcMain.on("app_version", (event) => {
-//   event.sender.send("app_version", {
-//     version: app.getVersion()
-//   });
-// });
+ipcMain.on("ServerListWindow", async (event, someArgument) => {
+    serverlistPage.OpenWindow();
+});
+
+//ipcMain.on("app_version", (event) => {
+//  event.sender.send("app_version", {
+//    version: app.getVersion()
+//  });
+//});
 
 ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
@@ -214,10 +217,6 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     event.reply("GetCurrentModVersion-Reply", version);
 });
 
-// TODO -----------------------------
-// MAKE THE UNINSTALL BUTTON APPEARS
-// ONLY WHEN THE MOD IS INSTALLED
-// ----------------------------------
 ipcMain.on("Remove-Mod", async(event, arg) => {
     if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
         dialog.showMessageBox(global.mainWindow, {
