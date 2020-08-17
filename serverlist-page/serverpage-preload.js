@@ -8,7 +8,8 @@ log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
 log.silly("Testing log - PRELOAD OF SETTINGS PAGE");
 
-const arrowHTML = ' <img src="../images/icons/arrow-down-bold-box-outline.png"/>';
+const arrowHTML = ' <i class="mdi mdi-arrow-down-drop-circle"></i>';
+const mapThumb = 'https://creators.tf/api/mapthumb?map=';
 
 var container;
 //Simple way to make server names look better for now.
@@ -27,6 +28,8 @@ window.addEventListener("DOMContentLoaded", () => {
 ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     if (serverListData.result == "SUCCESS") {
         var servers = serverListData.servers;
+        loading.remove();
+        failMessage.remove();
 
         //Remove the old server list if its there.
         //let oldServerList = document.getElementById("serverlist");
@@ -43,22 +46,23 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             else {
                 regionArray = serverRegionMap.get(server.region);
             }
-
             regionArray.push(server);
         }
 
         for (const region of serverRegionMap) {
             var heading = document.createElement("h2");
+            var headingFlag = document.createElement("span");
 
             container.appendChild(heading);
             var regionName = region[0].toLowerCase();
-            if(serverNames.has(regionName)){
+            if (serverNames.has(regionName)) {
                 heading.innerText = serverNames.get(regionName);
+                headingFlag.className = "flag-icon flag-icon-" + regionName;
             }
             else {
                 heading.innerText = regionName.toUpperCase();
             }
-
+            heading.appendChild(headingFlag);
             heading.innerHTML += arrowHTML;
 
             var table = document.createElement("table");
@@ -89,23 +93,50 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 let button = document.createElement("button");
                 tr.appendChild(connectButtonHolder);
                 connectButtonHolder.appendChild(button);
-                button.innerText = `Connect\n(${server.online}/${server.maxplayers})`;
+                button.innerText = `Connect (${server.online}/${server.maxplayers})`;
 
+                let hbHolder = document.createElement("td");
+                hbHolder.className = "hb";
+                let hb = document.createElement("p");
+                hb.innerText = `${server.since_heartbeat}`;
+                tr.appendChild(hbHolder);
+                hbHolder.appendChild(hb);
+
+                let statusHolder = document.createElement("td");
+                statusHolder.className = "status";
+                let status = document.createElement("i");
+                status.className = "mdi mdi-sync-circle link-mini blue";
+                tr.appendChild(statusHolder);
+                statusHolder.appendChild(status);
+                if (server.is_down === false) {
+                    status.className = "mdi mdi-check-circle link-mini up";
+                    status.title = "Server is up!"
+                } else {
+                    status.className = "mdi mdi-alert-circle link-mini down";
+                    status.title = "Server is down!"
+                }
+
+                if (server.passworded === true) {
+                    button.innerText = `Connect (${server.online}/${server.maxplayers}) `;
+                    let lock = document.createElement("i");
+                    lock.className = "mdi mdi-lock link-mini";
+                    lock.title = "This server requires a password to join";
+                    button.appendChild(lock);
+                }
                 SetButtonEventListner(button, server.ip, server.port);
-
                 table.appendChild(tr);
             }
-
             table.style.display = "none";
         }
     }
     else {
-        document.getElementById("server-container").innerText = "Failed to get servers";
+        loading.remove();
+        document.getElementById("failMessage").innerText = "Failed to get servers\nYour internet may be down\nOR\nCreators.TF may be down";
     }
 });
 
 function HeadingClicked(event, table) {
-    table.style.display = table.style.display == "block" ? "none" : "block";
+    table.style.display = table.style.display == "table" ? "none" : "table";
 }
 
 function SetEventListner(heading, table) {

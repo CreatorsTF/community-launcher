@@ -20,16 +20,13 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 640,
+        minWidth: 700,
         minHeight: 500,
         width: 900,
-        height: 1000
+        height: 650
     });
-
-    //serverlistWindow.removeMenu();
-
+    serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
-
     serverlistWindow.once("ready-to-show", () => {
         serverlistWindow.show();
     });
@@ -40,7 +37,7 @@ ipcMain.on("GetServerList", async (event, arg) => {
     GetServerList().then((result) => {event.reply("GetServerList-Reply", result)});
 });
 
-function GetServerList(){
+function GetServerList() {
     return new Promise((resolve, reject) => {
         var options = {
             headers: {
@@ -53,25 +50,21 @@ function GetServerList(){
         let req = https.get(apiEndpoint, options, res => {
             console.log(`statusCode: ${res.statusCode}`);
                 res.on('data', d => {
-                    if(res.statusCode != 200){
+                    if (res.statusCode != 200) {
                         reject(`Failed accessing ${url}: ` + res.statusCode);
                         return;
                     }
-                    
                     data.push(d);
                 });
-
-                res.on("end", function () {
+                res.on("end", function() {
                     var buf = Buffer.concat(data);
                     let parsed = JSON.parse(buf.toString());
                     resolve(parsed);
                 });
             });
-
             req.on('error', error => {
                 reject(error.toString());
             });
-            
             req.end();
     });
 }

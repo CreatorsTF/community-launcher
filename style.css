@@ -59,115 +59,118 @@ body {
 }
 
 .entry:hover {
-  color: #EEE;
+    color: #EEE;
 }
 
 .entry:hover::before {
-  width: 135%;
-  z-index: -1;
+    width: 135%;
+    z-index: -1;
 }
 
 .entry h2, .entry p {
-  margin: 0;
+    margin: 0;
 }
 
 .entry h2 {
-  font-size: 25px;
-  font-family: Roboto Light, Arial, sans-serif;
-  line-height: 25px;
+    font-size: 25px;
+    font-family: Roboto Light, Arial, sans-serif;
+    line-height: 25px;
 }
 
 .entry p {
-  font-size: 15px;
-  font-family: Roboto Light, Arial, sans-serif;
-  line-height: 20px;
+    font-size: 15px;
+    font-family: Roboto Light, Arial, sans-serif;
+    line-height: 20px;
 }
 
 .modInfoSidebar {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .entry img {
-  float: left;
-  width: 65px;
-  height: 65px;
-  margin-right: 7px;
-  border-radius: 50px;
-  pointer-events: none;
+    float: left;
+    width: 65px;
+    height: 65px;
+    margin-right: 7px;
+    border-radius: 50px;
+    pointer-events: none;
 }
 
 #boxOfButtons {
-  width: 100%;
-  display: flex;
-  margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    margin-bottom: 20px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
 }
 
 #boxOfButtons button {
-  width: 100%;
-  font-size: 22px;
-  font-family: Roboto Light, Arial, sans-serif;
-  padding: 5px;
-  border: none;
-  outline: none;
-  transition: 0.2s;
-  border-radius: 5px;
-  margin-left: 10px;
-  cursor: pointer;
+    width: 100%;
+    font-size: 22px;
+    font-family: Roboto Light, Arial, sans-serif;
+    padding: 5px;
+    transition: 0.2s;
+    border-radius: 5px;
+    margin-left: 10px;
 }
 
 #boxOfButtons button:nth-child(1) {
-  margin-left: 0px;
+    margin-left: 0px;
 }
 
 #boxOfButtons button:hover {
-  filter: brightness(1.25);
+    filter: brightness(1.25);
 }
 
 .mdi-loading::before {
-  animation-name: rotateThatThing;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-  animation-timing-function: cubic-bezier(0.55, 0, 0.02, 0.99);
+    animation-name: rotateThatThing;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.02, 0.99);
 }
 
 @keyframes rotateThatThing {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(360deg); }
-  100% { transform: rotate(720deg); }
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(360deg); }
+    100% { transform: rotate(720deg); }
 }
 
 @keyframes updateAlert {
-  0% { background-color: #388DF5; }
-  100% { background-color: #2963A9; }
+    0% { background-color: #388DF5; }
+    100% { background-color: #2963A9; }
 }
 
 #update-button-download {
-  background-color: #EBBD34;
+    background-color: #EBBD34;
 }
 
 #update-button-downloading {
-  background-color: #F5F238;
-  pointer-events: none;
+    background-color: #F5F238;
+    pointer-events: none;
 }
 
 #update-button-update {
-  background-color: #388DF5;
-  animation-name: updateAlert;
-  animation-timing-function: ease-in;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
+    background-color: #388DF5;
+    animation-name: updateAlert;
+    animation-timing-function: ease-in;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
 }
 
 #update-button-updated {
-  background-color: #47B82E;
-  pointer-events: painted;
+    background-color: #47B82E;
+    pointer-events: painted;
 }
 
 #contentdummy {
-  width: 78.5%;
+    width: 78.5%;
 }
 
 #content {
@@ -203,6 +206,25 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 1;
+}
+
+#boxOfModButtons {
+    display: inline-flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#boxOfModButtons button {
+    margin-left: 10px;
+    font-size: 1.5em;
+    padding: 15px;
+    border-radius: 50px;
+    transition: 0.2s;
+}
+
+#boxOfModButtons button:first-child {
+    margin-left: 0px;
 }
 
 #title-image-holder {
@@ -288,51 +310,42 @@ body {
     z-index: 1;
 }
 
+#install-play-update:hover {
+    filter: brightness(0.8);
+}
+
 #serverlist {
-    width: 170px;
-    height: 50px;
     margin: 0;
+    padding: 8px;
     font-size: 18px;
-    letter-spacing: 2.5px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    font-family: Roboto Medium, Arial, sans-serif;
+    font-family: Roboto Thin, Arial, sans-serif;
     display: block;
-    border: none;
-    text-shadow: 1px 1px 25px #000;
-    background-color: #ff8e37;
+    text-shadow: 1px 1px 20px #000;
+    background-color: #FF8E37;
     color: whitesmoke;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    transition: .2s;
-    z-index: 5;
+    z-index: 1;
 }
 
 #serverlist:hover {
-    cursor: pointer;
-    filter: brightness(0.8);
-}
-
-#install-play-update:hover {
-    cursor: pointer;
-    filter: brightness(0.8);
+    filter: brightness(0.9);
 }
 
 #remove-mod {
-    padding: 15px 25px;
-    font-size: 1em;
+    background-color: #C77474;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-family: Roboto Light, Arial, sans-serif;
-    border: none;
     color: black;
-    text-shadow: 1px 1px 25px #000;
-    position: relative;
-    bottom: 235px;
-    left: 0;
-    transition: .2s;
-    float: right;
+    text-shadow: 1px 1px 20px #000;
     z-index: 1;
+}
+
+#remove-mod:hover {
+    background-color: #CC4747;
+    color: #FFF;
+    filter: brightness(0.9);
 }
 
 /*
@@ -351,34 +364,34 @@ body {
 */
 
 .hidden {
-  display: none;
+    display: none;
 }
 
 [tooltip] {
-  position: relative;
+    position: relative;
 }
 
 [tooltip]:after {
-  content: attr(tooltip);
-  background-color: #111;
-  border-radius: 5px;
-  color: #CCC;
-  font-family: Roboto Thin, Arial, sans-serif;
-  font-size: 16px;
-  position: absolute;
-  padding: 5px;
-  bottom: -2em;
-  left: 0;
-  white-space: nowrap;
-  box-shadow: 0px 0px 20px rgba(50,50,50,0.5);
-  z-index: 9999999;
-  visibility: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transition: 0.25s;
+    content: attr(tooltip);
+    background-color: #111;
+    border-radius: 5px;
+    color: #CCC;
+    font-family: Roboto Thin, Arial, sans-serif;
+    font-size: 16px;
+    position: absolute;
+    padding: 5px;
+    bottom: -2em;
+    left: 0;
+    white-space: nowrap;
+    box-shadow: 0px 0px 20px rgba(50,50,50,0.5);
+    z-index: 9999999;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: 0.25s;
 }
 
 [tooltip]:hover:after {
-  opacity: 1;
-  visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }

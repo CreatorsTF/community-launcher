@@ -33,6 +33,7 @@
     "electron-log": "^4.2.2",
     "electron-progressbar": "^1.2.0",
     "electron-updater": "^4.3.4",
+    "flag-icon-css": "^3.5.0",
     "jszip": "^3.5.0"
   }
 }

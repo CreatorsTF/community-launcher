@@ -49,9 +49,7 @@ function createWindow() {
         global.mainWindow = mainWindow;
         global.app = app;
         mainWindow.removeMenu();
-
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
-
         //Load copy of mods data for this process. The rendering process will load its own.
 
         //Lets load the config file.
@@ -214,10 +212,6 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     event.reply("GetCurrentModVersion-Reply", version);
 });
 
-// TODO -----------------------------
-// MAKE THE UNINSTALL BUTTON APPEARS
-// ONLY WHEN THE MOD IS INSTALLED
-// ----------------------------------
 ipcMain.on("Remove-Mod", async(event, arg) => {
     if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
         dialog.showMessageBox(global.mainWindow, {
