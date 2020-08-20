@@ -20,17 +20,16 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 700,
-        minHeight: 500,
-        width: 900,
-        height: 650
+        minWidth: 850,
+        minHeight: 550,
+        width: 950,
+        height: 700
     });
-    serverlistWindow.removeMenu();
+    // serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
     serverlistWindow.once("ready-to-show", () => {
         serverlistWindow.show();
     });
-
 }
 
 ipcMain.on("GetServerList", async (event, arg) => {
