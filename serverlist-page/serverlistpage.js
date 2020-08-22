@@ -1,5 +1,5 @@
 const { BrowserWindow, ipcMain } = require("electron");
-const path = global.path;
+const path = require("path");
 
 var serverlistWindow;
 const apiEndpoint = "https://creators.tf/api/IServers/GServerList?provider=15";
@@ -33,10 +33,15 @@ function OpenWindow() {
 }
 
 ipcMain.on("GetServerList", async (event, arg) => {
-    GetServerList().then((result) => {event.reply("GetServerList-Reply", result)});
+    try{
+        event.reply("GetServerList-Reply", await GetServerList());
+    }
+    catch (error) {
+        event.reply("GetServerList-Reply", null);
+    }
 });
 
-function GetServerList() {
+async function GetServerList() {
     return new Promise((resolve, reject) => {
         var options = {
             headers: {
