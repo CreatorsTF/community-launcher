@@ -1,4 +1,4 @@
-const { ipcRenderer } = require("electron");
+ipcRenderer = window.ipcRenderer;
 
 var content = document.getElementById("content");
 var contentDummy = document.getElementById("contentdummy");
@@ -31,7 +31,7 @@ document.onload = () => {
 };
 
 function OnClick_Mod(data) {
-    global.log.info("Mod entry clicked");
+    window.log.info("Mod entry clicked");
 
     content.style.backgroundImage = `url("${"./" + data.backgroundimage}")`;
     titleImage.src = data.titleimage;
@@ -62,12 +62,12 @@ function OnClick_Mod(data) {
 
 updateButton_Download.onclick = (downloadUpdate) => {
   ipcRenderer.send("download_update");
-  global.log.info("User chose to download the update. Downloading it." + downloadUpdate);
+  window.log.info("User chose to download the update. Downloading it." + downloadUpdate);
 }
 
 updateButton_Update.onclick = (closeProgramAndUpdate) => {
   ipcRenderer.send("restart_app");
-  global.log.info("The launcher was restarted to update" + closeProgramAndUpdate);
+  window.log.info("The launcher was restarted to update" + closeProgramAndUpdate);
 }
 
 ipcRenderer.on("update_not_available", () => {
@@ -76,28 +76,28 @@ ipcRenderer.on("update_not_available", () => {
   updateButton_Download.remove();
   updateButton_Downloading.remove();
   updateButton_Update.remove();
-  global.log.info("No update available... Sad!");
+  window.log.info("No update available... Sad!");
 });
 
 ipcRenderer.on("update_available", () => {
   ipcRenderer.removeAllListeners("update_available");
   updateButton_Updated.remove();
   updateButton_Download.classList.remove("hidden");
-  global.log.info("An update is available. Waiting for user's input to actually download it.");
+  window.log.info("An update is available. Waiting for user's input to actually download it.");
 });
 
 ipcRenderer.on("update_downloading", () => {
   ipcRenderer.removeAllListeners("update_downloading");
   updateButton_Download.remove();
   updateButton_Downloading.classList.remove("hidden");
-  global.log.info("Downloading update");
+  window.log.info("Downloading update");
 });
 
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   updateButton_Download.remove();
   updateButton_Update.classList.remove("hidden");
-  global.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
+  window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
 
 document.getElementById("settings-button").addEventListener("click", (a,b) => {
