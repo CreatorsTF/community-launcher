@@ -35,7 +35,8 @@ function createWindow() {
             width: 1200,
             height: 600,
             webPreferences: {
-                preload: path.join(__dirname, "preload.js")
+                preload: path.join(__dirname, "preload.js"),
+                nodeIntegration: false
             },
             center: true,
             maximizable: true,
@@ -47,7 +48,7 @@ function createWindow() {
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
         global.app = app;
-        // mainWindow.removeMenu();
+        mainWindow.removeMenu();
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
         //Load copy of mods data for this process. The rendering process will load its own.
 

@@ -54,10 +54,8 @@ window.addEventListener("DOMContentLoaded", () => {
             if (currentClientVersion === version) {
                 launcherversionBox.remove();
             } else {
-                launcherversionBox.innerText = "A new update is available but it seems you don't have\nauto-update working.\nCheck the website to download the new version.";
+                launcherversionBox.innerText = "A new update is available but it seems you\ndon't have auto-update working.\nCheck the website to download the new version.";
             }
-        } else {
-            console.log("Status: " + `${request.status}` + "\nMessage: " + `${request.statusText}`);
         }
     }
 });
