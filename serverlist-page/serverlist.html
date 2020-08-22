@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://creators.tf/; script-src 'self'">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
         <title>Server List</title>
         <link rel="stylesheet" href="../node_modules/flag-icon-css/css/flag-icon.min.css">
@@ -12,9 +12,10 @@
     </head>
     <body>
         <h1 id="modname">Creators.TF - Server List</h1>
-        <div id="loading"><h1>LOADING...</h1></div>
-        <div id="failMessage"></div>
+        <div id="refreshHolder"><button id="refreshButton"><i class="mdi mdi-refresh-circle blue"></i></button></div>
         <div id="server-container"></div>
+        <div id="loading">LOADING...</div>
+        <div id="failMessage"></div>
         <script src="../consolewarning.js"></script>
     </body>
 </html>

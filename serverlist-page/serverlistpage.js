@@ -1,5 +1,5 @@
 const { BrowserWindow, ipcMain } = require("electron");
-const path = global.path;
+const path = require("path");
 
 var serverlistWindow;
 const apiEndpoint = "https://creators.tf/api/IServers/GServerList?provider=15";
@@ -20,24 +20,28 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 700,
-        minHeight: 500,
-        width: 900,
-        height: 650
+        minWidth: 850,
+        minHeight: 550,
+        width: 950,
+        height: 700
     });
     serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
     serverlistWindow.once("ready-to-show", () => {
         serverlistWindow.show();
     });
-
 }
 
 ipcMain.on("GetServerList", async (event, arg) => {
-    GetServerList().then((result) => {event.reply("GetServerList-Reply", result)});
+    try{
+        event.reply("GetServerList-Reply", await GetServerList());
+    }
+    catch (error) {
+        event.reply("GetServerList-Reply", null);
+    }
 });
 
-function GetServerList() {
+async function GetServerList() {
     return new Promise((resolve, reject) => {
         var options = {
             headers: {

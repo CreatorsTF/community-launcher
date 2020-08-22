@@ -12,7 +12,7 @@ function OpenWindow() {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            nodeIntegration: true
+            nodeIntegration: false
         },
         modal: true,
         show: false,
@@ -28,7 +28,6 @@ function OpenWindow() {
     });
     settingsWindow.removeMenu();
     settingsWindow.loadFile("./settings-page/settings.html");
-
     settingsWindow.once("ready-to-show", () => {
         settingsWindow.show();
 

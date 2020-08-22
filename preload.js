@@ -4,13 +4,15 @@ const path = require("path");
 const moddata = JSON.parse(fs.readFileSync(path.resolve(__dirname, "internal", "mods.json")));
 const { ipcRenderer } = require("electron");
 
-global.log = require("electron-log");
-global.log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-global.log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-global.log.transports.file.fileName = "renderer.log";
-global.log.transports.file.maxSize = 10485760; //why 10mb? idk.
-global.log.transports.file.getFile();
-global.log.silly("Testing log - PRELOAD OF MAIN WINDOW");
+window.ipcRenderer = ipcRenderer;
+
+window.log = require("electron-log");
+window.log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
+window.log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
+window.log.transports.file.fileName = "renderer.log";
+window.log.transports.file.maxSize = 10485760; //why 10mb? idk.
+window.log.transports.file.getFile();
+window.log.silly("Testing log - PRELOAD OF MAIN WINDOW");
 
 window.addEventListener("DOMContentLoaded", () => {
     sidebar = document.getElementById("sidebar");
@@ -38,4 +40,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
         div.addEventListener("click", function(e){OnClick_Mod(modentry)}, false);
     });
+
+    var launcherversionBox = document.getElementById("launcherversion");
+    const config = require("./package.json");
+    const currentClientVersion = config.version;
+    let request = new XMLHttpRequest();
+    request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
+    request.send();
+    request.onload = () => {
+        if (request.status === 200) {
+            var answer = JSON.parse(request.response);
+            var version = answer.name;
+            if (currentClientVersion === version) {
+                launcherversionBox.remove();
+            } else {
+                launcherversionBox.innerText = "A new update is available for the launcher.\nCheck the website to download the new version.\nIf you are using the auto-updater version,\ndownload it automatically by clicking the yellow\nbutton!";
+            }
+        }
+    }
 });

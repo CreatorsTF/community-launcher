@@ -168,6 +168,16 @@ button {
     pointer-events: painted;
 }
 
+#launcherversion {
+    color: #CCC;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 15px;
+    text-shadow: 1px 1px 1px #000;
+    padding: 20px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
 #contentdummy {
   background-image: url(images/logos/tf2logo_dark_fade.svg);
   background-repeat: no-repeat;
