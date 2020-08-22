@@ -19,13 +19,16 @@ log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}]
 log.transports.file.fileName = "main.log";
 log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
-log.silly("Testing log - MAIN WINDOW");
 global.log = log;
 
 const path = global.path;
 const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsupport@creators.tf";
 
 var mainWindow;
+
+function LogDeviceInfo(){
+    log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem()/1024)/1024)/1024).toFixed(2)} gb]`);
+}
 
 function createWindow() {
     try {
@@ -101,6 +104,8 @@ app.on("ready", () => {
     createWindow();
     autoUpdater.checkForUpdatesAndNotify();
     log.info("Launcher was opened and is currently checking for updates.");
+
+    LogDeviceInfo();
 });
 
 app.on("window-all-closed", function() {
