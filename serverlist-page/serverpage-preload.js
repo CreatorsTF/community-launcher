@@ -82,7 +82,12 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 serverDOMData.id.innerHTML = `<p>${server.id}</p>`;
                 serverDOMData.hostname.innerHTML = `<p>${server.hostname}</p>`;
                 serverDOMData.map.innerHTML = `<p>${server.map}</p>`;
-                serverDOMData.mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
+
+                let mapPic = document.createElement("div");
+                serverDOMData.map.appendChild(mapPic);
+                mapPic.className = "mapCover";
+                mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
+
                 serverDOMData.players.innerHTML = `<p>${server.online}/${server.maxplayers}</p>`;
                 serverDOMData.hearbeat.innerText = `${server.since_heartbeat}` + "s ago";
 
@@ -175,14 +180,14 @@ function CreateServerDOMElements(serverRegionMap){
             tr.appendChild(hostname);
 
             let map = document.createElement("td");
-            domData.map = map;
             map.className = "map";
             tr.appendChild(map);
+            domData.map = map;
 
             let mapPic = document.createElement("div");
-            domData.mapPic = mapPic;
-            mapPic.className = "mapCover";
             map.appendChild(mapPic);
+            mapPic.className = "mapCover";
+            mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
 
             let playerCount = document.createElement("td");
             domData.players = playerCount;
