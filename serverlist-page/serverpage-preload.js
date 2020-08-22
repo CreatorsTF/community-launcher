@@ -17,6 +17,8 @@ var hasCreatedPageContent = false;
 var refreshButton;
 var refreshing = false;
 const regionDOMData = new Map();
+const refreshTime = 10 * 1000;
+
 //Simple way to make server names look better for now.
 //Country flags are appended automatically to each new region name, so
 //the shortnames !!!MUST BE!!! the ISO 3166-1-alpha-2 country's code
@@ -52,6 +54,9 @@ window.addEventListener("DOMContentLoaded", () => {
     refreshButton = document.getElementById("refreshButton");
 
     refreshButton.addEventListener("click", Refresh);
+
+    //Set an initial automatic refresh.
+    setTimeout(Refresh, refreshTime);
 });
 
 ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
@@ -243,10 +248,13 @@ function GetServerURL(ip, port) {
     return `steam://connect/${ip}:${port}`;
 }
 
-function Refresh(e){
+function Refresh(e = null){
     if(!refreshing){
         ipcRenderer.send("GetServerList", "");
         refreshing = true;
+
+        //Set new timeout to refresh.
+        setTimeout(Refresh, refreshTime);
     }
 }
 
