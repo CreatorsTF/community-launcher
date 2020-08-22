@@ -46,15 +46,11 @@ class ServerDOMData {
     lock = null;
 }
 
-
 window.addEventListener("DOMContentLoaded", () => {
     ipcRenderer.send("GetServerList", "");
     container = document.getElementById("server-container");
-
     refreshButton = document.getElementById("refreshButton");
-
     refreshButton.addEventListener("click", Refresh);
-
     //Set an initial automatic refresh.
     setTimeout(Refresh, refreshTime);
 });
@@ -70,7 +66,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
         if(!hasCreatedPageContent) {
             CreateServerDOMElements(serverRegionMap);
         }
-        
+
         //Update server DOM elements with the recieved information.
         for (const region of serverRegionMap) {
             var regionName = region[0].toLowerCase();

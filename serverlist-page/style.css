@@ -45,7 +45,7 @@ h1 {
     font-family: Roboto Black, Arial, sans-serif;
 }
 
-/* #refreshHolder {
+#refreshHolder {
     margin: 10px auto 20px auto;
     text-align: center;
 }
@@ -62,7 +62,7 @@ h1 {
 
 #refreshButton i {
     font-size: 35px;
-} */
+}
 
 .serverRegions {
     margin: 10px auto;
