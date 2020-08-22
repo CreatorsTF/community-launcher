@@ -9,8 +9,8 @@ function OpenWindow() {
     patchNotesWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
-            nodeIntegration: true
+            preload: path.join(__dirname, "patch.js"),
+            nodeIntegration: false
         },
         modal: true,
         show: false,
