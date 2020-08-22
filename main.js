@@ -96,7 +96,6 @@ function createWindow() {
     }
 }
 
-// app.whenReady().then(createWindow);
 app.on("ready", () => {
     createWindow();
     autoUpdater.checkForUpdatesAndNotify();
@@ -161,11 +160,9 @@ ipcMain.on("restart_app", () => {
 ipcMain.on("SettingsWindow", async (event, someArgument) => {
     settingsPage.OpenWindow();
 });
-
 ipcMain.on("PatchNotesWindow", async (event, someArgument) => {
     patchnotesPage.OpenWindow();
 });
-
 ipcMain.on("ServerListWindow", async (event, someArgument) => {
     serverlistPage.OpenWindow();
 });
