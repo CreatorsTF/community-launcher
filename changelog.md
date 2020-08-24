@@ -1,4 +1,4 @@
-## Version 0.1.0.1 - (ALPHA)
+## Version 0.1.1 - (ALPHA)
 ### 24/08/2020 - 22:32 (GMT)
 - Small bugfix to solve mod installation hanging on `Starting...` for some users
 - Improved logged data

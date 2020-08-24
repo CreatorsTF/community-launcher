@@ -95,7 +95,7 @@ ipcRenderer.on("update_downloading", () => {
 
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
-  updateButton_Download.remove();
+  updateButton_Downloading.remove();
   updateButton_Update.classList.remove("hidden");
   window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
