@@ -72,6 +72,8 @@ ChangeCurrentMod(name){
         this.currentModState = State.NOT_INSTALLED;
         this.currentModVersionRemote = 0;
 
+        global.log.log(`Set current mod to: ${this.currentModData.name}`);
+
         //Setup the source manager object depending on the type of the mod.
         switch(this.currentModData.install.type){
             case "jsonlist":
@@ -133,16 +135,25 @@ ChangeCurrentMod(name){
 
 //Trigger the correct response to the current mod depending on its state.
 //This is called when the Install / Update / Installed button is pressed in the UI.
-ModInstallPlayButtonClick(){
+ModInstallPlayButtonClick() {
+    global.log.log("Install button was clicked! Reacting based on state: " + this.currentModState)
     if(this.currentModData != null){
         switch(this.currentModState){
             case State.NOT_INSTALLED:
                 //We should try to install this mod!
                 //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
-                if(!ValidateTF2Dir()) return;
+                global.log.log("Will validate TF2 path before starting download...");
+                if(!ValidateTF2Dir()){
+                    this.FakeClickMod();
+                    global.log.error("Ending Install attempt now as validation failed!");
+                    return;
+                } 
+
+                global.log.log("TF2 Path was validated.");
                     
                 //Perform mod download and install.
                 this.source_manager.GetFileURL().then((_url) => {
+                    global.log.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                     this.ModInstall(_url).then(() => {
                         this.SetupNewModAsInstalled();
                     });
@@ -158,7 +169,7 @@ ModInstallPlayButtonClick(){
 
                 //Setup the message to include the version if we have the data.
                 //Really we should for this state to be active but best to be sure.
-
+                global.log.log("Asking user if they want to update this mod.");
                 this.source_manager.GetLatestVersionNumber().then((version) => {
                     let update_msg = 
                     `Would you like to update this mod to version "${version}"`;
@@ -180,9 +191,13 @@ ModInstallPlayButtonClick(){
                 });
                 break;
             default:
-                global.log.log("Somehow the install button was clicked when the mod is in the installed state.");
+                global.log.error("Somehow the install button was clicked when the mod is in the installed state.");
                 break;
         }
+    }
+    else{
+        this.FakeClickMod();
+        ErrorDialog("Mod data was not able to be read.\nPlease report this error.", "Mod Install Start Error")
     }
 },
 
@@ -922,34 +937,19 @@ function DownloadZIP_UI(_url) {
 function ValidateTF2Dir(){
     //Check we have a config object
     if(!global.config){
-        dialog.showMessageBox(global.mainWindow, {
-            type: "error",
-            title: "Internal Error",
-            message: "The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!",
-            buttons: ["OK"]
-        });
+        ErrorDialog("The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!", "Internal Error");
         return false;
     }
 
     //If no path is specified. Maybe the auto locate failed?
     if(global.config.tf2_directory == ""){
-        dialog.showMessageBox(global.mainWindow, {
-            type: "error",
-            title: "TF2 Path Error",
-            message: "No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'",
-            buttons: ["OK"]
-        });
+        ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error");
         return false;
     }
 
     //Check if the directory actually exists.
     if(!fs.existsSync(global.config.tf2_directory)){
-        dialog.showMessageBox(global.mainWindow, {
-            type: "error",
-            title: "TF2 Path Error",
-            message: "The current TF2 directory specified does not exist. Please check your settings.",
-            buttons: ["OK"]
-        });
+        ErrorDialog("The current TF2 directory specified does not exist. Please check your settings.", "TF2 Path Error");
         return false;
     }
 
@@ -977,13 +977,7 @@ function ValidateTF2Dir(){
     }
 
     //All the tests failed, show dialogue for that.
-    dialog.showMessageBox(global.mainWindow, {
-        type: "error",
-        title: "TF2 Validation Error",
-        message: "The current TF2 directory specified does exist, but it did not pass validation.\nCheck it links only to the 'Team Fortress 2' folder and not to the sub 'tf' folder.\nPlease check your settings.",
-        buttons: ["OK"]
-    });
-
+    ErrorDialog("The current TF2 directory specified does exist, but it did not pass validation.\nCheck it links only to the 'Team Fortress 2' folder and not to the sub 'tf' folder.\nPlease check your settings.", "TF2 Validation Error");
     return false;
 }
 
@@ -1072,6 +1066,7 @@ function SetNewModVersion(version, currentModName){
 }
 
 function ErrorDialog(error, title){
+    global.log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
     dialog.showMessageBox(global.mainWindow, {
         type: "error",
         title: title,

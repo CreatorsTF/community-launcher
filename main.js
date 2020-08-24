@@ -66,6 +66,7 @@ function createWindow() {
                 mainWindow.loadFile(path.resolve(__dirname, "index.html"));
             }
             catch(e) {
+                log.error(e.toString());
                 dialog.showMessageBox({
                     type: "error",
                     title: "Startup Error - Main Window Load",
@@ -77,6 +78,7 @@ function createWindow() {
             }
         })
         .catch((e) => {
+            log.error(e.toString());
             dialog.showMessageBox({
                 type: "error",
                 title: "Startup Error - Config Load",
@@ -88,6 +90,7 @@ function createWindow() {
         });
     }
     catch(majorE) {
+        log.error(majorE.toString());
         dialog.showMessageBox({
             type: "error",
             title: "Startup Error - Major Initial Error",

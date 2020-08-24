@@ -1,4 +1,4 @@
-ipcRenderer = window.ipcRenderer;
+const ipcRenderer = window.ipcRenderer;
 
 var content = document.getElementById("content");
 var contentDummy = document.getElementById("contentdummy");
