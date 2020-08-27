@@ -108,7 +108,15 @@ app.on("ready", () => {
     log.info("Launcher was opened and is currently checking for updates.");
 
     LogDeviceInfo();
+    GetCurrentVersion();
 });
+
+function GetCurrentVersion(){
+    global.fs.readFile(path.join(__dirname, "package.json"), (err, package) => {
+        var version = JSON.parse(package).version;
+        log.info("Current launcher version: " + version);
+    });
+}
 
 app.on("window-all-closed", function() {
     // On macOS it is common for applications and their menu bar

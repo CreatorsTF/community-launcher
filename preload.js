@@ -12,7 +12,7 @@ window.log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{proces
 window.log.transports.file.fileName = "renderer.log";
 window.log.transports.file.maxSize = 10485760; //why 10mb? idk.
 window.log.transports.file.getFile();
-window.log.silly("Testing log - PRELOAD OF MAIN WINDOW");
+window.log.info("Main Window Preload Began.");
 
 window.addEventListener("DOMContentLoaded", () => {
     sidebar = document.getElementById("sidebar");
