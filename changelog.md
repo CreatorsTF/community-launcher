@@ -1,3 +1,11 @@
+## Version 0.1.11 - (ALPHA)
+### 27/08/2020 - 23:25 (GMT)
+- Definitive bugfix to solve mod installation hanging on `Starting...` for some users.
+- Fixed "Downloading" button not disappearing when an update finished download.
+- Updated Electron to v10.0.1.
+- Improved logged data.
+
+
 ## Version 0.1.1 - (ALPHA)
 ### 24/08/2020 - 22:32 (GMT)
 - Small bugfix to solve mod installation hanging on `Starting...` for some users
