@@ -1,6 +1,7 @@
 ## Version 0.1.20 - (ALPHA)
 ### 30/08/2020 - 20:04 (GMT)
-- This version was made to fix a bug where auto-update users didn't get the launcher's newest version.
+- This version only applies to Windows installer users. Linux and unpacked ZIP users with v0.1.2 should not worry about updating to this version.
+ - Fixed a bug where auto-update users didn't get the launcher's newest version.
 
 ## Version 0.1.2 - (ALPHA)
 ### 30/08/2020 - 18:16 (GMT)
