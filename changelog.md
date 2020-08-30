@@ -1,3 +1,10 @@
+## Version 0.1.2 - (ALPHA)
+### 30/08/2020 - 18:16 (GMT)
+- Added G-Man Announcer pack.
+- Launcher's main window now dynamically adjusts itself in relation to user's monitor size on launch.
+- Improved update warning for non auto-updater users when connection to the GitHub API fails.
+- Improved logged data.
+
 ## Version 0.1.11 - (ALPHA)
 ### 27/08/2020 - 23:25 (GMT)
 - Definitive bugfix to solve mod installation hanging on `Starting...` for some users.
