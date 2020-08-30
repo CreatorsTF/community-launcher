@@ -114,7 +114,7 @@ installButton.addEventListener("click", (e) => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
-    window.ipcRenderer.send("install-play-click", ""); 
+    window.ipcRenderer.send("install-play-click", "");
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {

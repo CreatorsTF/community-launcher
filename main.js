@@ -4,7 +4,7 @@ global.process = require("process");
 global.os = require("os");
 global.https = require("https");
 
-const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, dialog, screen } = require("electron");
 const config = require("./modules/config");
 const settingsPage = require("./settings-page/settingspage");
 const patchnotesPage = require("./patchnotes-page/patchnotespage");
@@ -26,17 +26,18 @@ const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsuppo
 
 var mainWindow;
 
-function LogDeviceInfo(){
+function LogDeviceInfo() {
     log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem()/1024)/1024)/1024).toFixed(2)} gb]`);
 }
 
 function createWindow() {
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     try {
         mainWindow = new BrowserWindow({
             minWidth: 960,
             minHeight: 540,
-            width: 1200,
-            height: 600,
+            width: width-200,
+            height: height-150,
             webPreferences: {
                 preload: path.join(__dirname, "preload.js"),
                 nodeIntegration: false
