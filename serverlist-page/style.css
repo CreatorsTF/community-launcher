@@ -1,4 +1,4 @@
-html, body { height: 100%; margin: 0; }
+html, body { height: 100%; }
 
 body {
     background-color: #111;
@@ -10,11 +10,6 @@ body {
     user-select: none;
     overflow-x: hidden;
 }
-
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #333; }
-::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #888; }
 
 h1, h2, p {
     margin: 0;

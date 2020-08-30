@@ -2,17 +2,10 @@ html, body { height: 100%; }
 
 body {
     font-family: Roboto Medium, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
     display: flex;
     background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 100%);
     user-select: none;
 }
-
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #333; }
-::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #888; }
 
 #sidebar {
     min-width: 300px;
@@ -79,7 +72,7 @@ body {
 .entry p {
     font-size: 15px;
     font-family: Roboto Light, Arial, sans-serif;
-    line-height: 20px;
+    line-height: 18px;
 }
 
 .modInfoSidebar {
@@ -242,7 +235,7 @@ button {
 }
 
 #title-image-holder {
-    width: 65%;
+    width: 60%;
     margin: 0 auto;
     z-index: 0;
 }

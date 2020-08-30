@@ -16,6 +16,7 @@ var github = document.getElementById("socialMediaGithub");
 var twitter = document.getElementById("socialMediaTwitter");
 var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
+var serverlist = document.getElementById("serverlist");
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
@@ -35,7 +36,8 @@ function OnClick_Mod(data) {
     titleImage.src = data.titleimage;
     text.innerText = data.contenttext;
     content.style.borderColor = data.bordercolor;
-    content.style.backgroundPositionX = data.backgroundpos;
+    content.style.backgroundPositionX = data.backgroundposX;
+    content.style.backgroundPositionY = data.backgroundposY;
 
     contentDummy.remove();
     content.style.display = "block";
@@ -52,6 +54,12 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
+
+    // If the mod has a server list, just fill the "serverlist" attribute
+    // in mods.json with anything. If it doesn't, leave it blank.
+    // This was made to avoid the server list button to appear on Gman's
+    // announcer page.
+    serverlist.style.display = data.serverlist != "" ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
@@ -93,9 +101,9 @@ window.ipcRenderer.on("update_downloading", () => {
 
 window.ipcRenderer.on("update_downloaded", () => {
     window.ipcRenderer.removeAllListeners("update_downloaded");
-  updateButton_Downloading.remove();
-  updateButton_Update.classList.remove("hidden");
-  window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
+    updateButton_Downloading.remove();
+    updateButton_Update.classList.remove("hidden");
+    window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
 
 document.getElementById("settings-button").addEventListener("click", (a,b) => {
@@ -124,7 +132,7 @@ window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     arg = arg.toLowerCase();
     installButton.innerText = arg.toUpperCase();
-    if(arg != "installed" && arg != "internal error"){
+    if (arg != "installed" && arg != "internal error") {
         installButton.disabled = false;
     }
 

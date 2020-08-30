@@ -1,10 +1,8 @@
 html, body { height: 97%; }
 
 body {
-    margin: 0;
-    padding: 0;
     background-color: #222;
-    background-image: url(../images/backgrounds/creatorstf.png);
+    background-image: url(../images/backgrounds/creatorstf_patchnotes.png);
     background-blend-mode: soft-light;
     background-position: center;
     background-size: cover;
@@ -23,11 +21,6 @@ body {
     0% { opacity: 0; }
     100% { opacity: 1; }
 }
-
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #222; }
-::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #888; }
 
 #modname {
     margin: 25px auto;

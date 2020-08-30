@@ -1,0 +1,10 @@
+/* So I don't have to write these everytime for every page. */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #222; }
+::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #888; }

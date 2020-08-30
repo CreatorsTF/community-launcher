@@ -1,4 +1,4 @@
-html, body { height: 100%; margin: 0; }
+html, body { height: 100%; }
 
 body {
   display: flex;
@@ -22,11 +22,6 @@ body {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
-
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #333; }
-::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #888; }
 
 h1, h2, p { color: lightgrey; }
 

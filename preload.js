@@ -56,6 +56,8 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
                 launcherversionBox.innerText = "A new update is available for the launcher.\nCheck the website to download the new version.\nIf you are using the auto-updater version,\ndownload it automatically by clicking the yellow\nbutton!";
             }
+        } else {
+            launcherversionBox.innerText = "Can't check for updates.\nEither your internet or GitHub's API is down!";
         }
     }
 });
