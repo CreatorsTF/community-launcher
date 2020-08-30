@@ -1,3 +1,7 @@
+## Version 0.1.20 - (ALPHA)
+### 30/08/2020 - 20:04 (GMT)
+- This version was made to fix a bug where auto-update users didn't get the launcher's newest version.
+
 ## Version 0.1.2 - (ALPHA)
 ### 30/08/2020 - 18:16 (GMT)
 - Added G-Man Announcer pack.
