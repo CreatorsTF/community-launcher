@@ -1,4 +1,6 @@
 const https = require("https");
+const fs = require("fs");
+const _crypto = require("crypto");
 
 module.exports = 
 class CreatorsDepotClient {
@@ -6,29 +8,46 @@ class CreatorsDepotClient {
 
     allContentURL = "https://creators.tf/api/IDepots/GVersionInfo?depid=1&tags=content";
 
-    allContentJSON : string | undefined;
+    allDepotData : string | undefined;
 
     tf2Path : string;
 
+    filesToUpdate : Array<string> = [];
+
     constructor(tf2path : string){
         this.tf2Path = tf2path;
-
     }
 
-    CheckForUpdates() : void {
-        
+    async CheckForUpdates() : Promise<void> {
+        var data = await this.GetDepotData();
+
+        if(data.result == "SUCCESS"){
+            for(var group of data.groups){
+
+            }
+        }
     }
 
-    async GetDepotData() {
+    DoesFileNeedUpdate(filePath : string, md5Hash : string) : boolean {
+        if(fs.existsSync(filePath)){
+            var file = fs.readFileSync(filePath);
+
+            var hash = _crypto.createHash("md5").update(file).digest("hex");
+            return (hash != md5Hash);
+        }
+        else return true;
+    }
+
+    async GetDepotData() : Promise<any> {
         return new Promise((resolve, reject) => {
-            if(this.allContentJSON == undefined){
+            if(this.allDepotData == undefined){
                 var options = {
                     headers: {
                       'User-Agent': 'creators-tf-launcher'
                     }
                 };
     
-                var req = https.get(this.allContentURL, function (res) {
+                var req = https.get(this.allContentURL, function (res : any) {
                     if (res.statusCode !== 200) {
                         let error = `Request failed, response code was: ${res.statusCode}`;
                     }
@@ -53,6 +72,8 @@ class CreatorsDepotClient {
                 });
     
             }
+
+            else resolve(this.allDepotData);
         });
     }
 }
