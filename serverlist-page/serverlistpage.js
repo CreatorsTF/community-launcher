@@ -1,7 +1,7 @@
 const { BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
-var serverlistWindow;
+let serverlistWindow;
 const apiEndpoint = "https://creators.tf/api/IServers/GServerList?provider=15";
 
 module.exports.OpenWindow = OpenWindow;
@@ -32,7 +32,7 @@ function OpenWindow() {
     });
 }
 
-ipcMain.on("GetServerList", async (event, arg) => {
+ipcMain.on("GetServerList", async (event) => {
     try{
         event.reply("GetServerList-Reply", await GetServerList());
     }
@@ -43,15 +43,15 @@ ipcMain.on("GetServerList", async (event, arg) => {
 
 async function GetServerList() {
     return new Promise((resolve, reject) => {
-        var options = {
+        const options = {
             headers: {
               'User-Agent': 'creators-tf-launcher'
             }
         };
 
-        var data = [];
+        const data = [];
 
-        let req = https.get(apiEndpoint, options, res => {
+        let req = https.get(apiEndpoint, options, (res) => {
             console.log(`statusCode: ${res.statusCode}`);
                 res.on('data', d => {
                     if (res.statusCode != 200) {
@@ -60,13 +60,13 @@ async function GetServerList() {
                     }
                     data.push(d);
                 });
-                res.on("end", function() {
-                    var buf = Buffer.concat(data);
-                    let parsed = JSON.parse(buf.toString());
+                res.on("end", () => {
+                    const buf = Buffer.concat(data);
+                    const parsed = JSON.parse(buf.toString());
                     resolve(parsed);
                 });
             });
-            req.on('error', error => {
+            req.on('error', (error) => {
                 reject(error.toString());
             });
             req.end();

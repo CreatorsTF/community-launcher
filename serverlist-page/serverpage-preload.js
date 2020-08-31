@@ -12,10 +12,10 @@ const arrowDownHTML = ' <i class="mdi mdi-arrow-down-drop-circle"></i>';
 const arrowRightHTML = ' <i class="mdi mdi-arrow-right-drop-circle"></i>';
 const mapThumb = 'https://creators.tf/api/mapthumb?map=';
 
-var container;
-var hasCreatedPageContent = false;
-var refreshButton;
-var refreshing = false;
+let container;
+let hasCreatedPageContent = false;
+let refreshButton;
+let refreshing = false;
 const regionDOMData = new Map();
 const refreshTime = 10 * 1000;
 
@@ -23,7 +23,7 @@ const refreshTime = 10 * 1000;
 //Country flags are appended automatically to each new region name, so
 //the shortnames !!!MUST BE!!! the ISO 3166-1-alpha-2 country's code
 //They can be found here: https://www.iso.org/obp/ui/
-var serverNames = new Map();
+const serverNames = new Map();
 serverNames.set("eu", "Europe");
 serverNames.set("us", "North America");
 serverNames.set("ru", "Russia");
@@ -55,12 +55,12 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(Refresh, refreshTime);
 });
 
-ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
+ipcRenderer.on("GetServerList-Reply", (_, serverListData) => {
     refreshing = false;
     if (serverListData != null && serverListData.result == "SUCCESS") {
-        var servers = serverListData.servers;
+        const servers = serverListData.servers;
 
-        var serverRegionMap = SortServersIntoRegions(servers);
+        const serverRegionMap = SortServersIntoRegions(servers);
 
         //Create DOM elements for the servers if not created already.
         if(!hasCreatedPageContent) {
@@ -69,21 +69,21 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
 
         //Update server DOM elements with the recieved information.
         for (const region of serverRegionMap) {
-            var regionName = region[0].toLowerCase();
+            const regionName = region[0].toLowerCase();
             if(!regionDOMData.has(regionName)){
                 continue;
             }
 
-            var regionDOMs = regionDOMData.get(regionName);
+            const regionDOMs = regionDOMData.get(regionName);
 
             for (let server of region[1]) {
-                var serverDOMData = regionDOMs.get(parseInt(server.id));
+                const serverDOMData = regionDOMs.get(parseInt(server.id));
 
                 serverDOMData.id.innerHTML = `<p>${server.id}</p>`;
                 serverDOMData.hostname.innerHTML = `<p>${server.hostname}</p>`;
                 serverDOMData.map.innerHTML = `<p>${server.map}</p>`;
 
-                let mapPic = document.createElement("div");
+                const mapPic = document.createElement("div");
                 serverDOMData.map.appendChild(mapPic);
                 mapPic.className = "mapCover";
                 mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
@@ -136,12 +136,12 @@ function CreateServerDOMElements(serverRegionMap){
     failMessage.remove();
     //First time getting server info, create the page layout!
     for (const region of serverRegionMap) {
-        var heading = document.createElement("span");
-        var headingFlag = document.createElement("i");
+        const heading = document.createElement("span");
+        const headingFlag = document.createElement("i");
 
         container.appendChild(heading);
         heading.className = "serverRegions";
-        var regionName = region[0].toLowerCase();
+        const regionName = region[0].toLowerCase();
         if (serverNames.has(regionName)) {
             heading.innerText = serverNames.get(regionName);
             headingFlag.className = "flag-icon flag-icon-" + regionName;
@@ -152,67 +152,67 @@ function CreateServerDOMElements(serverRegionMap){
         heading.appendChild(headingFlag);
         heading.innerHTML += arrowDownHTML;
 
-        var regionDOMDatas = new Map();
+        const regionDOMDatas = new Map();
         regionDOMData.set(regionName, regionDOMDatas);
 
-        var table = document.createElement("table");
+        const table = document.createElement("table");
         SetEventListener(heading, table);
         table.id = "serverlist-" + region[0];
         container.appendChild(table);
 
         for (let server of region[1]) {
-            var domData = new ServerDOMData();
+            const domData = new ServerDOMData();
             domData._id = parseInt(server.id);
             domData._region = regionName;
             regionDOMDatas.set(domData._id, domData);
 
-            let tr = document.createElement("tr");
+            const tr = document.createElement("tr");
             domData.tr = tr;
 
-            let id = document.createElement("td");
+            const id = document.createElement("td");
             domData.id = id;
             id.className = "id";
             tr.appendChild(id);
 
-            let hostname = document.createElement("td");
+            const hostname = document.createElement("td");
             domData.hostname = hostname;
             hostname.className = "name";
             tr.appendChild(hostname);
 
-            let map = document.createElement("td");
+            const map = document.createElement("td");
             map.className = "map";
             tr.appendChild(map);
             domData.map = map;
 
-            let mapPic = document.createElement("div");
+            const mapPic = document.createElement("div");
             map.appendChild(mapPic);
             mapPic.className = "mapCover";
             mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
 
-            let playerCount = document.createElement("td");
+            const playerCount = document.createElement("td");
             domData.players = playerCount;
             playerCount.className = "players";
             tr.appendChild(playerCount);
 
-            let connectButtonHolder = document.createElement("td");
+            const connectButtonHolder = document.createElement("td");
             connectButtonHolder.className = "connect";
-            let button = document.createElement("button");
+            const button = document.createElement("button");
             domData.button = button;
             tr.appendChild(connectButtonHolder);
             connectButtonHolder.appendChild(button);
             button.innerText = "Connect";
 
-            let hbHolder = document.createElement("td");
+            const hbHolder = document.createElement("td");
             hbHolder.className = "hb";
-            let hb = document.createElement("p");
+            const hb = document.createElement("p");
             domData.hearbeat = hb;
             hbHolder.title = "This is the amount of time that has passed since the last server status check. Typically, the time should not exceed 30 seconds. If it exceeds, it means the server is probably experiencing connection problems.";
             tr.appendChild(hbHolder);
             hbHolder.appendChild(hb);
 
-            let statusHolder = document.createElement("td");
+            const statusHolder = document.createElement("td");
             statusHolder.className = "status";
-            let status = document.createElement("i");
+            const status = document.createElement("i");
             domData.status = status;
             status.className = "mdi mdi-sync-circle link-mini blue";
             tr.appendChild(statusHolder);
@@ -227,18 +227,19 @@ function CreateServerDOMElements(serverRegionMap){
     hasCreatedPageContent = true;
 }
 
+// What is point of event param???
 function HeadingClicked(event, table) {
     // lol??
     table.style.display = table.style.display == "table" ? "none" : "table";
 }
 
 function SetEventListener(heading, table) {
-    heading.addEventListener("click", (e) => { HeadingClicked(e, table); });
+    heading.addEventListener("click", (e) => HeadingClicked(e, table));
 }
 
 function SetButtonEventListener(button, ip, port) {
     var serverURL = GetServerURL(ip, port);
-    button.addEventListener("click", (e) => { ConnectToServer(serverURL); });
+    button.addEventListener("click", () => ConnectToServer(serverURL));
 }
 
 function ConnectToServer(server) {
@@ -260,9 +261,9 @@ function Refresh(e = null){
 }
 
 function SortServersIntoRegions(serverData){
-    var resultMap = new Map();
+    const resultMap = new Map();
     for (let server of serverData) {
-        var regionArray;
+        let regionArray;
         if (!resultMap.has(server.region)) {
             //Add this region to the map.
             regionArray = [];
