@@ -11,7 +11,7 @@ function OpenWindow() {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "serverpage-preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
         },
         modal: true,
         show: false,
@@ -23,7 +23,7 @@ function OpenWindow() {
         minWidth: 850,
         minHeight: 550,
         width: 950,
-        height: 700
+        height: 700,
     });
     serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
@@ -33,10 +33,9 @@ function OpenWindow() {
 }
 
 ipcMain.on("GetServerList", async (event) => {
-    try{
+    try {
         event.reply("GetServerList-Reply", await GetServerList());
-    }
-    catch (error) {
+    } catch (error) {
         event.reply("GetServerList-Reply", null);
     }
 });
@@ -45,30 +44,30 @@ async function GetServerList() {
     return new Promise((resolve, reject) => {
         const options = {
             headers: {
-              'User-Agent': 'creators-tf-launcher'
-            }
+                "User-Agent": "creators-tf-launcher",
+            },
         };
 
         const data = [];
 
         let req = https.get(apiEndpoint, options, (res) => {
             console.log(`statusCode: ${res.statusCode}`);
-                res.on('data', d => {
-                    if (res.statusCode != 200) {
-                        reject(`Failed accessing ${url}: ` + res.statusCode);
-                        return;
-                    }
-                    data.push(d);
-                });
-                res.on("end", () => {
-                    const buf = Buffer.concat(data);
-                    const parsed = JSON.parse(buf.toString());
-                    resolve(parsed);
-                });
+            res.on("data", (d) => {
+                if (res.statusCode != 200) {
+                    reject(`Failed accessing ${url}: ` + res.statusCode);
+                    return;
+                }
+                data.push(d);
             });
-            req.on('error', (error) => {
-                reject(error.toString());
+            res.on("end", () => {
+                const buf = Buffer.concat(data);
+                const parsed = JSON.parse(buf.toString());
+                resolve(parsed);
             });
-            req.end();
+        });
+        req.on("error", (error) => {
+            reject(error.toString());
+        });
+        req.end();
     });
 }

@@ -1,4 +1,4 @@
-const { BrowserWindow } = require('electron');
+const { BrowserWindow } = require("electron");
 const path = require("path");
 
 var patchNotesWindow;
@@ -10,7 +10,7 @@ function OpenWindow() {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
         },
         modal: true,
         show: false,
@@ -22,7 +22,7 @@ function OpenWindow() {
         minWidth: 700,
         minHeight: 500,
         width: 960,
-        height: 540
+        height: 540,
     });
     patchNotesWindow.removeMenu();
     patchNotesWindow.loadFile(path.resolve(__dirname, "patchnotes.html"));

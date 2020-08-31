@@ -1,8 +1,10 @@
 const { ipcRenderer, shell, win } = require("electron");
 
 const log = require("electron-log");
-log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
+log.transports.console.format =
+    "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
+log.transports.file.format =
+    "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "preloadsettingspage.log";
 log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
@@ -10,7 +12,7 @@ log.silly("Testing log - PRELOAD OF SETTINGS PAGE");
 
 const arrowDownHTML = ' <i class="mdi mdi-arrow-down-drop-circle"></i>';
 const arrowRightHTML = ' <i class="mdi mdi-arrow-right-drop-circle"></i>';
-const mapThumb = 'https://creators.tf/api/mapthumb?map=';
+const mapThumb = "https://creators.tf/api/mapthumb?map=";
 
 let container;
 let hasCreatedPageContent = false;
@@ -63,14 +65,14 @@ ipcRenderer.on("GetServerList-Reply", (_, serverListData) => {
         const serverRegionMap = SortServersIntoRegions(servers);
 
         //Create DOM elements for the servers if not created already.
-        if(!hasCreatedPageContent) {
+        if (!hasCreatedPageContent) {
             CreateServerDOMElements(serverRegionMap);
         }
 
         //Update server DOM elements with the recieved information.
         for (const region of serverRegionMap) {
             const regionName = region[0].toLowerCase();
-            if(!regionDOMData.has(regionName)){
+            if (!regionDOMData.has(regionName)) {
                 continue;
             }
 
@@ -86,34 +88,38 @@ ipcRenderer.on("GetServerList-Reply", (_, serverListData) => {
                 const mapPic = document.createElement("div");
                 serverDOMData.map.appendChild(mapPic);
                 mapPic.className = "mapCover";
-                mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
+                mapPic.style.backgroundImage =
+                    "url(" + mapThumb + `${server.map}` + ")";
 
                 serverDOMData.players.innerHTML = `<p>${server.online}/${server.maxplayers}</p>`;
-                serverDOMData.hearbeat.innerText = `${server.since_heartbeat}` + "s ago";
+                serverDOMData.hearbeat.innerText =
+                    `${server.since_heartbeat}` + "s ago";
 
                 if (server.is_down === false) {
-                    serverDOMData.status.className = "mdi mdi-check-circle link-mini up";
-                    serverDOMData.status.title = "Server is up!"
+                    serverDOMData.status.className =
+                        "mdi mdi-check-circle link-mini up";
+                    serverDOMData.status.title = "Server is up!";
                     serverDOMData.tr.style.backgroundColor = null;
                 } else {
-                    serverDOMData.status.className = "mdi mdi-alert-circle link-mini down";
-                    serverDOMData.status.title = "Server is down!"
+                    serverDOMData.status.className =
+                        "mdi mdi-alert-circle link-mini down";
+                    serverDOMData.status.title = "Server is down!";
                     serverDOMData.tr.style.backgroundColor = "#6B0F0F";
                 }
 
                 if (server.passworded === true) {
                     serverDOMData.button.innerText = `Connect (${server.online}/${server.maxplayers}) `;
-                    if(serverDOMData.lock == null){
+                    if (serverDOMData.lock == null) {
                         serverDOMData.lock = document.createElement("i");
                         serverDOMData.lock.className = "mdi mdi-lock link-mini";
-                        serverDOMData.lock.title = "This server requires a password to join";
+                        serverDOMData.lock.title =
+                            "This server requires a password to join";
                     }
 
                     serverDOMData.lock.style.display = "inline";
                     serverDOMData.button.appendChild(serverDOMData.lock);
-                }
-                else{
-                    if(serverDOMData.lock != null){
+                } else {
+                    if (serverDOMData.lock != null) {
                         serverDOMData.lock.style.display = "none";
                     }
 
@@ -121,17 +127,17 @@ ipcRenderer.on("GetServerList-Reply", (_, serverListData) => {
                 }
             }
         }
-    }
-    else {
+    } else {
         // remove everything but error message
         refreshHolder.remove();
         container.remove();
         loading.remove();
-        document.getElementById("failMessage").innerText = "Failed to get servers.\n\nYour internet may be down\nOR\nCreators.TF may be down\n\nGo to our Twitter (@CreatorsTF) for more info!";
+        document.getElementById("failMessage").innerText =
+            "Failed to get servers.\n\nYour internet may be down\nOR\nCreators.TF may be down\n\nGo to our Twitter (@CreatorsTF) for more info!";
     }
 });
 
-function CreateServerDOMElements(serverRegionMap){
+function CreateServerDOMElements(serverRegionMap) {
     loading.remove();
     failMessage.remove();
     //First time getting server info, create the page layout!
@@ -145,8 +151,7 @@ function CreateServerDOMElements(serverRegionMap){
         if (serverNames.has(regionName)) {
             heading.innerText = serverNames.get(regionName);
             headingFlag.className = "flag-icon flag-icon-" + regionName;
-        }
-        else {
+        } else {
             heading.innerText = regionName.toUpperCase();
         }
         heading.appendChild(headingFlag);
@@ -187,7 +192,8 @@ function CreateServerDOMElements(serverRegionMap){
             const mapPic = document.createElement("div");
             map.appendChild(mapPic);
             mapPic.className = "mapCover";
-            mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
+            mapPic.style.backgroundImage =
+                "url(" + mapThumb + `${server.map}` + ")";
 
             const playerCount = document.createElement("td");
             domData.players = playerCount;
@@ -206,7 +212,8 @@ function CreateServerDOMElements(serverRegionMap){
             hbHolder.className = "hb";
             const hb = document.createElement("p");
             domData.hearbeat = hb;
-            hbHolder.title = "This is the amount of time that has passed since the last server status check. Typically, the time should not exceed 30 seconds. If it exceeds, it means the server is probably experiencing connection problems.";
+            hbHolder.title =
+                "This is the amount of time that has passed since the last server status check. Typically, the time should not exceed 30 seconds. If it exceeds, it means the server is probably experiencing connection problems.";
             tr.appendChild(hbHolder);
             hbHolder.appendChild(hb);
 
@@ -250,8 +257,8 @@ function GetServerURL(ip, port) {
     return `steam://connect/${ip}:${port}`;
 }
 
-function Refresh(e = null){
-    if(!refreshing){
+function Refresh(e = null) {
+    if (!refreshing) {
         ipcRenderer.send("GetServerList", "");
         refreshing = true;
 
@@ -260,7 +267,7 @@ function Refresh(e = null){
     }
 }
 
-function SortServersIntoRegions(serverData){
+function SortServersIntoRegions(serverData) {
     const resultMap = new Map();
     for (let server of serverData) {
         let regionArray;
@@ -268,8 +275,7 @@ function SortServersIntoRegions(serverData){
             //Add this region to the map.
             regionArray = [];
             resultMap.set(server.region, regionArray);
-        }
-        else {
+        } else {
             regionArray = resultMap.get(server.region);
         }
         regionArray.push(server);
