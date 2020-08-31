@@ -18,39 +18,39 @@ window.addEventListener("DOMContentLoaded", () => {
     sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach(modentry => {
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.className = "entry";
         sidebar.appendChild(div);
 
-        let image = document.createElement("img");
+        const image = document.createElement("img");
         image.src = modentry.icon;
         div.appendChild(image);
 
-        let divModInfoSidebar = document.createElement("div");
+        const divModInfoSidebar = document.createElement("div");
         divModInfoSidebar.className = "modInfoSidebar";
         div.appendChild(divModInfoSidebar);
 
-        let title = document.createElement("h2");
+        const title = document.createElement("h2");
         title.innerText = modentry.name;
         divModInfoSidebar.appendChild(title);
 
-        let blurb = document.createElement("p");
+        const blurb = document.createElement("p");
         blurb.innerText = modentry.blurb;
         divModInfoSidebar.appendChild(blurb);
 
-        div.addEventListener("click", function(e){OnClick_Mod(modentry)}, false);
+        div.addEventListener("click", (e) => OnClick_Mod(modentry), false);
     });
 
-    var launcherversionBox = document.getElementById("launcherversion");
+    const launcherversionBox = document.getElementById("launcherversion");
     const config = require("./package.json");
     const currentClientVersion = config.version;
-    let request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
     request.send();
     request.onload = () => {
         if (request.status === 200) {
-            var answer = JSON.parse(request.response);
-            var version = answer.name;
+            const answer = JSON.parse(request.response);
+            const version = answer.name;
             if (currentClientVersion === version) {
                 launcherversionBox.remove();
             } else {
