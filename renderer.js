@@ -1,30 +1,30 @@
-var content = document.getElementById("content");
-var contentDummy = document.getElementById("contentdummy");
-var titleImage = document.getElementById("title-image");
-var text = document.getElementById("content-text");
-var version = document.getElementById("version-text");
+const content = document.getElementById("content");
+const contentDummy = document.getElementById("contentdummy");
+const titleImage = document.getElementById("title-image");
+const text = document.getElementById("content-text");
+const version = document.getElementById("version-text");
 
-var removeButton = document.getElementById("remove-mod");
+const removeButton = document.getElementById("remove-mod");
 
-var updateButton_Download = document.getElementById("update-button-download");
-var updateButton_Downloading = document.getElementById("update-button-downloading");
-var updateButton_Update = document.getElementById("update-button-update");
-var updateButton_Updated = document.getElementById("update-button-updated");
+const updateButton_Download = document.getElementById("update-button-download");
+const updateButton_Downloading = document.getElementById("update-button-downloading");
+const updateButton_Update = document.getElementById("update-button-update");
+const updateButton_Updated = document.getElementById("update-button-updated");
 
-var website = document.getElementById("socialMediaWebsite");
-var github = document.getElementById("socialMediaGithub");
-var twitter = document.getElementById("socialMediaTwitter");
-var discord = document.getElementById("socialMediaDiscord");
-var instagram = document.getElementById("socialMediaInstagram");
-var serverlist = document.getElementById("serverlist");
+const website = document.getElementById("socialMediaWebsite");
+const github = document.getElementById("socialMediaGithub");
+const twitter = document.getElementById("socialMediaTwitter");
+const discord = document.getElementById("socialMediaDiscord");
+const instagram = document.getElementById("socialMediaInstagram");
+const serverlist = document.getElementById("serverlist");
 
-website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
-github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
-twitter.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
-instagram.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
-discord.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
+website.onclick = () => window.ipcRenderer.send("Visit-Mod-Social", "website");
+github.onclick = () => window.ipcRenderer.send("Visit-Mod-Social", "github");
+twitter.onclick = () => window.ipcRenderer.send("Visit-Mod-Social", "twitter");
+instagram.onclick = () => window.ipcRenderer.send("Visit-Mod-Social", "instagram");
+discord.onclick = () => window.ipcRenderer.send("Visit-Mod-Social", "discord");
 
-var installButton = document.getElementById("install-play-update");
+const installButton = document.getElementById("install-play-update");
 document.onload = () => {
     installButton.disabled = true;
 };
@@ -106,30 +106,30 @@ window.ipcRenderer.on("update_downloaded", () => {
     window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
 
-document.getElementById("settings-button").addEventListener("click", (a,b) => {
+document.getElementById("settings-button").addEventListener("click", () => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
 
-document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
+document.getElementById("patchnotes-button").addEventListener("click", () => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
 
-document.getElementById("serverlist").addEventListener("click", (a, b) => {
+document.getElementById("serverlist").addEventListener("click", () => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
-installButton.addEventListener("click", (e) => {
+installButton.addEventListener("click", () => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
     window.ipcRenderer.send("install-play-click", "");
 });
 
-window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
+window.ipcRenderer.on("GetCurrentModVersion-Reply", (_, arg) => {
     version.innerText = arg;
 });
 
-window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
+window.ipcRenderer.on("InstallButtonName-Reply", (_, arg) => {
     arg = arg.toLowerCase();
     installButton.innerText = arg.toUpperCase();
     if (arg != "installed" && arg != "internal error") {
@@ -168,10 +168,10 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     }
 });
 
-window.ipcRenderer.on("FakeClickMod", (event, moddata) => {
+window.ipcRenderer.on("FakeClickMod", (_, moddata) => {
     OnClick_Mod(moddata);
 });
 
-removeButton.addEventListener("click", function(e) {
+removeButton.addEventListener("click", () => {
     window.ipcRenderer.send("Remove-Mod", "");
 });

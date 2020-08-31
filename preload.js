@@ -1,4 +1,4 @@
-var sidebar;
+let sidebar;
 const fs = require("fs");
 const path = require("path");
 const moddata = JSON.parse(fs.readFileSync(path.resolve(__dirname, "internal", "mods.json")));
