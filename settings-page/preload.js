@@ -9,10 +9,10 @@ log.transports.file.getFile();
 log.silly("Testing log - PRELOAD OF SETTINGS PAGE");
 
 window.addEventListener("DOMContentLoaded", () => {
-    var cfg_debug = document.getElementById("config-debug");
-    var btn_showCfg = document.getElementById("config-show-button");
-    var btn_showCfgClose = document.getElementById("config-dontshow-button");
-    var btn_openconfigloc = document.getElementById("open-config-location");
+    const cfg_debug = document.getElementById("config-debug");
+    const btn_showCfg = document.getElementById("config-show-button");
+    const btn_showCfgClose = document.getElementById("config-dontshow-button");
+    const btn_openconfigloc = document.getElementById("open-config-location");
 
     log.info("Asking for config");
     ipcRenderer.send("GetConfig", "");
@@ -28,14 +28,14 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 });
 
-ipcRenderer.on("GetConfig-Reply", (event, config_arg) => {
+ipcRenderer.on("GetConfig-Reply", (_, config_arg) => {
     log.info("Populating settings values");
     document.getElementById("tf2_directory").value = config_arg.tf2_directory;
     document.getElementById("steam_directory").value = config_arg.steam_directory;
     document.getElementById("config-contents").innerText = JSON.stringify(config_arg);
 });
 
-ipcRenderer.on("GetNewSettings", (event, arg) => {
+ipcRenderer.on("GetNewSettings", (_, arg) => {
     log.info("GetNewSettings event recieved. Sending data back");
     arg.tf2_directory = document.getElementById("tf2_directory").value;
     arg.steam_directory = document.getElementById("steam_directory").value;

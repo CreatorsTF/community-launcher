@@ -2,8 +2,8 @@ const { BrowserWindow, ipcMain, shell } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
 
-var settingsWindow;
-var waitingForSettings = true;
+let settingsWindow;
+let waitingForSettings = true;
 
 module.exports.OpenWindow = OpenWindow;
 function OpenWindow() {
@@ -50,7 +50,7 @@ function OpenWindow() {
         });
 
         //Add the reply function
-        ipcMain.on("GetNewSettings-Reply", (event, arg) => {
+        ipcMain.on("GetNewSettings-Reply", (_, arg) => {
             //Apply the new settings to the config.
             //The data we get is from the settings window, from the rendering process.
 
@@ -70,7 +70,7 @@ function OpenWindow() {
     });
 }
 
-ipcMain.on("open-config-location", (event, arg) => {
+ipcMain.on("open-config-location", () => {
     try {
         shell.showItemInFolder(config.GetConfigFullPath());
     }
