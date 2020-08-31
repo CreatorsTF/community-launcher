@@ -7,7 +7,8 @@
     "start": "electron .",
     "buildwindows": "electron-builder build --win --x64 --ia32 --publish never",
     "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
-    "deploy": "electron-builder build --win --x64 --ia32 --publish always"
+    "deploy": "electron-builder build --win --x64 --ia32 --publish always",
+    "tsc": "npx tsc"
   },
   "keywords": [
     "TF2",
@@ -35,6 +36,7 @@
     "electron-updater": "^4.3.4",
     "flag-icon-css": "^3.5.0",
     "jszip": "^3.5.0",
-    "marked": "^1.1.1"
+    "marked": "^1.1.1",
+    "typescript": "^4.0.2"
   }
 }
