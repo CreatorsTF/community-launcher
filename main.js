@@ -24,7 +24,7 @@ global.log = log;
 const path = global.path;
 const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsupport@creators.tf";
 
-var mainWindow;
+let mainWindow;
 
 function LogDeviceInfo() {
     log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem()/1024)/1024)/1024).toFixed(2)} gb]`);
@@ -73,7 +73,7 @@ function createWindow() {
                     title: "Startup Error - Main Window Load",
                     message: e.toString() + majorErrorMessageEnd,
                     buttons: ["OK"]
-                }).then((button) => {
+                }).then(() => {
                     app.quit();
                 });
             }
@@ -85,7 +85,7 @@ function createWindow() {
                 title: "Startup Error - Config Load",
                 message: e.toString() + majorErrorMessageEnd,
                 buttons: ["OK"]
-            }).then((button) => {
+            }).then(() => {
                 app.quit();
             });
         });
@@ -97,7 +97,7 @@ function createWindow() {
             title: "Startup Error - Major Initial Error",
             message: majorE.toString() + majorErrorMessageEnd,
             buttons: ["OK"]
-        }).then((button) => {
+        }).then(() => {
             app.quit();
         });
     }
@@ -113,13 +113,13 @@ app.on("ready", () => {
 });
 
 function GetCurrentVersion(){
-    global.fs.readFile(path.join(__dirname, "package.json"), (err, package) => {
+    global.fs.readFile(path.join(__dirname, "package.json"), (_, package) => {
         var version = JSON.parse(package).version;
         log.info("Current launcher version: " + version);
     });
 }
 
-app.on("window-all-closed", function() {
+app.on("window-all-closed", () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
@@ -128,7 +128,7 @@ app.on("window-all-closed", function() {
     }
 });
 
-app.on("activate", function() {
+app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -174,13 +174,13 @@ ipcMain.on("restart_app", () => {
 });
 
 
-ipcMain.on("SettingsWindow", async (event, someArgument) => {
+ipcMain.on("SettingsWindow", () => {
     settingsPage.OpenWindow();
 });
-ipcMain.on("PatchNotesWindow", async (event, someArgument) => {
+ipcMain.on("PatchNotesWindow", () => {
     patchnotesPage.OpenWindow();
 });
-ipcMain.on("ServerListWindow", async (event, someArgument) => {
+ipcMain.on("ServerListWindow", () => {
     serverlistPage.OpenWindow();
 });
 
@@ -190,11 +190,11 @@ ipcMain.on("ServerListWindow", async (event, someArgument) => {
 //  });
 //});
 
-ipcMain.on("GetConfig", async (event, someArgument) => {
+ipcMain.on("GetConfig", (event) => {
     event.reply("GetConfig-Reply", global.config);
 });
 
-ipcMain.on("SetCurrentMod", async (event, arg) => {
+ipcMain.on("SetCurrentMod", (event, arg) => {
     mod_manager.ChangeCurrentMod(arg).then((result) => {
         event.reply("InstallButtonName-Reply", result);
     }).catch((error) => {
@@ -204,22 +204,22 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
     });
 });
 
-ipcMain.on("install-play-click", async(event, args) => {
+ipcMain.on("install-play-click", () => {
     mod_manager.ModInstallPlayButtonClick();
 });
 
-ipcMain.on("Visit-Mod-Website", async(event, arg) => {
+ipcMain.on("Visit-Mod-Website", () => {
     shell.openExternal(mod_manager.currentModData.website);
 });
 
-ipcMain.on("Visit-Mod-Social", async(event, arg) => {
-    let socialLink = mod_manager.currentModData[arg];
+ipcMain.on("Visit-Mod-Social", (_, arg) => {
+    const socialLink = mod_manager.currentModData[arg];
     if(socialLink != null && socialLink != ""){
         shell.openExternal(socialLink);
     }
 });
 
-ipcMain.on("GetCurrentModVersion", async(event, arg) => {
+ipcMain.on("GetCurrentModVersion", (event) => {
     let version;
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
@@ -231,7 +231,7 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     event.reply("GetCurrentModVersion-Reply", version);
 });
 
-ipcMain.on("Remove-Mod", async(event, arg) => {
+ipcMain.on("Remove-Mod", () => {
     if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
         dialog.showMessageBox(global.mainWindow, {
             type: "question",
