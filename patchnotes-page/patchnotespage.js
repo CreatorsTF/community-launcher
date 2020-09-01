@@ -1,12 +1,10 @@
 const { BrowserWindow } = require("electron");
 const path = require("path");
 
-var patchNotesWindow;
-
 module.exports.OpenWindow = OpenWindow;
 function OpenWindow() {
     global.log.info("Loading Patch Notes window...");
-    patchNotesWindow = new BrowserWindow({
+    const patchNotesWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),

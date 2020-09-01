@@ -6,7 +6,7 @@ marked.setOptions({
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-    var request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.open(
         "GET",
         "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/changelog.md"

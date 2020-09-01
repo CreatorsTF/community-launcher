@@ -992,7 +992,7 @@ function WriteFilesToDirectory(targetPath, files, currentModData) {
 function DownloadZIP_UI(_url) {
     return new Promise((resolve, reject) => {
         global.log.log("Starting GET for mod data zip at: " + _url);
-        var progressBar;
+        let progressBar;
         let maxProgressVal = 0;
 
         let progressFunction = (dataLength) => {

@@ -245,7 +245,7 @@ function SetEventListener(heading, table) {
 }
 
 function SetButtonEventListener(button, ip, port) {
-    var serverURL = GetServerURL(ip, port);
+    const serverURL = GetServerURL(ip, port);
     button.addEventListener("click", () => ConnectToServer(serverURL));
 }
 

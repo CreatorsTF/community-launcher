@@ -137,7 +137,7 @@ app.on("ready", () => {
 
 function GetCurrentVersion() {
     global.fs.readFile(path.join(__dirname, "package.json"), (_, package) => {
-        var version = JSON.parse(package).version;
+        const version = JSON.parse(package).version;
         log.info("Current launcher version: " + version);
     });
 }
