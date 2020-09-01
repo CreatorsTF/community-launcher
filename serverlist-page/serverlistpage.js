@@ -1,13 +1,12 @@
 const { BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
-let serverlistWindow;
 const apiEndpoint = "https://creators.tf/api/IServers/GServerList?provider=15";
 
 module.exports.OpenWindow = OpenWindow;
 function OpenWindow() {
     global.log.info("Loading Server List window...");
-    serverlistWindow = new BrowserWindow({
+    const serverlistWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "serverpage-preload.js"),
@@ -50,7 +49,7 @@ async function GetServerList() {
 
         const data = [];
 
-        let req = https.get(apiEndpoint, options, (res) => {
+        const req = https.get(apiEndpoint, options, (res) => {
             console.log(`statusCode: ${res.statusCode}`);
             res.on("data", (d) => {
                 if (res.statusCode != 200) {

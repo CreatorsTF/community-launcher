@@ -12,7 +12,7 @@ function OpenWindow() {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
         },
         modal: true,
         show: false,
@@ -24,7 +24,7 @@ function OpenWindow() {
         minWidth: 640,
         minHeight: 500,
         width: 700,
-        height: 550
+        height: 550,
     });
     settingsWindow.removeMenu();
     settingsWindow.loadFile("./settings-page/settings.html");
@@ -40,7 +40,10 @@ function OpenWindow() {
             //We can trigger this ourselves hence we need this.
             if (waitingForSettings) {
                 global.log.info("Settings window is going to be closed!");
-                settingsWindow.webContents.send("GetNewSettings", global.config);
+                settingsWindow.webContents.send(
+                    "GetNewSettings",
+                    global.config
+                );
 
                 //We need to prevent the close for us to save the new settings.
                 //Once that is done, THEN we close it ourselves.
@@ -54,7 +57,7 @@ function OpenWindow() {
             //Apply the new settings to the config.
             //The data we get is from the settings window, from the rendering process.
 
-            let c = global.config;
+            const c = global.config;
             c.tf2_directory = arg.tf2_directory;
             c.steam_directory = arg.steam_directory;
             config.SaveConfig(c);
@@ -73,8 +76,7 @@ function OpenWindow() {
 ipcMain.on("open-config-location", () => {
     try {
         shell.showItemInFolder(config.GetConfigFullPath());
-    }
-    catch(e) {
+    } catch (e) {
         global.log.error("Failed to open config location: " + e.toString());
     }
 });

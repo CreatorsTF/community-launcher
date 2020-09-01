@@ -1,4 +1,3 @@
-let sidebar;
 const fs = require("fs");
 const path = require("path");
 const moddata = JSON.parse(
@@ -19,7 +18,7 @@ window.log.transports.file.getFile();
 window.log.info("Main Window Preload Began.");
 
 window.addEventListener("DOMContentLoaded", () => {
-    sidebar = document.getElementById("sidebar");
+    const sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach((modentry) => {
         const div = document.createElement("div");
