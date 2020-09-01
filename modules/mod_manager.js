@@ -13,7 +13,7 @@ const { GithubSource } = require("./mod_sources/github_source.js");
 const { JsonListSource } = require("./mod_sources/jsonlist_source.js");
 const { GameBananaSource } = require("./mod_sources/gamebanana_source.js");
 
-var functionMap = new Map();
+const functionMap = new Map();
 
 ("use strict");
 
