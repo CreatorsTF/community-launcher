@@ -21,6 +21,8 @@
 ### Contributing
 If you have something to contribute, please, open a pull request! Make sure your PR tries to solve/improve one thing at a time and isn't messy. Pull requests should always have a specific goal to accomplish.
 
+Please do NOT make a pull request or change that only seeks to change code styling or do "housekeeping" as these will be denied and closed.
+
 If you have a bug report or a suggestion, open an issue! Try to use the templates and give good information.
 The launcher is currently in an alpha state so any help is appreciated.
 
