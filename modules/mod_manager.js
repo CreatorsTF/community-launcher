@@ -15,7 +15,7 @@ const { GameBananaSource } = require("./mod_sources/gamebanana_source.js");
 
 const functionMap = new Map();
 
-("use strict");
+"use strict";
 
 //Shared by all loading bar uis to set text colour.
 const loadingTextStyle = {

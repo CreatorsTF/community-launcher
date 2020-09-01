@@ -2,7 +2,7 @@ let fileListPath;
 const fs = global.fs;
 const process = global.process;
 
-("use strict");
+"use strict";
 
 module.exports = {
     Init() {
