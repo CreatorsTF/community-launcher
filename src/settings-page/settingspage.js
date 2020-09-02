@@ -27,7 +27,7 @@ function OpenWindow() {
         height: 550
     });
     settingsWindow.removeMenu();
-    settingsWindow.loadFile("./settings-page/settings.html");
+    settingsWindow.loadFile(path.join(__dirname, "settings.html"));
     settingsWindow.once("ready-to-show", () => {
         settingsWindow.show();
 
@@ -53,7 +53,6 @@ function OpenWindow() {
         ipcMain.on("GetNewSettings-Reply", (event, arg) => {
             //Apply the new settings to the config.
             //The data we get is from the settings window, from the rendering process.
-
             let c = global.config;
             c.tf2_directory = arg.tf2_directory;
             c.steam_directory = arg.steam_directory;

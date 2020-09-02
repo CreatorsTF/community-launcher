@@ -105,6 +105,7 @@ function createWindow() {
 
 app.on("ready", () => {
     createWindow();
+    mainWindow.webContents.openDevTools();
     autoUpdater.checkForUpdatesAndNotify();
     log.info("Launcher was opened and is currently checking for updates.");
 
