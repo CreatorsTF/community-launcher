@@ -28,7 +28,8 @@
   "devDependencies": {
     "electron": "^10.0.1",
     "electron-builder": "^22.8.0",
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "typescript": "^4.0.2"
   },
   "dependencies": {
     "@mdi/font": "^5.4.55",
