@@ -27,5 +27,5 @@ exports.default = function () {
       // Again, Needed to keep folder structure
       base: "node_modules",
     })
-    .pipe(gulp.dest("build/node_modules"));
+    .pipe(gulp.dest("build/assets"));
 };
