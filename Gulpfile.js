@@ -22,10 +22,13 @@ exports.default = function () {
   // Copies over package.json due to GetCurrentVersion reading it
   gulp.src("package.json").pipe(gulp.dest("build/"));
   // Copies over only the needed node_modules css files to build folder
-  return gulp
-    .src(["node_modules/flag-icon-css/**/*", "node_modules/@mdi/**/*"], {
-      // Again, Needed to keep folder structure
-      base: "node_modules",
-    })
-    .pipe(gulp.dest("build/assets"));
+  return (
+    gulp
+      .src(["node_modules/flag-icon-css/**/*", "node_modules/@mdi/**/*"], {
+        // Again, Needed to keep folder structure
+        base: "node_modules",
+      })
+      // Pipes it into an assets folder due to electron-builder not compiling anything in node_modules
+      .pipe(gulp.dest("build/assets"))
+  );
 };
