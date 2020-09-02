@@ -10,6 +10,12 @@
     "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
     "deploy": "electron-builder build --win --x64 --ia32 --publish always"
   },
+  "build": {
+    "files": [
+      "./build/**/*",
+      "./build/main.js"
+    ]
+  },
   "keywords": [
     "TF2",
     "Creators.TF",
