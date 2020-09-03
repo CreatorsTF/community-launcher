@@ -63,8 +63,8 @@ function createWindow() {
             // and load the index.html of the app.
             //Also setup the mod manager.
             try {
-                mod_manager.Setup();
-                mainWindow.loadFile(path.resolve(__dirname, "index.html"));
+                mod_manager.Setup()
+                    .then(() => mainWindow.loadFile(path.resolve(__dirname, "index.html")))                ;
             }
             catch(e) {
                 log.error(e.toString());
@@ -194,18 +194,19 @@ ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
 });
 
-ipcMain.on("SetCurrentMod", async (event, arg) => {
-    mod_manager.ChangeCurrentMod(arg).then((result) => {
+ipcMain.on("SetCurrentMod", async (event, arg) => {    
+    try {
+        const result = await mod_manager.ChangeCurrentMod(arg);
         event.reply("InstallButtonName-Reply", result);
-    }).catch((error) => {
+    } catch (error) {
         event.reply("InstallButtonName-Reply", "Internal Error");
         console.error(error);
         log.error(error);
-    });
+    }
 });
 
-ipcMain.on("install-play-click", async(event, args) => {
-    mod_manager.ModInstallPlayButtonClick();
+ipcMain.on("install-play-click", async (event, args) => {
+    await mod_manager.ModInstallPlayButtonClick();
 });
 
 ipcMain.on("Visit-Mod-Website", async(event, arg) => {
@@ -239,10 +240,10 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
             message: `Would you like to uninstall the mod "${mod_manager.currentModData.name}"?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
-        }).then((button) => {
+        }).then(async (button) => {
             if (button.response == 0) {
                 log.info("Will start the mod removal process. User said yes.");
-                mod_manager.RemoveCurrentMod();
+                await mod_manager.RemoveCurrentMod();
             }
         });
     }

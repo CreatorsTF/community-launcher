@@ -50,14 +50,14 @@ function OpenWindow() {
         });
 
         //Add the reply function
-        ipcMain.on("GetNewSettings-Reply", (event, arg) => {
+        ipcMain.on("GetNewSettings-Reply", async (event, arg) => {
             //Apply the new settings to the config.
             //The data we get is from the settings window, from the rendering process.
 
             let c = global.config;
             c.tf2_directory = arg.tf2_directory;
             c.steam_directory = arg.steam_directory;
-            config.SaveConfig(c);
+            await config.SaveConfig(c);
             global.config = c;
 
             waitingForSettings = false;
@@ -70,9 +70,9 @@ function OpenWindow() {
     });
 }
 
-ipcMain.on("open-config-location", (event, arg) => {
+ipcMain.on("open-config-location", async (event, arg) => {
     try {
-        shell.showItemInFolder(config.GetConfigFullPath());
+        shell.showItemInFolder(await config.GetConfigFullPath());
     }
     catch(e) {
         global.log.error("Failed to open config location: " + e.toString());
