@@ -1,4 +1,3 @@
-const fs = global.fs;
 const path = global.path;
 const os = require('os');
 
