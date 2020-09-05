@@ -714,15 +714,18 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
         }
     };
 
+    const HandleZips = async (zips) => {
+        const promises = [];
+        zips.forEach((rf, f) => {
+            const promise = HandleFile(rf, f);
+            promises.push(promise);
+        })
+        return Promise.all(promises);
+    }
 
     const DoExtract = async () => {
         global.log.log("Waiting for ZIP exraction to complete...")
-        for (let index = 0; index < currentZip.length; index++) {
-            currentZip[index]
-            await HandleFile(currentZip[index], index, array);
-        }
-
-
+        await HandleZips(currentZip);
         
         let checkFunc = async () => {
             if(inProgress <= 0){
@@ -734,10 +737,7 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
                     if(currentIndex < zips.length){
                         //Assign the new zip and repeat the processess to handle and write the files.
                         currentZip = zips[currentIndex];
-                        for (let index = 0; index < currentZip.length; index++) {
-                            currentZip[index]
-                            await HandleFile(currentZip[index], index, array);
-                        }
+                        await HandleZips(currentZip);
 
                         //Make sure we set a timeout for the checking function again!!
                         await Delay(200);
