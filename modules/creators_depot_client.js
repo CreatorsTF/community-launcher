@@ -35,38 +35,55 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var https = require("https");
-var fs = require("fs");
-var _crypto = require("crypto");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var https_1 = __importDefault(require("https"));
+var fs_1 = __importDefault(require("fs"));
+var crypto_1 = __importDefault(require("crypto"));
+var path_1 = __importDefault(require("path"));
+var ProgressBar = require("electron-progressbar");
 module.exports = /** @class */ (function () {
-    function CreatorsDepotClient(tf2path) {
+    function CreatorsDepotClient(modpath) {
         //Checks for updates of local files based on their md5 hash.
         this.allContentURL = "https://creators.tf/api/IDepots/GVersionInfo?depid=1&tags=content";
         this.filesToUpdate = [];
-        this.tf2Path = tf2path;
+        this.modPath = modpath;
     }
     CreatorsDepotClient.prototype.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, _i, _a, group;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var data, _i, _a, group, dir, _b, _c, fileData, path_2, hash;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0: return [4 /*yield*/, this.GetDepotData()];
                     case 1:
-                        data = _b.sent();
+                        data = _d.sent();
                         if (data.result == "SUCCESS") {
                             for (_i = 0, _a = data.groups; _i < _a.length; _i++) {
                                 group = _a[_i];
+                                dir = group.directory.local;
+                                dir.replace("Path_Mod/", "");
+                                dir = path_1.default.join(this.modPath, dir);
+                                for (_b = 0, _c = group.files; _b < _c.length; _b++) {
+                                    fileData = _c[_b];
+                                    path_2 = fileData[0];
+                                    hash = fileData[1];
+                                    if (this.DoesFileNeedUpdate(path_2, hash)) {
+                                        this.filesToUpdate.push(path_2);
+                                    }
+                                }
                             }
                         }
-                        return [2 /*return*/];
+                        return [2 /*return*/, this.filesToUpdate.length > 0];
                 }
             });
         });
     };
     CreatorsDepotClient.prototype.DoesFileNeedUpdate = function (filePath, md5Hash) {
-        if (fs.existsSync(filePath)) {
-            var file = fs.readFileSync(filePath);
-            var hash = _crypto.createHash("md5").update(file).digest("hex");
+        if (fs_1.default.existsSync(filePath)) {
+            var file = fs_1.default.readFileSync(filePath);
+            var hash = crypto_1.default.createHash("md5").update(file).digest("hex");
             return (hash != md5Hash);
         }
         else
@@ -83,7 +100,7 @@ module.exports = /** @class */ (function () {
                                     'User-Agent': 'creators-tf-launcher'
                                 }
                             };
-                            var req = https.get(_this.allContentURL, function (res) {
+                            var req = https_1.default.get(_this.allContentURL, options, function (res) {
                                 if (res.statusCode !== 200) {
                                     var error = "Request failed, response code was: " + res.statusCode;
                                 }
@@ -106,6 +123,89 @@ module.exports = /** @class */ (function () {
                         else
                             resolve(_this.allDepotData);
                     })];
+            });
+        });
+    };
+    CreatorsDepotClient.prototype.UpdateFiles = function (mainWindow, app, loadingTextStyle) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        if (_this.filesToUpdate.length > 0) {
+                            var progressBar = new ProgressBar({
+                                indeterminate: false,
+                                text: "Downloading Mod Files",
+                                detail: "Starting Download...",
+                                abortOnError: true,
+                                closeOnComplete: false,
+                                maxValue: _this.filesToUpdate.length,
+                                browserWindow: {
+                                    webPreferences: {
+                                        nodeIntegration: true
+                                    },
+                                    width: 550,
+                                    parent: mainWindow,
+                                    modal: true,
+                                    title: "Downloading Mod Files",
+                                    backgroundColor: "#2b2826"
+                                },
+                                style: {
+                                    text: loadingTextStyle,
+                                    detail: loadingTextStyle,
+                                    value: loadingTextStyle
+                                }
+                            }, app);
+                            //Setup events to display data.
+                            progressBar
+                                .on('completed', function () {
+                                //progressBar.detail = 'Download Finished!';
+                            })
+                                .on('aborted', function (value) {
+                                reject("Download Cancelled by User!");
+                            });
+                            //We need to download files and write them to disk as soon as we get them to not hold them in memory.
+                        }
+                    })];
+            });
+        });
+    };
+    CreatorsDepotClient.prototype.DownloadFile = function (url) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        var options = {
+                            headers: {
+                                'User-Agent': 'creators-tf-launcher'
+                            }
+                        };
+                        var req = https_1.default.get(url, options, function (res) {
+                            if (res.statusCode !== 200) {
+                                var error = "Request failed, response code was: " + res.statusCode;
+                            }
+                            else {
+                                var data = [], dataLen = 0;
+                                res.on("data", function (chunk) {
+                                    data.push(chunk);
+                                    dataLen += chunk.length;
+                                });
+                                res.on("end", function () {
+                                    var buf = Buffer.concat(data);
+                                    resolve(buf);
+                                });
+                            }
+                        });
+                        req.on("error", function (err) {
+                            reject(new Error(err.toString()));
+                        });
+                    })];
+            });
+        });
+    };
+    CreatorsDepotClient.prototype.WriteFile = function (path, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                fs_1.default.writeFileSync(path, data);
+                return [2 /*return*/];
             });
         });
     };
