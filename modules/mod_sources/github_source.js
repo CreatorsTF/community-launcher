@@ -12,10 +12,6 @@ module.exports.GithubSource = class GithubSource extends ModInstallSource {
     github_data = null;
     fileType = "FILE";
 
-    constructor(install_data){
-        super(install_data);
-    }
-
     //Function to get the latest github data from memory or request.
     _GetGithubData(){
         return new Promise((resolve, reject) => {
@@ -98,5 +94,11 @@ module.exports.GithubSource = class GithubSource extends ModInstallSource {
             
             req.end();
         });
+    }
+
+    SetSubmod(submodName){
+        super.SetSubmod(submodName);
+
+        this.github_data = null;
     }
 }

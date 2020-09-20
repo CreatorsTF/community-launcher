@@ -75,15 +75,15 @@ ChangeCurrentMod(name){
         global.log.log(`Set current mod to: ${this.currentModData.name}`);
 
         //Setup the source manager object depending on the type of the mod.
-        switch(this.currentModData.install.type){
+        switch(this.currentModData.type){
             case "jsonlist":
-                this.source_manager = new JsonListSource(this.currentModData.install);
+                this.source_manager = new JsonListSource(this.currentModData);
             break;
             case "github":
-                this.source_manager = new GithubSource(this.currentModData.install);
+                this.source_manager = new GithubSource(this.currentModData);
                 break;
             case "gamebanana":
-                this.source_manager = new GameBananaSource(this.currentModData.install);
+                this.source_manager = new GameBananaSource(this.currentModData);
                 break;
             default:
                 this.source_manager = null;
@@ -91,12 +91,19 @@ ChangeCurrentMod(name){
                 return;
         }
 
+        var responseObject = {buttonstate:"", submods: null};
+
+        if(this.currentModData.hasOwnProperty("submods")) {
+            responseObject.submods = this.currentModData.submods;
+        }
+
         //We do not have a version for this mod. Method to use is install.
         if(this.currentModVersion == null || this.currentModVersion == 0){
             this.source_manager.GetLatestVersionNumber().then((version) => {
                 this.currentModState = State.NOT_INSTALLED;
                 this.currentModVersionRemote = version;
-                resolve("Install");
+                responseObject.buttonstate = "Install";
+                resolve(responseObject);
             }).catch((e) => {
                 reject("Failed to get mod version: " + e.toString());
             });
@@ -117,15 +124,16 @@ ChangeCurrentMod(name){
                     //Time to resolve with the text to show on the button
                     switch(this.currentModState){
                         case State.INSTALLED:
-                            resolve("Installed");
+                            responseObject.buttonstate = "Installed";
                             break;
                         case State.UPDATE:
-                            resolve("Update");
+                            responseObject.buttonstate = "Update";
                             break;
                         default:
-                            resolve("Install");
+                            responseObject.buttonstate = "Install";
                             break;
                     }
+                    resolve(responseObject);
                 }).catch((e) => {
                     reject(e);
             });

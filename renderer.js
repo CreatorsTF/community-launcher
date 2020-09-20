@@ -1,22 +1,23 @@
-var content = document.getElementById("content");
-var contentDummy = document.getElementById("contentdummy");
-var titleImage = document.getElementById("title-image");
-var text = document.getElementById("content-text");
-var version = document.getElementById("version-text");
+const content = document.getElementById("content");
+const contentDummy = document.getElementById("contentdummy");
+const titleImage = document.getElementById("title-image");
+const text = document.getElementById("content-text");
+const version = document.getElementById("version-text");
 
-var removeButton = document.getElementById("remove-mod");
+const removeButton = document.getElementById("remove-mod");
+const submodSelect = document.getElementById("submod-select");
 
-var updateButton_Download = document.getElementById("update-button-download");
-var updateButton_Downloading = document.getElementById("update-button-downloading");
-var updateButton_Update = document.getElementById("update-button-update");
-var updateButton_Updated = document.getElementById("update-button-updated");
+const updateButton_Download = document.getElementById("update-button-download");
+const updateButton_Downloading = document.getElementById("update-button-downloading");
+const updateButton_Update = document.getElementById("update-button-update");
+const updateButton_Updated = document.getElementById("update-button-updated");
 
-var website = document.getElementById("socialMediaWebsite");
-var github = document.getElementById("socialMediaGithub");
-var twitter = document.getElementById("socialMediaTwitter");
-var discord = document.getElementById("socialMediaDiscord");
-var instagram = document.getElementById("socialMediaInstagram");
-var serverlist = document.getElementById("serverlist");
+const website = document.getElementById("socialMediaWebsite");
+const github = document.getElementById("socialMediaGithub");
+const twitter = document.getElementById("socialMediaTwitter");
+const discord = document.getElementById("socialMediaDiscord");
+const instagram = document.getElementById("socialMediaInstagram");
+const serverlist = document.getElementById("serverlist");
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
@@ -24,7 +25,7 @@ twitter.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "
 instagram.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
 discord.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
 
-var installButton = document.getElementById("install-play-update");
+const installButton = document.getElementById("install-play-update");
 document.onload = () => {
     installButton.disabled = true;
 };
@@ -48,6 +49,8 @@ function OnClick_Mod(data) {
     installButton.style.color = "black";
     installButton.innerText = "LOADING...";
     installButton.disabled = true;
+
+    submodSelect.style.display = "none";
 
     website.style.display = data.website != "" ? "block" : "none";
     github.style.display = data.github != "" ? "block" : "none";
@@ -130,13 +133,13 @@ window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
 });
 
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
-    arg = arg.toLowerCase();
-    installButton.innerText = arg.toUpperCase();
-    if (arg != "installed" && arg != "internal error") {
+    var buttonstate = arg.buttonstate.toLowerCase();
+    installButton.innerText = buttonstate.toUpperCase();
+    if (buttonstate != "installed" && buttonstate != "internal error") {
         installButton.disabled = false;
     }
 
-    switch(arg) {
+    switch(buttonstate) {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 25%, #007520 75%)"; //Green (light-to-dark)
             installButton.style.color = "white";
@@ -165,6 +168,23 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             installButton.style.color = "black";
             removeButton.style.display = "none";
             break;
+    }
+
+    //Setup submod selection (if avalible)
+    if(arg.submods != null){
+        submodSelect.style.display = "block";
+        //Clear all children
+        submodSelect.textContent = "";
+
+        for(var submod of arg.submods){
+            var option = document.createElement("option");
+            option.value = submod.name;
+            option.innerText = submod.name;
+            submodSelect.appendChild(option);
+        }
+    }
+    else{
+        submodSelect.style.display = "none";
     }
 });
 

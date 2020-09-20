@@ -3,14 +3,8 @@ const https = global.https;
 const { ModInstallSource } = require("./mod_source_base.js");
 
 module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
-    url = "";
     fileType = "ARCHIVE";
     jsonlist_data = null;
-
-    constructor(install_data){
-        super(install_data);
-        this.url = install_data.get_url;
-    }
 
     GetJsonData(){
         return new Promise((resolve, reject) => {
@@ -24,7 +18,7 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
     GetLatestVersionNumber(){
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data.version_property_name]);
+                resolve(json_data[this.GetInstallData().version_property_name]);
             }).catch(reject);
         });
     }
@@ -32,14 +26,14 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
     GetFileURL(){
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data.install_url_property_name]);
+                resolve(json_data[this.GetInstallData().install_url_property_name]);
             });
         });
     }
 
     GetJsonReleaseData(){
         return new Promise((resolve, reject) => {
-            let req = https.get(this.url, res => {
+            let req = https.get(this.GetInstallData().get_url, res => {
             console.log(`statusCode: ${res.statusCode}`)
                 res.on('data', d => {
                     d = JSON.parse(d);
@@ -53,5 +47,11 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
             
             req.end();
         });
+    }
+
+    SetSubmod(submodName){
+        super.SetSubmod(submodName);
+
+        this.jsonlist_data = null;
     }
 }

@@ -402,3 +402,7 @@ button {
     opacity: 1;
     visibility: visible;
 }
+
+#submod-select{
+    width: 30%;
+}

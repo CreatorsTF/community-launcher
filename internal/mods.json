@@ -4,6 +4,7 @@
         {
             "name": "Creators.TF",
             "blurb": "A TF2 celebration project",
+            "type": "jsonlist",
             "icon": "images/logos/modcirclelogos/creatorstf.png",
             "titleimage": "images/logos/modlogos/creatorstf.png",
             "backgroundimage": "images/backgrounds/creatorstf.png",
@@ -18,7 +19,6 @@
             "serverlist": "yes",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
-                "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/ctfpack.json",
                 "targetdirectory": "{tf2_dir}/tf/download/",
                 "version_property_name": "Version",
@@ -28,6 +28,7 @@
         {
             "name": "GMan Announcer",
             "blurb": "Creators.TF GMan Announcer Pack",
+            "type": "jsonlist",
             "icon": "images/logos/modcirclelogos/announcer.png",
             "titleimage": "images/logos/modlogos/gmanannouncer.png",
             "backgroundimage": "images/backgrounds/gmanannouncer.jpg",
@@ -41,13 +42,39 @@
             "discord": "",
             "serverlist": "",
             "contenttext": "Custom Creators.TF G-Man Announcer Pack",
-            "install": {
-                "type": "jsonlist",
-                "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
-                "targetdirectory": "{tf2_dir}/tf/custom/",
-                "version_property_name": "Version",
-                "install_url_property_name": "DownloadLink"
-            }
+            "submods": [
+                {
+                    "name": "Default",
+                    "description": "Normal sound level",
+                    "default": true,
+                    "install": {
+                        "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
+                        "targetdirectory": "{tf2_dir}/tf/custom/",
+                        "version_property_name": "Version",
+                        "install_url_property_name": "DownloadLink"
+                    }
+                },
+                {
+                    "name": "Louder",
+                    "description": "A louder varaint",
+                    "install": {
+                        "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
+                        "targetdirectory": "{tf2_dir}/tf/custom/",
+                        "version_property_name": "Version",
+                        "install_url_property_name": "DownloadLink"
+                    }
+                },
+                {
+                    "name": "Deafening",
+                    "description": "A very loud and deafening version. Use at own risk.",
+                    "install": {
+                        "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
+                        "targetdirectory": "{tf2_dir}/tf/custom/",
+                        "version_property_name": "Version",
+                        "install_url_property_name": "DownloadLink"
+                    }
+                }
+            ]
         }
     ]
 }
