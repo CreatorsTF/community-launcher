@@ -248,3 +248,14 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
         });
     }
 });
+
+
+ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
+
+    const tf2dir = await config.GetTF2Directory(steamdir);
+    if (tf2dir && tf2dir != "")
+        global.config.steam_directory = steamdir;
+        global.config.tf2_directory = tf2dir;
+
+    event.reply("GetConfig-Reply", global.config);
+});

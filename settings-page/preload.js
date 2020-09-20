@@ -13,6 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
     var btn_showCfg = document.getElementById("config-show-button");
     var btn_showCfgClose = document.getElementById("config-dontshow-button");
     var btn_openconfigloc = document.getElementById("open-config-location");
+    var btn_reload = document.getElementById("reload-button");
 
     log.info("Asking for config");
     ipcRenderer.send("GetConfig", "");
@@ -25,6 +26,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     btn_openconfigloc.onclick = () => {
         ipcRenderer.send("open-config-location", "");
+    };
+    btn_reload.onclick = () => {
+        const steamdir = document.getElementById("steam_directory").value
+        ipcRenderer.send("config-reload-tf2directory", steamdir);
     };
 });
 
