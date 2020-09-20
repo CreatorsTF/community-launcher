@@ -53,7 +53,7 @@ module.exports = /** @class */ (function () {
     }
     CreatorsDepotClient.prototype.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, _i, _a, group, dir, _b, _c, fileData, path_2, hash;
+            var data, _i, _a, group, dir, _b, _c, fileData, filePath, hash;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0: return [4 /*yield*/, this.GetDepotData()];
@@ -63,14 +63,14 @@ module.exports = /** @class */ (function () {
                             for (_i = 0, _a = data.groups; _i < _a.length; _i++) {
                                 group = _a[_i];
                                 dir = group.directory.local;
-                                dir.replace("Path_Mod/", "");
+                                dir = dir.replace("Path_Mod/", "");
                                 dir = path_1.default.join(this.modPath, dir);
                                 for (_b = 0, _c = group.files; _b < _c.length; _b++) {
                                     fileData = _c[_b];
-                                    path_2 = fileData[0];
+                                    filePath = fileData[0];
                                     hash = fileData[1];
-                                    if (this.DoesFileNeedUpdate(path_2, hash)) {
-                                        this.filesToUpdate.push(path_2);
+                                    if (this.DoesFileNeedUpdate(path_1.default.join(dir, filePath), hash)) {
+                                        this.filesToUpdate.push(filePath);
                                     }
                                 }
                             }
@@ -81,13 +81,22 @@ module.exports = /** @class */ (function () {
         });
     };
     CreatorsDepotClient.prototype.DoesFileNeedUpdate = function (filePath, md5Hash) {
+        //@ts-ignore
+        global.log.log(("Checking if file needs update: " + filePath));
         if (fs_1.default.existsSync(filePath)) {
             var file = fs_1.default.readFileSync(filePath);
+            //@ts-ignore
+            global.log.log("File exists, comparing md5 hashes.");
             var hash = crypto_1.default.createHash("md5").update(file).digest("hex");
+            //@ts-ignore
+            global.log.log("Our hash: '" + hash + "'. Remote hash: '" + md5Hash + "'.");
+            //@ts-ignore
+            global.log.log(hash == md5Hash ? "    Same!" : "    Different!");
             return (hash != md5Hash);
         }
-        else
-            return true;
+        //@ts-ignore
+        global.log.log("    File does not exist. Update.");
+        return true;
     };
     CreatorsDepotClient.prototype.GetDepotData = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -211,3 +220,4 @@ module.exports = /** @class */ (function () {
     };
     return CreatorsDepotClient;
 }());
+//# sourceMappingURL=creators_depot_client.js.map

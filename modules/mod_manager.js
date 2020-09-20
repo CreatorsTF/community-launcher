@@ -12,6 +12,7 @@ const filemanager = require("./file_manager");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
+const CreatorsDepotClient = require("./creators_depot_client.js");
 
 var functionMap = new Map();
 
@@ -55,6 +56,7 @@ currentModVersionRemote: 0,
 downloadWindow: null,
 files_object: null,
 source_manager: null,
+depotClient: null,
 
 //Sets up the module.
 Setup(){
@@ -72,6 +74,8 @@ ChangeCurrentMod(name){
         this.currentModState = State.NOT_INSTALLED;
         this.currentModVersionRemote = 0;
 
+        var isDepot = false;
+
         global.log.log(`Set current mod to: ${this.currentModData.name}`);
 
         //Setup the source manager object depending on the type of the mod.
@@ -85,50 +89,62 @@ ChangeCurrentMod(name){
             case "gamebanana":
                 this.source_manager = new GameBananaSource(this.currentModData.install);
                 break;
+            case "creators-depot":
+                //Special case to handle the creators.tf depot system
+                isDepot = true;
+                break;
             default:
                 this.source_manager = null;
                 reject("Mod install type was not recognised: " + this.currentModData.install.type);
                 return;
         }
 
-        //We do not have a version for this mod. Method to use is install.
-        if(this.currentModVersion == null || this.currentModVersion == 0){
-            this.source_manager.GetLatestVersionNumber().then((version) => {
-                this.currentModState = State.NOT_INSTALLED;
-                this.currentModVersionRemote = version;
-                resolve("Install");
-            }).catch((e) => {
-                reject("Failed to get mod version: " + e.toString());
+        if(isDepot){
+            this.depotClient = new CreatorsDepotClient(this.GetRealTF2Path());
+            this.depotClient.CheckForUpdates().then((needsUpdate) => {
+                resolve(needsUpdate ? "Update" : "Installed");
             });
         }
-        else {
-            //We have a version, now we need to determine if there is an update or not.
-            this.source_manager.GetLatestVersionNumber().then(
-                (version) => {
-                    //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
-
+        else{
+            //We do not have a version for this mod. Method to use is install.
+            if(this.currentModVersion == null || this.currentModVersion == 0){
+                this.source_manager.GetLatestVersionNumber().then((version) => {
+                    this.currentModState = State.NOT_INSTALLED;
                     this.currentModVersionRemote = version;
-
-                    if(version > this.currentModVersion) 
-                        this.currentModState = State.UPDATE;
-                    else 
-                        this.currentModState = State.INSTALLED;
-
-                    //Time to resolve with the text to show on the button
-                    switch(this.currentModState){
-                        case State.INSTALLED:
-                            resolve("Installed");
-                            break;
-                        case State.UPDATE:
-                            resolve("Update");
-                            break;
-                        default:
-                            resolve("Install");
-                            break;
-                    }
+                    resolve("Install");
                 }).catch((e) => {
-                    reject(e);
-            });
+                    reject("Failed to get mod version: " + e.toString());
+                });
+            }
+            else {
+                //We have a version, now we need to determine if there is an update or not.
+                this.source_manager.GetLatestVersionNumber().then(
+                    (version) => {
+                        //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
+
+                        this.currentModVersionRemote = version;
+
+                        if(version > this.currentModVersion) 
+                            this.currentModState = State.UPDATE;
+                        else 
+                            this.currentModState = State.INSTALLED;
+
+                        //Time to resolve with the text to show on the button
+                        switch(this.currentModState){
+                            case State.INSTALLED:
+                                resolve("Installed");
+                                break;
+                            case State.UPDATE:
+                                resolve("Update");
+                                break;
+                            default:
+                                resolve("Install");
+                                break;
+                        }
+                    }).catch((e) => {
+                        reject(e);
+                });
+            }
         }
     });
 },

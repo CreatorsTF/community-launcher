@@ -27,15 +27,15 @@ class CreatorsDepotClient {
         if(data.result == "SUCCESS"){
             for(var group of data.groups){
                 var dir = group.directory.local;
-                dir.replace("Path_Mod/", "");
+                dir = dir.replace("Path_Mod/", "");
                 dir = path.join(this.modPath, dir);
 
                 for(var fileData of group.files){
-                    let path = fileData[0];
+                    let filePath = fileData[0];
                     let hash = fileData[1];
 
-                    if(this.DoesFileNeedUpdate(path, hash)){
-                        this.filesToUpdate.push(path);
+                    if(this.DoesFileNeedUpdate(path.join(dir, filePath), hash)){
+                        this.filesToUpdate.push(filePath);
                     }
                 }
             }
@@ -51,7 +51,7 @@ class CreatorsDepotClient {
             var hash = _crypto.createHash("md5").update(file).digest("hex");
             return (hash != md5Hash);
         }
-        else return true;
+        return true;
     }
 
     async GetDepotData() : Promise<any> {
@@ -130,7 +130,7 @@ class CreatorsDepotClient {
                 });
 
                 //We need to download files and write them to disk as soon as we get them to not hold them in memory.
-                
+
             }
         });
     }

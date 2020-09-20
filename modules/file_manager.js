@@ -9,7 +9,7 @@ module.exports =
 
 Init(){
     fileListPath = this.GetPath();
-}, 
+},
 
 GetFileList(modName){
     return new Promise((resolve, reject) => {

@@ -48,6 +48,27 @@
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
             }
+        },
+        {
+            "name": "Creators.TF DEPOT",
+            "blurb": "DEPOT CLIENT",
+            "icon": "images/logos/modcirclelogos/creatorstf.png",
+            "titleimage": "images/logos/modlogos/creatorstf.png",
+            "backgroundimage": "images/backgrounds/creatorstf.png",
+            "bordercolor": "orange",
+            "backgroundposX": "left",
+            "backgroundposY": "top",
+            "website": "https://creators.tf",
+            "github": "",
+            "twitter": "https://creators.tf/twitter",
+            "instagram": "https://creators.tf/instagram",
+            "discord": "https://creators.tf/discord",
+            "serverlist": "yes",
+            "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
+            "install": {
+                "type": "creators-depot",
+                "targetdirectory": "{tf2_dir}/tf/download/"
+            }
         }
     ]
 }
