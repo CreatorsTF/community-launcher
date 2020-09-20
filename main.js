@@ -248,3 +248,7 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
         });
     }
 });
+
+ipcMain.on("SetSubMod", (event, submod) => {
+    mod_manager.SetCurrentModSubmod(submod);
+});

@@ -14,6 +14,7 @@ const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
 
 var functionMap = new Map();
+var modSubmodMap = new Map();
 
 "use strict";
 
@@ -52,6 +53,7 @@ currentModData: null,
 currentModVersion: 0,
 currentModState: State.NOT_INSTALLED,
 currentModVersionRemote: 0,
+currentModSubmod: "",
 downloadWindow: null,
 files_object: null,
 source_manager: null,
@@ -64,7 +66,7 @@ Setup(){
 },
 
 //Change the currently selected mod, return its installation button text.
-ChangeCurrentMod(name){
+ChangeCurrentMod(name, reuseSourceManager = false){
     return new Promise((resolve, reject) => {
         //Get this mods data and store it for use.
         this.currentModData = this.GetModDataByName(name);
@@ -74,21 +76,29 @@ ChangeCurrentMod(name){
 
         global.log.log(`Set current mod to: ${this.currentModData.name}`);
 
-        //Setup the source manager object depending on the type of the mod.
-        switch(this.currentModData.type){
-            case "jsonlist":
-                this.source_manager = new JsonListSource(this.currentModData);
-            break;
-            case "github":
-                this.source_manager = new GithubSource(this.currentModData);
+        if(!modSubmodMap.has(name)){
+            modSubmodMap.set(name, "");
+        }
+
+        this.currentModSubmod = modSubmodMap.get(name);
+
+        if(!reuseSourceManager){
+            //Setup the source manager object depending on the type of the mod.
+            switch(this.currentModData.type){
+                case "jsonlist":
+                    this.source_manager = new JsonListSource(this.currentModData, this.currentModSubmod);
                 break;
-            case "gamebanana":
-                this.source_manager = new GameBananaSource(this.currentModData);
-                break;
-            default:
-                this.source_manager = null;
-                reject("Mod install type was not recognised: " + this.currentModData.install.type);
-                return;
+                case "github":
+                    this.source_manager = new GithubSource(this.currentModData, this.currentModSubmod);
+                    break;
+                case "gamebanana":
+                    this.source_manager = new GameBananaSource(this.currentModData, this.currentModSubmod);
+                    break;
+                default:
+                    this.source_manager = null;
+                    reject("Mod install type was not recognised: " + this.currentModData.install.type);
+                    return;
+            }
         }
 
         var responseObject = {buttonstate:"", submods: null};
@@ -139,6 +149,16 @@ ChangeCurrentMod(name){
             });
         }
     });
+},
+
+SetCurrentModSubmod(submodName){
+    //Only change the submod if it's different.
+    if(submodName == this.currentModSubmod) return;
+
+    global.log.log("Changing the submod for the current mod to: " + submodName);
+    this.source_manager.SetSubmod(submodName);
+    modSubmodMap.set(this.currentModData.name, submodName);
+    this.ChangeCurrentMod(this.currentModData.name, true);
 },
 
 //Trigger the correct response to the current mod depending on its state.

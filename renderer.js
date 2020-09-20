@@ -195,3 +195,9 @@ window.ipcRenderer.on("FakeClickMod", (event, moddata) => {
 removeButton.addEventListener("click", function(e) {
     window.ipcRenderer.send("Remove-Mod", "");
 });
+
+//Handle when the input is changed for the submod dropdown.
+submodSelect.addEventListener("change", (e) => {
+    window.log.log("User changed current submod to be: " + submodSelect.value);
+    window.ipcRenderer.send("SetSubMod", submodSelect.value);
+});
