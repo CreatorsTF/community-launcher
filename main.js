@@ -11,6 +11,7 @@ const patchnotesPage = require("./patchnotes-page/patchnotespage");
 const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
+const isDev = require('electron-is-dev');
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
@@ -52,7 +53,7 @@ function createWindow() {
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
         global.app = app;
-        //mainWindow.removeMenu();
+        if(!isDev) mainWindow.removeMenu();
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
         //Load copy of mods data for this process. The rendering process will load its own.
 
