@@ -52,7 +52,7 @@ function createWindow() {
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
         global.app = app;
-        mainWindow.removeMenu();
+        // mainWindow.removeMenu();
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
         //Load copy of mods data for this process. The rendering process will load its own.
 
@@ -112,7 +112,7 @@ app.on("ready", () => {
     GetCurrentVersion();
 });
 
-function GetCurrentVersion(){
+function GetCurrentVersion() {
     global.fs.readFile(path.join(__dirname, "package.json"), (err, package) => {
         var version = JSON.parse(package).version;
         log.info("Current launcher version: " + version);
@@ -123,8 +123,8 @@ app.on("window-all-closed", function() {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
-      app.quit();
-      log.info("Launcher was closed");
+        app.quit();
+        log.info("Launcher was closed");
     }
 });
 
@@ -132,7 +132,7 @@ app.on("activate", function() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+        createWindow();
     }
 });
 
@@ -140,37 +140,37 @@ autoUpdater.autoDownload = false;
 log.info("Auto download for updates is DISABLED.");
 
 autoUpdater.on("checking-for-update", () => {
-  log.info("Checking for updates");
+    log.info("Checking for updates");
 });
 
 autoUpdater.on("update-not-available", () => {
-  mainWindow.webContents.send("update_not_available");
-  log.info("No updates available");
+    mainWindow.webContents.send("update_not_available");
+    log.info("No updates available");
 });
 
 autoUpdater.on("update-available", () => {
-  mainWindow.webContents.send("update_available");
-  log.info("An update is available");
+    mainWindow.webContents.send("update_available");
+    log.info("An update is available");
 });
 
 ipcMain.on("download_update", () => {
-  autoUpdater.downloadUpdate();
-  mainWindow.webContents.send("update_downloading");
-  log.info("Downloading update");
+    autoUpdater.downloadUpdate();
+    mainWindow.webContents.send("update_downloading");
+    log.info("Downloading update");
 });
 
 autoUpdater.on("update-downloaded", () => {
-  mainWindow.webContents.send("update_downloaded");
-  log.info("Update downloaded");
+    mainWindow.webContents.send("update_downloaded");
+    log.info("Update downloaded");
 });
 
 autoUpdater.on("error", (err) => {
-  log.error("Error in auto-updater: " + err);
+    log.error("Error in auto-updater: " + err);
 });
 
 ipcMain.on("restart_app", () => {
-  autoUpdater.quitAndInstall();
-  log.info("Restarting program to install an update");
+    autoUpdater.quitAndInstall();
+    log.info("Restarting program to install an update");
 });
 
 
@@ -184,11 +184,11 @@ ipcMain.on("ServerListWindow", async (event, someArgument) => {
     serverlistPage.OpenWindow();
 });
 
-//ipcMain.on("app_version", (event) => {
-//  event.sender.send("app_version", {
-//    version: app.getVersion()
-//  });
-//});
+// ipcMain.on("app_version", (event) => {
+//     event.sender.send("app_version", {
+//         version: app.getVersion()
+//     });
+// });
 
 ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
@@ -223,7 +223,7 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     let version;
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
-        if(version == null) version = "?";
+        if (version == null) version = "?";
     }
     catch {
         version = "?";

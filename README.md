@@ -9,7 +9,7 @@
 * More details on our [website page](https://creators.tf/launcher)
 
 ### Useful links for this repository:
-* [Releases](https://github.com/ampersoftware/Creators.TF-Community-Launcher/releases)
+* [Releases](https://github.com/ampersoftware/Creators.TF-Community-Launcher/releases) -- [Latest release](https://github.com/ampersoftware/Creators.TF-Community-Launcher/releases/latest)
 * [Changelogs](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/changelog.md)
 * [License](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/LICENSE)
 * [Code of Conduct](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/CODE_OF_CONDUCT.md) (TL;DR; common sense)
@@ -28,7 +28,7 @@ The launcher is currently in an alpha state so any help is appreciated.
 
 ## Launching and Building from Source
 If you want to build the launcher yourself, you need to have [Node.JS](https://nodejs.org/en/download/) installed, which should also include [npm](https://www.npmjs.com/get-npm).
-Clone the repository using git (or download from this page) and do `npm install` in the main repository using your system's CLI to download the required packages.
+Clone the repository using git *(or download from this page)* and do `npm install` in the main repository using your system's CLI to download the required packages.
 
 You can start the launcher for testing purposes without building via `npm start`.
 You can build for Windows or Linux via the included build scripts using `npm run buildwindows` or `npm run buildlinux`.

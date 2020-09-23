@@ -45,7 +45,7 @@ function OnClick_Mod(data) {
 
     installButton.style.background = "";
     installButton.style.backgroundColor = "grey";
-    installButton.style.color = "black";
+    installButton.style.color = "#EEE";
     installButton.innerText = "LOADING...";
     installButton.disabled = true;
 
@@ -114,7 +114,7 @@ document.getElementById("patchnotes-button").addEventListener("click", (a,b) => 
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
 
-document.getElementById("serverlist").addEventListener("click", (a, b) => {
+document.getElementById("serverlist").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
@@ -138,31 +138,24 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
 
     switch(arg) {
         case "installed":
-            installButton.style.background = "linear-gradient(to right, #009028 25%, #007520 75%)"; //Green (light-to-dark)
-            installButton.style.color = "white";
+            installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
             removeButton.style.display = "block";
             break;
         case "install":
-            installButton.style.background = "";
-            installButton.style.backgroundColor = "#FF850A";
-            installButton.style.color = "white";
+            installButton.style.background = "#FF850A";
             removeButton.style.display = "none";
             break;
         case "update":
-            installButton.style.background = "linear-gradient(to left, #1A96FF 25%, #1A70FF 75%)"; //Blue (dark-to-light)
-            installButton.style.color = "white";
+            installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
             removeButton.style.display = "block";
             break;
         case "internal error":
-            installButton.style.background = "";
-            installButton.style.backgroundColor = "#B51804";
-            installButton.style.color = "white";
+            // installButton.style.background = "#B51804";
+            installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
             removeButton.style.display = "none";
             break;
         default:
-            installButton.style.background = "";
-            installButton.style.backgroundColor = "grey";
-            installButton.style.color = "black";
+            installButton.style.background = "grey";
             removeButton.style.display = "none";
             break;
     }
