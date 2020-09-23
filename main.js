@@ -12,6 +12,7 @@ const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
 const isDev = require('electron-is-dev');
+const Utilities = require("./modules/utilities");
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
@@ -174,7 +175,6 @@ ipcMain.on("restart_app", () => {
   log.info("Restarting program to install an update");
 });
 
-
 ipcMain.on("SettingsWindow", async (event, someArgument) => {
     settingsPage.OpenWindow();
 });
@@ -185,12 +185,6 @@ ipcMain.on("ServerListWindow", async (event, someArgument) => {
     serverlistPage.OpenWindow();
 });
 
-//ipcMain.on("app_version", (event) => {
-//  event.sender.send("app_version", {
-//    version: app.getVersion()
-//  });
-//});
-
 ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
 });
@@ -200,8 +194,7 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
         event.reply("InstallButtonName-Reply", result);
     }).catch((error) => {
         event.reply("InstallButtonName-Reply", "Internal Error");
-        console.error(error);
-        log.error(error);
+            Utilities.ErrorDialog(isDev ? error.toString() : `Failed to check if mod "${arg}" has updates. Its Website may be down.\nTry again later, if the error persists please report it on our Discord.`, "Mod Update Check Error");
     });
 });
 
@@ -251,7 +244,6 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
 
 
 ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
-
     const tf2dir = await config.GetTF2Directory(steamdir);
     if (tf2dir && tf2dir != "")
         global.config.steam_directory = steamdir;
