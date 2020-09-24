@@ -39,14 +39,27 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
 
     GetJsonReleaseData(){
         return new Promise((resolve, reject) => {
+
+            var data = [], dataLen = 0;
             let req = https.get(this.url, res => {
-            console.log(`statusCode: ${res.statusCode}`)
+                console.log(`statusCode: ${res.statusCode}`);
+
                 res.on('data', d => {
-                    try {
-                        d = JSON.parse(d);
-                        resolve(d);
+                    if(res.statusCode != 200){
+                        reject(`Failed accessing ${url}: ` + res.statusCode);
+                        return;
                     }
-                    catch(error) {
+                    
+                    data.push(d);
+                });
+
+                res.on("end", function () {
+                    try{
+                        var buf = Buffer.concat(data);
+                        let parsed = JSON.parse(buf.toString());
+                        resolve(parsed);
+                    }
+                    catch (error){
                         //Json parsing failed soo reject.
                         global.log.error("Json parse failed. Endpoint is probably not returning valid JSON. Site may be down!");
                         reject(error.toString());
