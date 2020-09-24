@@ -7,7 +7,7 @@
     "start": "electron .",
     "buildwindows": "electron-builder build --win --x64 --ia32 --publish never",
     "buildlinux": "electron-builder build --linux deb pacman tar.gz --publish never",
-    "buildmac": "electron-builder build --mac pkg --publish never",
+    "buildmac": "electron-builder build --mac dmg --publish never",
     "deploy": "electron-builder build --win --x64 --ia32 --publish always"
   },
   "keywords": [
