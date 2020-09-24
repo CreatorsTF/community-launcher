@@ -244,10 +244,15 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
 
 
 ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
-    const tf2dir = await config.GetTF2Directory(steamdir);
-    if (tf2dir && tf2dir != "")
-        global.config.steam_directory = steamdir;
-        global.config.tf2_directory = tf2dir;
-
-    event.reply("GetConfig-Reply", global.config);
+    if(steamdir != ""){
+        const tf2dir = await config.GetTF2Directory(steamdir);
+        if (tf2dir && tf2dir != "")
+            global.config.steam_directory = steamdir;
+            global.config.tf2_directory = tf2dir;
+    
+        event.reply("GetConfig-Reply", global.config);
+    }
+    else {
+        Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
+    }
 });
