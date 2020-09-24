@@ -46,7 +46,7 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
 
                 res.on('data', d => {
                     if(res.statusCode != 200){
-                        reject(`Failed accessing ${url}: ` + res.statusCode);
+                        reject(`Failed accessing ${this.url}: ` + res.statusCode);
                         return;
                     }
                     
