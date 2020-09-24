@@ -1,9 +1,9 @@
-const fsp = require('fs/promises')
-
 const process = global.process;
 const fs = global.fs;
 const os = global.os;
 const path = global.path;
+
+const fsp = fs.promises;
 
 const pathStringRegex = new RegExp(/("(\S+[:]+[\S]+)")/, 'g'); //Home made regex to find a path. May not be perfect.
 
