@@ -153,7 +153,7 @@ ModInstallPlayButtonClick() {
                     
                 //Perform mod download and install.
                 this.source_manager.GetFileURL().then((_url) => {
-                    global.log.log("Successfuly got mod install file urls. Will proceed to try to download them.");
+                    global.log.log("Successfully got mod install file urls. Will proceed to try to download them.");
                     this.ModInstall(_url).then(() => {
                         this.SetupNewModAsInstalled();
                     });
@@ -171,8 +171,7 @@ ModInstallPlayButtonClick() {
                 //Really we should for this state to be active but best to be sure.
                 global.log.log("Asking user if they want to update this mod.");
                 this.source_manager.GetLatestVersionNumber().then((version) => {
-                    let update_msg = 
-                    `Would you like to update this mod to version "${version}"`;
+                    let update_msg = `Would you like to update this mod to version "${version}"?`;
 
                     //Ask if the users wants to update or not
                     dialog.showMessageBox(global.mainWindow, {
@@ -182,9 +181,9 @@ ModInstallPlayButtonClick() {
                         buttons: ["Yes", "Cancel"],
                         cancelId: 1
                     }).then((button) => {
-                        if(button.response == 0) {
+                        if (button.response == 0) {
                             //Do the update!
-                            global.log.log("Start the update process");
+                            global.log.log("Starting update process...");
                             this.UpdateCurrentMod();
                         }
                     });
@@ -202,9 +201,9 @@ ModInstallPlayButtonClick() {
 },
 
 //Attempt an update. If possible then we do it. Will try to do it incrementally or a full re download.
-UpdateCurrentMod(){
+UpdateCurrentMod() {
     //Validate tf2 dir, then make sure we have the current data for the mod.
-    if (!ValidateTF2Dir()){
+    if (!ValidateTF2Dir()) {
         this.FakeClickMod();
         return;
     }
