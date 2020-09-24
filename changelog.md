@@ -1,7 +1,14 @@
+## Version 0.1.31 - (ALPHA)
+### 24/09/2020 - 20:49 (GMT)
+- Steam path can now be correctly located again on Linux.
+- Added handle and error dialog to better explain JSON parse error.
+- Added ability to re auto locate TF2 directory if a Steam path is given. (Thanks eisbaer66!).
+
+
 ## Version 0.1.30 - (ALPHA)
 ### 08/09/2020 - 22:20 (GMT)
-- Updated Electron to v10.1.1;
-- Improved auto locating for the Steam folder (thanks brucelay!);
+- Updated Electron to v10.1.1.
+- Improved auto locating for the Steam folder (thanks brucelay!).
 - Changed server page so it can be refreshed and loaded correctly without needing to be reopened.
 - Changed server page's style a bit.
 
