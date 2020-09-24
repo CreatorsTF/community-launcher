@@ -1,3 +1,5 @@
+const fsp = require('fs/promises')
+
 const process = global.process;
 const fs = global.fs;
 const os = global.os;
@@ -36,7 +38,7 @@ module.exports = {
             }
 
             //Try to populate the default values of the steam directory and tf2 directory automatically.
-            this.config.steam_directory = GetSteamDirectory();
+            this.config.steam_directory = await GetSteamDirectory();
 
             global.log.log(`Auto locater for the users steam directory returned '${this.config.steam_directory}'`);
 
@@ -111,54 +113,19 @@ var configname = "config.json";
 
 //Attempts to locate the steam directory automatically.
 //This aids in finding the tf2 dir later.
-function GetSteamDirectory() {
-    var basedir = "";
-    /**
-     * Gets first existing path in an array of strings
-     * @param {string[]} steamPaths An array of directory paths
-     * @param {string} pathPrefix A path to add before each path in steamPaths before checking
-     * @returns First existing path in steamPaths or null if none of the paths exist, with prefix added
-     */
-    var getExistingPath = function(steamPaths, pathPrefix="") {
-        for (let steamPath of steamPaths) {
-            steamPath = path.join(pathPrefix, steamPath);
-            if(fs.existsSync(steamPath)) {
-                return steamPath;
-            }
-        }
+async function GetSteamDirectory() {
+    const paths = [
+      path.join("C:", "Program Files (x86)", "Steam"),
+      path.join("C:", "Program Files", "Steam"),
+      path.join(process.env.HOME, ".steam", "steam"),
+      path.join(process.env.HOME, ".local", "share", "Steam"),
+    ];
 
-        return "";
+    for (const path of paths) {
+      if (await fsp.exists(path)) {
+        return path;
+      }
     }
 
-    //Try to find steam installation directory
-    //Not using the registry for Windows installations
-    //We check the most likely install paths.
-    if (os.platform() == "win32") {
-        var steamPaths = ["C:/Program Files (x86)/Steam", "C:/Program Files/Steam"];
-        basedir = getExistingPath(steamPaths);
-    } else if (os.platform() == "linux" || "freebsd" || "openbsd") {
-        //Linux solution is untested
-        var homedir = process.env.HOME;
-        var steamPaths = [
-            {
-                "paths": [".steam/steam"],
-                "prefix": homedir
-            },
-            {
-                "paths": [".local/share/steam"],
-                "prefix": ""
-            }
-        ]
-        
-        for(const pathGroup of steamPaths) {
-            basedir = getExistingPath(pathGroup["paths"], pathGroup["prefix"])
-            if(basedir != "") {
-                break;
-            }
-        }
-    } else {
-        basedir = "";
-    }
-
-    return basedir;
+    return "";
 }
