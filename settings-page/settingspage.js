@@ -21,9 +21,9 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 640,
+        minWidth: 800,
         minHeight: 500,
-        width: 700,
+        width: 960,
         height: 550
     });
     if (!isDev) settingsWindow.removeMenu();

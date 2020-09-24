@@ -1,4 +1,4 @@
-html, body { height: 97%; }
+html, body { height: 100%; }
 
 body {
     background-color: #222;
@@ -67,6 +67,7 @@ h3 {
 p {
     font-size: 16px;
 }
+
 ul {
     list-style-image: url(../images/thatarrowfromthetfblog.svg);
     font-size: 21px;
@@ -74,8 +75,8 @@ ul {
 }
 
 code {
-    background-color: rgba(25,25,25,0.9);
-    padding: 0px 5px;
+    background-color: rgba(25,25,25,0.75);
+    padding: 3px 5px;
     border-radius: 5px;
     font-family: Roboto Thin, Arial, sans-serif;
     font-size: 19px;

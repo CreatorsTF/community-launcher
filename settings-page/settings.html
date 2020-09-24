@@ -12,20 +12,21 @@
     </head>
     <body>
         <h1>Settings</h1>
-        <p class="dirconfig">Steam Directory<br><input id="steam_directory" type="text"></p>
-        <div class="inputLabelRow">
-            <p>TF2 Directory</p>
-        </div>
+        <span class="inputLabelRow">Steam Directory</span>
         <div class="inputRow">
-            <input id="tf2_directory" type="text" class="inputColumn">
-            <button type="button" class="buttonColumn reload-button mdi mdi-reload" id="reload-button"></button>
+            <input id="steam_directory" class="inputColumn" type="text">
+        </div>
+        <span class="inputLabelRow">TF2 Directory</p></span>
+        <div class="inputRow">
+            <input id="tf2_directory" class="inputColumn" type="text">
+            <button type="button" class="mdi mdi-reload" id="reload-button"></button>
         </div>
         <div id="boxofbuttons">
-            <button type="button" class="config-button" id="config-show-button">Show Config Contents</button>
-            <button type="button" class="config-button" id="open-config-location">Open Config/Log Folder</button>
+            <button type="button" id="config-show-button">Show Config Contents</button>
+            <button type="button" id="open-config-location">Open Config/Log Folder</button>
         </div>
         <div id="config-debug">
-            <button type="button" class="config-button" id="config-dontshow-button">Close</button>
+            <button type="button" id="config-dontshow-button">Close</button>
             <h2>Config File Contents</h2>
             <p id="config-contents"></p>
         </div>

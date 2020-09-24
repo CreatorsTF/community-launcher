@@ -43,19 +43,21 @@ p {
     margin: 5px 0px;
 }
 
-.dirconfig {
-    width: 55%;
-    text-align: center;
-    margin: 0px 0px 10px 0px;
+button {
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 0;
+    outline: 0;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 18px;
+    margin-left: 10px;
+    box-shadow: inset 0px 0px 3px #000;
 }
 
-.dirconfig input {
-    width: 90%;
-    margin-top: 5px;
-    padding: 5px;
-    border: 0px;
-    border-radius: 5px;
-    box-shadow: inset 0px 0px 3px #000;
+button:hover {
+    background-color: #999;
 }
 
 #config-debug {
@@ -79,95 +81,47 @@ p {
     user-select: text;
 }
 
-#boxofbuttons {
-    margin: 15px 0px;
-}
-
-.config-button {
-    padding: 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-    border: 0;
-    outline: 0;
-    font-family: Roboto Light, Arial, sans-serif;
-    font-size: 18px;
-    margin-left: 10px;
-    box-shadow: inset 0px 0px 3px #000;
-}
-
-.config-button:nth-child(1) {
-  margin-left: 0px;
-}
-
-.config-button:hover {
-    background-color: #999;
-}
-
 #config-dontshow-button {
+    margin: 0;
     display: flex;
     position: absolute;
     padding: 5px 8px;
     font-size: 16px;
-    font-family: Roboto Light, Arial, sans-serif;
 }
 
-#config-dontshow-button:hover { background-color: #999; }
+#boxofbuttons {
+    margin: 15px 0px;
+}
 
+#boxofbuttons button {
+    padding: 8px;
+}
+
+#boxofbuttons button:first-child {
+    margin-left: 0px;
+}
 
 .inputLabelRow {
-    display: flex;
-    flex-direction: row;
-    width: 55%;
+    margin: 0 auto;
     text-align: center;
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 20px;
-    margin: 0px;
+    color: #EEE;
 }
 
-.inputLabelRow p {
-    width: 100%;
-    margin: 0px;
-}
-.inputRow
-{
+.inputRow {
     display: flex;
     flex-direction: row;
-    width: 49.5%;
+    width: 50%;
     text-align: center;
     margin: 0px 0px 10px 0px;
     padding: 5px;
 }
 
-.inputColumn
-{
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-
+.inputColumn {
+    width: 100%;
+    padding: 5px;
     border: 0px;
     border-radius: 5px;
     box-shadow: inset 0px 0px 3px #000;
-}
-
-.buttonColumn
-{
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 auto;
-}
-
-.reload-button {
-    padding: 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-    border: 0;
-    outline: 0;
-    margin-left: 10px;
-    box-shadow: inset 0px 0px 3px #000;
-}
-
-.reload-button:hover {
-    background-color: #999;
 }
