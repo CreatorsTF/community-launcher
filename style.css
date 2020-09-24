@@ -244,19 +244,29 @@ button:active {
     right: 0;
 }
 
+#serverlist {
+    background-color: #FF8E37;
+}
+
+#remove-mod {
+    background-color: #B74848;
+}
+
 #boxOfModButtons button {
+    display: block;
     margin-left: 10px;
-    font-size: 1.5em;
     padding: 10px;
+    text-shadow: 1px 1px 20px #000;
+    font-size: 1.5em;
+    color: whitesmoke;
     border-radius: 50px;
     transition: 0.2s;
-    color: whitesmoke;
-    overflow: hidden;
+    z-index: 1;
 }
 
 #boxOfModButtons button:hover {
     filter: brightness(0.9);
-    transform: scale(0.97);
+    transform: scale(0.95);
 }
 
 #boxOfModButtons button:first-child {
@@ -298,17 +308,11 @@ button:active {
 .socialMedia {
     width: 35px;
     height: 35px;
-    padding: 10px;
+    padding: 8px;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 100%;
     border-radius: 50px;
-    margin-right: 5px;
-    transition: .2s;
-}
-
-.socialMedia:last-child {
-    margin-right: 0px;
+    transition: 0.2s;
 }
 
 .socialMedia:hover {
@@ -320,7 +324,7 @@ button:active {
 /* SOCIAL MEDIA LOGOS */
 #socialMediaTwitter { background-image: url(images/logos/social/twitter.svg); }
 #socialMediaInstagram { background-image: url(images/logos/social/instagram.svg); background-size: 60%; }
-#socialMediaDiscord { background-image: url(images/logos/social/discord.svg); background-size: 80%; }
+#socialMediaDiscord { background-image: url(images/logos/social/discord.svg); background-size: 77%; }
 #socialMediaWebsite { background-image: url(images/logos/social/websiteicon.svg); background-size: 75%;}
 #socialMediaGithub { background-image: url(images/logos/social/github_light.svg); background-size: 70%;}
 
@@ -352,29 +356,6 @@ button:active {
 
 #install-play-update:hover {
     filter: brightness(0.8);
-}
-
-#serverlist {
-    margin: 0;
-    padding: 8px;
-    font-size: 18px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: Roboto Thin, Arial, sans-serif;
-    display: block;
-    text-shadow: 1px 1px 20px #000;
-    background-color: #FF8E37;
-    z-index: 1;
-}
-
-#remove-mod {
-    /* background-color: #C77474; */
-    background-color: #B74848;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: Roboto Light, Arial, sans-serif;
-    text-shadow: 1px 1px 20px #000;
-    z-index: 1;
 }
 
 #version {
