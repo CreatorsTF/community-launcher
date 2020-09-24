@@ -25,7 +25,7 @@ function OpenWindow() {
         width: 950,
         height: 700
     });
-    serverlistWindow.removeMenu();
+    if (!isDev) serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
     serverlistWindow.once("ready-to-show", () => {
         serverlistWindow.show();

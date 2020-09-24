@@ -54,7 +54,7 @@ function createWindow() {
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
         global.app = app;
-        if(!isDev) mainWindow.removeMenu();
+        if (!isDev) mainWindow.removeMenu();
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
         //Load copy of mods data for this process. The rendering process will load its own.
 
