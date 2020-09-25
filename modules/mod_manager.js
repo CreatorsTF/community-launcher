@@ -12,6 +12,7 @@ const filemanager = require("./file_manager");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
+const Utilities = require("./utilities");
 
 var functionMap = new Map();
 
@@ -481,7 +482,7 @@ GetCurrentModVersionFromConfig(name){
     else return null;
 },
 
-GetRealTF2Path(){
+GetRealInstallPath(){
     let realPath = this.currentModData.install.targetdirectory;
 
     //To ensure the path is correct when resolved. Good one Zonical.
@@ -522,7 +523,7 @@ InstallFiles(files){
             func = entry.value[0];
         }
         
-        func(this.GetRealTF2Path(), entry.value[1], this.currentModData).then(() => {
+        func(this.GetRealInstallPath(), entry.value[1], this.currentModData).then(() => {
             entryIndex++;
             if(entryIndex < sortedFiles.size){
                 entryProcess();
@@ -1031,7 +1032,20 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc){
                         global.log.log("File download finished. Returning raw data.");
                         //This approach to get the file name only works for direct file urls.
                         //A better solution for later would be via the content-disposition header if this is missing.
-                        resolve(new DownloadedFile(buf, GetFileName(__url)));
+                        var filename;
+                        var contentDispositionHeader = res.headers["content-disposition"];
+                        if(contentDispositionHeader != undefined){
+                            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                            var matches = filenameRegex.exec(contentDispositionHeader);
+                            if (matches != null && matches[1]) { 
+                                filename = matches[1].replace(/['"]/g, '');
+                                global.log.info("Got filename for download fron content-disposition header: " + filename);
+                            }
+                        }
+
+                        if(filename == undefined) GetFileName(__url);
+
+                        resolve(new DownloadedFile(buf, filename));
                     });
                 }
             });
@@ -1066,7 +1080,7 @@ function SetNewModVersion(version, currentModName){
 }
 
 function ErrorDialog(error, title){
-    global.log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
+    global.log.error(`Error Dialog shown: ${title} : ${error.toString()}.\nError Stack:${error.stack}`);
     dialog.showMessageBox(global.mainWindow, {
         type: "error",
         title: title,

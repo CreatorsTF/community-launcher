@@ -48,6 +48,30 @@
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
             }
+        },
+        {
+            "name": "Ultimate TF2 Visual Fix Pack",
+            "blurb": "Community Visual Fix Pack",
+            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.png",
+            "titleimage": "images/logos/modlogos/ultimate_tf2_visual_fixes_largelogo.png",
+            "backgroundimage": "",
+            "bordercolor": "#3e3c3f",
+            "backgroundposX": "left",
+            "backgroundposY": "top",
+            "website": "",
+            "github": "https://github.com/agrastiOs/Ultimate-TF2-Visual-Fix-Pack",
+            "twitter": "",
+            "instagram": "",
+            "discord": "",
+            "serverlist": "",
+            "contenttext": "Community made Visual Fixes for various issues with cosmetics, weapons, particles, visual effects,\n plus fixing Dragon’s Fury lag, opaque and glitchy Flamethrower flames, worse looking stock weapons, and more!",
+            "install": {
+                "type": "github",
+                "owner": "agrastiOs",
+                "name": "Ultimate-TF2-Visual-Fix-Pack",
+                "targetdirectory": "{tf2_dir}/tf/custom/",
+                "asset_index": 0
+            }
         }
     ]
 }
