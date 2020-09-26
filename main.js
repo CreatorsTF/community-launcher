@@ -30,10 +30,6 @@ const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsuppo
 
 var mainWindow;
 
-function LogDeviceInfo() {
-    log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem()/1024)/1024)/1024).toFixed(2)} gb]`);
-}
-
 function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     try {
@@ -107,29 +103,30 @@ function createWindow() {
     }
 }
 
-app.on("ready", () => {
-    createWindow();
-    autoUpdater.checkForUpdatesAndNotify();
-    log.info("Launcher was opened and is currently checking for updates.");
-
-    LogDeviceInfo();
-    GetCurrentVersion();
-});
-
-function GetCurrentVersion() {
+function getCurrentVersion() {
     global.fs.readFile(path.join(__dirname, "package.json"), (err, package) => {
         var version = JSON.parse(package).version;
         log.info("Current launcher version: " + version);
     });
 }
 
-app.on("window-all-closed", function() {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== "darwin") {
-        app.quit();
-        log.info("Launcher was closed");
-    }
+function logDeviceInfo() {
+    log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2)} gb]`);
+}
+
+function updateCheck() {
+    autoUpdater.checkForUpdatesAndNotify();
+    log.info("Currently checking for updates.");
+}
+
+app.on("ready", () => {
+    createWindow();
+    updateCheck();
+    getCurrentVersion();
+    logDeviceInfo();
+    log.info("Launcher was opened/finished initialization.");
+    autoUpdater.autoDownload = false;
+    log.info("Auto download for updates is DISABLED.");
 });
 
 app.on("activate", function() {
@@ -140,8 +137,14 @@ app.on("activate", function() {
     }
 });
 
-autoUpdater.autoDownload = false;
-log.info("Auto download for updates is DISABLED.");
+app.on("window-all-closed", function() {
+    // On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== "darwin") {
+        app.quit();
+        log.info("Launcher was closed.");
+    }
+});
 
 autoUpdater.on("checking-for-update", () => {
     log.info("Checking for updates");
@@ -252,10 +255,15 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
 
 
 ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
-    const tf2dir = await config.GetTF2Directory(steamdir);
-    if (tf2dir && tf2dir != "")
-        global.config.steam_directory = steamdir;
-        global.config.tf2_directory = tf2dir;
-
-    event.reply("GetConfig-Reply", global.config);
+    if(steamdir != ""){
+        const tf2dir = await config.GetTF2Directory(steamdir);
+        if (tf2dir && tf2dir != "")
+            global.config.steam_directory = steamdir;
+            global.config.tf2_directory = tf2dir;
+    
+        event.reply("GetConfig-Reply", global.config);
+    }
+    else {
+        Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
+    }
 });
