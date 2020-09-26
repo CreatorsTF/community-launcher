@@ -1,5 +1,5 @@
 "use strict";
-const https = global.https;
+const https = require("https");
 const { ModInstallSource } = require("./mod_source_base.js");
 
 module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
@@ -39,11 +39,31 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
 
     GetJsonReleaseData(){
         return new Promise((resolve, reject) => {
+
+            var data = [], dataLen = 0;
             let req = https.get(this.url, res => {
-            console.log(`statusCode: ${res.statusCode}`)
+                console.log(`statusCode: ${res.statusCode}`);
+
                 res.on('data', d => {
-                    d = JSON.parse(d);
-                    resolve(d);
+                    if(res.statusCode != 200){
+                        reject(`Failed accessing ${this.url}: ` + res.statusCode);
+                        return;
+                    }
+                    
+                    data.push(d);
+                });
+
+                res.on("end", function () {
+                    try{
+                        var buf = Buffer.concat(data);
+                        let parsed = JSON.parse(buf.toString());
+                        resolve(parsed);
+                    }
+                    catch (error){
+                        //Json parsing failed soo reject.
+                        global.log.error("Json parse failed. Endpoint is probably not returning valid JSON. Site may be down!");
+                        reject(error.toString());
+                    }
                 });
             });
             

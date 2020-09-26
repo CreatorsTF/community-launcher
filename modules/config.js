@@ -113,25 +113,52 @@ var configname = "config.json";
 //This aids in finding the tf2 dir later.
 function GetSteamDirectory() {
     var basedir = "";
-    var path1 = "C:/Program Files (x86)/Steam";
-    var path2 = "C:/Program Files/Steam";
+    /**
+     * Gets first existing path in an array of strings
+     * @param {string[]} steamPaths An array of directory paths
+     * @param {string} pathPrefix A path to add before each path in steamPaths before checking
+     * @returns First existing path in steamPaths or null if none of the paths exist, with prefix added
+     */
+    var getExistingPath = function(steamPaths, pathPrefix="") {
+        for (let steamPath of steamPaths) {
+            steamPath = path.join(pathPrefix, steamPath);
+            if(fs.existsSync(steamPath)) {
+                return steamPath;
+            }
+        }
 
-    //Windows
+        return "";
+    }
+
+    //Try to find steam installation directory
+    //Not using the registry for Windows installations
+    //We check the most likely install paths.
     if (os.platform() == "win32") {
-        //Try to find steam installation without the registry
-        //We check the most likelly install paths.
-        if (fs.existsSync(path1)) {
-            basedir = path1;
+        var steamPaths = ["C:/Program Files (x86)/Steam", "C:/Program Files/Steam"];
+        basedir = getExistingPath(steamPaths);
+    } else if (os.platform() == "linux" || "freebsd" || "openbsd") {
+        //Linux solution is untested
+        var homedir = process.env.HOME;
+        var steamPaths = [
+            {
+                "paths": [".steam/steam"],
+                "prefix": homedir
+            },
+            {
+                "paths": [".local/share/steam"],
+                "prefix": ""
+            }
+        ]
+        
+        for(const pathGroup of steamPaths) {
+            basedir = getExistingPath(pathGroup["paths"], pathGroup["prefix"])
+            if(basedir != "") {
+                break;
+            }
         }
-        else if (fs.existsSync(path2)) {
-            basedir = path2;
-        }
+    } else {
+        basedir = "";
     }
-    //A probably flawed method to check for the steam dir on linux.
-    else if (os.platform == "linux") {
-        basedir = path.join(process.env.HOME, ".steam");
-        //If this doesnt exist, don't use.
-        if(!fs.existsSync(basedir)) basedir = "";
-    }
+
     return basedir;
 }

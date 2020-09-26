@@ -123,10 +123,6 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
         }
     }
     else {
-        // remove everything but error message
-        refreshHolder.remove();
-        container.remove();
-        loading.remove();
         document.getElementById("failMessage").innerText = "Failed to get servers.\n\nYour internet may be down\nOR\nCreators.TF may be down\n\nGo to our Twitter (@CreatorsTF) for more info!";
     }
 });
