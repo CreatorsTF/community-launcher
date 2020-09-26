@@ -28,10 +28,6 @@ const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsuppo
 
 var mainWindow;
 
-function LogDeviceInfo() {
-    log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem()/1024)/1024)/1024).toFixed(2)} gb]`);
-}
-
 function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     try {
@@ -54,7 +50,7 @@ function createWindow() {
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
         global.app = app;
-        if(!isDev) mainWindow.removeMenu();
+        if (!isDev) mainWindow.removeMenu();
         //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
         //Load copy of mods data for this process. The rendering process will load its own.
 
@@ -105,74 +101,81 @@ function createWindow() {
     }
 }
 
-app.on("ready", () => {
-    createWindow();
-    autoUpdater.checkForUpdatesAndNotify();
-    log.info("Launcher was opened and is currently checking for updates.");
-
-    LogDeviceInfo();
-    GetCurrentVersion();
-});
-
-function GetCurrentVersion(){
+function getCurrentVersion() {
     global.fs.readFile(path.join(__dirname, "package.json"), (err, package) => {
         var version = JSON.parse(package).version;
         log.info("Current launcher version: " + version);
     });
 }
 
-app.on("window-all-closed", function() {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== "darwin") {
-      app.quit();
-      log.info("Launcher was closed");
-    }
+function logDeviceInfo() {
+    log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2)} gb]`);
+}
+
+function updateCheck() {
+    autoUpdater.checkForUpdatesAndNotify();
+    log.info("Currently checking for updates.");
+}
+
+app.on("ready", () => {
+    createWindow();
+    updateCheck();
+    getCurrentVersion();
+    logDeviceInfo();
+    log.info("Launcher was opened/finished initialization.");
+    autoUpdater.autoDownload = false;
+    log.info("Auto download for updates is DISABLED.");
 });
 
 app.on("activate", function() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+        createWindow();
     }
 });
 
-autoUpdater.autoDownload = false;
-log.info("Auto download for updates is DISABLED.");
+app.on("window-all-closed", function() {
+    // On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== "darwin") {
+        app.quit();
+        log.info("Launcher was closed.");
+    }
+});
 
 autoUpdater.on("checking-for-update", () => {
-  log.info("Checking for updates");
+    log.info("Checking for updates");
 });
 
 autoUpdater.on("update-not-available", () => {
-  mainWindow.webContents.send("update_not_available");
-  log.info("No updates available");
+    mainWindow.webContents.send("update_not_available");
+    log.info("No updates available");
 });
 
 autoUpdater.on("update-available", () => {
-  mainWindow.webContents.send("update_available");
-  log.info("An update is available");
+    mainWindow.webContents.send("update_available");
+    log.info("An update is available");
 });
 
 ipcMain.on("download_update", () => {
-  autoUpdater.downloadUpdate();
-  mainWindow.webContents.send("update_downloading");
-  log.info("Downloading update");
+    autoUpdater.downloadUpdate();
+    mainWindow.webContents.send("update_downloading");
+    log.info("Downloading update");
 });
 
 autoUpdater.on("update-downloaded", () => {
-  mainWindow.webContents.send("update_downloaded");
-  log.info("Update downloaded");
+    mainWindow.webContents.send("update_downloaded");
+    log.info("Update downloaded");
 });
 
 autoUpdater.on("error", (err) => {
-  log.error("Error in auto-updater: " + err);
+    log.error("Error in auto-updater: " + err);
 });
 
 ipcMain.on("restart_app", () => {
-  autoUpdater.quitAndInstall();
-  log.info("Restarting program to install an update");
+    autoUpdater.quitAndInstall();
+    log.info("Restarting program to install an update");
 });
 
 ipcMain.on("SettingsWindow", async (event, someArgument) => {
