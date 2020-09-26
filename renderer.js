@@ -76,7 +76,7 @@ updateButton_Download.onclick = (downloadUpdate) => {
 
 updateButton_Update.onclick = (closeProgramAndUpdate) => {
     window.ipcRenderer.send("restart_app");
-    window.log.info("The launcher was restarted to update" + closeProgramAndUpdate);
+    window.log.info("User chose to restart the launcher to update." + closeProgramAndUpdate);
 }
 
 window.ipcRenderer.on("update_not_available", () => {
@@ -99,7 +99,7 @@ window.ipcRenderer.on("update_downloading", () => {
     window.ipcRenderer.removeAllListeners("update_downloading");
     updateButton_Download.remove();
     updateButton_Downloading.classList.remove("hidden");
-    window.log.info("Downloading update");
+    window.log.info("Downloading update...");
 });
 
 window.ipcRenderer.on("update_downloaded", () => {
@@ -112,12 +112,10 @@ window.ipcRenderer.on("update_downloaded", () => {
 document.getElementById("settings-button").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
-
 document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-
-document.getElementById("serverlist").addEventListener("click", (a, b) => {
+document.getElementById("serverlist").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 

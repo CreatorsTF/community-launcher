@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>Settings</title>
+    <link rel="stylesheet" href="../node_modules/@mdi/font/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="../generalstyle.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../fonts/fonts.css">
@@ -12,7 +13,13 @@
   <body>
     <h1>Settings</h1>
     <p class="dirconfig">Steam Directory<br><input id="steam_directory" type="text"></p>
-    <p class="dirconfig">TF2 Directory<br><input id="tf2_directory" type="text"></p>
+    <div class="inputLabelRow">
+      <p>TF2 Directory</p>
+    </div>
+    <div class="inputRow">
+      <input id="tf2_directory" type="text" class="inputColumn">
+      <button type="button" class="buttonColumn reload-button mdi mdi-reload" id="reload-button"></button>
+    </div>
     <div id="boxofbuttons">
       <button type="button" class="config-button" id="config-show-button">Show Config Contents</button>
       <button type="button" class="config-button" id="open-config-location">Open Config/Log Folder</button>
