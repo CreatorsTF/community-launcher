@@ -44,11 +44,17 @@ var fs_1 = __importDefault(require("fs"));
 var crypto_1 = __importDefault(require("crypto"));
 var path_1 = __importDefault(require("path"));
 var ProgressBar = require("electron-progressbar");
+var strf = require('string-format');
+var isDev = require("electron-is-dev");
+//Checks for updates of local files based on their md5 hash.
 module.exports = /** @class */ (function () {
     function CreatorsDepotClient(modpath) {
-        //Checks for updates of local files based on their md5 hash.
         this.allContentURL = "https://creators.tf/api/IDepots/GVersionInfo?depid=1&tags=content";
+        this.downloadRequestURL = "https://creators.tf/api/IDepots/GDownloadFile?depid=1&file={0}";
         this.filesToUpdate = [];
+        this.MaxConcurrentDownloads = 3;
+        this.updateActive = false;
+        this.currentDownloads = 0;
         this.modPath = modpath;
     }
     CreatorsDepotClient.prototype.CheckForUpdates = function () {
@@ -81,21 +87,11 @@ module.exports = /** @class */ (function () {
         });
     };
     CreatorsDepotClient.prototype.DoesFileNeedUpdate = function (filePath, md5Hash) {
-        //@ts-ignore
-        global.log.log(("Checking if file needs update: " + filePath));
         if (fs_1.default.existsSync(filePath)) {
             var file = fs_1.default.readFileSync(filePath);
-            //@ts-ignore
-            global.log.log("File exists, comparing md5 hashes.");
             var hash = crypto_1.default.createHash("md5").update(file).digest("hex");
-            //@ts-ignore
-            global.log.log("Our hash: '" + hash + "'. Remote hash: '" + md5Hash + "'.");
-            //@ts-ignore
-            global.log.log(hash == md5Hash ? "    Same!" : "    Different!");
             return (hash != md5Hash);
         }
-        //@ts-ignore
-        global.log.log("    File does not exist. Update.");
         return true;
     };
     CreatorsDepotClient.prototype.GetDepotData = function () {
@@ -172,11 +168,57 @@ module.exports = /** @class */ (function () {
                                 .on('aborted', function (value) {
                                 reject("Download Cancelled by User!");
                             });
+                            _this.updateActive = true;
                             //We need to download files and write them to disk as soon as we get them to not hold them in memory.
+                            for (var _i = 0, _a = _this.filesToUpdate; _i < _a.length; _i++) {
+                                var url = _a[_i];
+                                //Start downloads equal to files to update length or max amount, whichever is smaller.
+                                for (var i = 0; i < Math.min(_this.filesToUpdate.length, _this.MaxConcurrentDownloads); i++) {
+                                    //Download the file then write to disk strait away.
+                                    _this.UpdateNextFile();
+                                }
+                            }
+                            if (_this.filesToUpdate.length > 0) {
+                                var checkFunction = function () {
+                                    if (_this.currentDownloads > 0 && _this.updateActive) {
+                                        if (_this.currentDownloads < _this.MaxConcurrentDownloads) {
+                                            _this.UpdateNextFile();
+                                        }
+                                        //Recheck this in 100ms.
+                                        setTimeout(checkFunction, 100);
+                                    }
+                                    else {
+                                        //We should be finished. Lets resolve.
+                                        resolve();
+                                    }
+                                };
+                            }
                         }
                     })];
             });
         });
+    };
+    //Start a download and write the first file from the queue. 
+    CreatorsDepotClient.prototype.UpdateNextFile = function () {
+        var _this = this;
+        try {
+            var fileToUpdate = this.filesToUpdate[0];
+            this.filesToUpdate.splice(0);
+            this.DownloadFile(strf.format(this.downloadRequestURL, fileToUpdate)).then(function (fileBuffer) {
+                _this.WriteFile(fileToUpdate, fileBuffer);
+                _this.currentDownloads--;
+            });
+            this.currentDownloads++;
+        }
+        catch (error) {
+            this.updateActive = false;
+            //We want to rethrow this error in development.
+            //@ts-ignore
+            if (isDev)
+                global.log.error("Tried to update file but an error occured");
+            else
+                throw error;
+        }
     };
     CreatorsDepotClient.prototype.DownloadFile = function (url) {
         return __awaiter(this, void 0, void 0, function () {
@@ -192,10 +234,9 @@ module.exports = /** @class */ (function () {
                                 var error = "Request failed, response code was: " + res.statusCode;
                             }
                             else {
-                                var data = [], dataLen = 0;
+                                var data = [];
                                 res.on("data", function (chunk) {
                                     data.push(chunk);
-                                    dataLen += chunk.length;
                                 });
                                 res.on("end", function () {
                                     var buf = Buffer.concat(data);
@@ -211,12 +252,7 @@ module.exports = /** @class */ (function () {
         });
     };
     CreatorsDepotClient.prototype.WriteFile = function (path, data) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                fs_1.default.writeFileSync(path, data);
-                return [2 /*return*/];
-            });
-        });
+        fs_1.default.writeFileSync(path, data);
     };
     return CreatorsDepotClient;
 }());

@@ -2,20 +2,21 @@ import https from "https";
 import fs from "fs";
 import _crypto from "crypto";
 import path from "path";
-import { exception } from "console";
 const ProgressBar = require("electron-progressbar");
+const strf = require('string-format');
+const isDev = require("electron-is-dev");
 
-module.exports = 
+//Checks for updates of local files based on their md5 hash.
 class CreatorsDepotClient {
-    //Checks for updates of local files based on their md5 hash.
 
-    allContentURL = "https://creators.tf/api/IDepots/GVersionInfo?depid=1&tags=content";
-
-    allDepotData : string | undefined;
-
-    modPath : string;
-
-    filesToUpdate : Array<string> = [];
+    private allContentURL = "https://creators.tf/api/IDepots/GVersionInfo?depid=1&tags=content";
+    private downloadRequestURL = "https://creators.tf/api/IDepots/GDownloadFile?depid=1&file={0}";
+    private allDepotData : string | undefined;
+    private modPath : string;
+    private filesToUpdate : Array<string> = [];
+    private MaxConcurrentDownloads = 3;
+    private updateActive = false;
+    private currentDownloads = 0;
 
     constructor(modpath : string){
         this.modPath = modpath;
@@ -44,7 +45,7 @@ class CreatorsDepotClient {
         return this.filesToUpdate.length > 0;
     }
 
-    DoesFileNeedUpdate(filePath : string, md5Hash : string) : boolean {
+    private DoesFileNeedUpdate(filePath : string, md5Hash : string) : boolean {
         if(fs.existsSync(filePath)){
             var file = fs.readFileSync(filePath);
 
@@ -93,7 +94,7 @@ class CreatorsDepotClient {
         });
     }
 
-    async UpdateFiles(mainWindow : any, app : any, loadingTextStyle : string) : Promise<void> {
+    public async UpdateFiles(mainWindow : any, app : any, loadingTextStyle : string) : Promise<void> {
         return new Promise((resolve, reject) => {
             if(this.filesToUpdate.length > 0){
                 var progressBar = new ProgressBar({
@@ -129,13 +130,61 @@ class CreatorsDepotClient {
                     reject("Download Cancelled by User!");
                 });
 
-                //We need to download files and write them to disk as soon as we get them to not hold them in memory.
+                this.updateActive = true;
 
+                //We need to download files and write them to disk as soon as we get them to not hold them in memory.
+                for(var url of this.filesToUpdate) {
+                    //Start downloads equal to files to update length or max amount, whichever is smaller.
+                    for(var i = 0; i < Math.min(this.filesToUpdate.length, this.MaxConcurrentDownloads); i++){
+                        //Download the file then write to disk strait away.
+                        this.UpdateNextFile();
+                    }
+                }
+
+                if(this.filesToUpdate.length > 0){
+                    var checkFunction = () => {
+                        if(this.currentDownloads > 0 && this.updateActive){
+                            if(this.currentDownloads < this.MaxConcurrentDownloads){
+                                this.UpdateNextFile();
+                            }
+
+                            //Recheck this in 100ms.
+                            setTimeout(checkFunction, 100);
+                        }
+                        else {
+                            //We should be finished. Lets resolve.
+                            resolve();
+                        }
+                    };
+                }
             }
         });
     }
 
-    async DownloadFile(url : string) : Promise<Buffer> {
+    //Start a download and write the first file from the queue. 
+    private UpdateNextFile() {
+        try {
+            var fileToUpdate = this.filesToUpdate[0];
+            this.filesToUpdate.splice(0);
+            this.DownloadFile(strf.format(this.downloadRequestURL, fileToUpdate)).then(
+                (fileBuffer) => {
+                    this.WriteFile(fileToUpdate, fileBuffer);
+                    this.currentDownloads--;
+                }
+            );
+            this.currentDownloads++;
+        }
+        catch (error : any) {
+            this.updateActive = false;
+
+            //We want to rethrow this error in development.
+            //@ts-ignore
+            if(isDev) global.log.error("Tried to update file but an error occured");
+            else throw error;
+        }
+    }
+
+    private async DownloadFile(url : string) : Promise<Buffer> {
         return new Promise((resolve, reject) => {
             var options = {
                 headers: {
@@ -148,11 +197,10 @@ class CreatorsDepotClient {
                     let error = `Request failed, response code was: ${res.statusCode}`;
                 }
                 else {  
-                    var data: any[] = [], dataLen = 0;
+                    var data: any[] = [];
     
                     res.on("data", function (chunk: string | any[]) {
                         data.push(chunk);
-                        dataLen += chunk.length;
                     });
     
                     res.on("end", () => {
@@ -169,7 +217,9 @@ class CreatorsDepotClient {
         });
     }
 
-    async WriteFile(path : string, data : Buffer) : Promise<void> {
+    private WriteFile(path : string, data : Buffer){
         fs.writeFileSync(path, data);
     }
 }
+
+export default CreatorsDepotClient;

@@ -39,6 +39,7 @@
     "flag-icon-css": "^3.5.0",
     "jszip": "^3.5.0",
     "marked": "^1.1.1",
+    "string-format": "^2.0.0",
     "typescript": "^4.0.2"
   }
 }
