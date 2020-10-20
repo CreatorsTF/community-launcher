@@ -4,7 +4,7 @@
         {
             "name": "Creators.TF",
             "blurb": "A TF2 celebration project",
-            "icon": "images/logos/modcirclelogos/creatorstf.png",
+            "icon": "images/logos/modcirclelogos/creatorstf.svg",
             "titleimage": "images/logos/modlogos/creatorstf.png",
             "backgroundimage": "images/backgrounds/creatorstf.png",
             "bordercolor": "orange",
@@ -16,6 +16,7 @@
             "instagram": "https://creators.tf/instagram",
             "discord": "https://creators.tf/discord",
             "serverlist": "yes",
+            "modid": "",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
                 "type": "jsonlist",
@@ -28,11 +29,11 @@
         {
             "name": "GMan Announcer",
             "blurb": "GMan Announcer Pack",
-            "icon": "images/logos/modcirclelogos/announcer.png",
+            "icon": "images/logos/modcirclelogos/gmanannouncer.png",
             "titleimage": "images/logos/modlogos/gmanannouncer.png",
             "backgroundimage": "images/backgrounds/gmanannouncer.jpg",
             "bordercolor": "#6969FF",
-            "backgroundposX": "right",
+            "backgroundposX": "center",
             "backgroundposY": "bottom",
             "website": "",
             "github": "",
@@ -40,6 +41,7 @@
             "instagram": "",
             "discord": "",
             "serverlist": "",
+            "modid": "",
             "contenttext": "Custom Creators.TF G-Man Announcer Pack",
             "install": {
                 "type": "jsonlist",

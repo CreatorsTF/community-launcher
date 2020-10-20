@@ -4,6 +4,7 @@ var titleImage = document.getElementById("title-image");
 var text = document.getElementById("content-text");
 var version = document.getElementById("version-text");
 
+var installButton = document.getElementById("install-play-button");
 var removeButton = document.getElementById("remove-mod");
 
 var updateButton_Download = document.getElementById("update-button-download");
@@ -24,13 +25,12 @@ twitter.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "
 instagram.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
 discord.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
 
-var installButton = document.getElementById("install-play-update");
 document.onload = () => {
     installButton.disabled = true;
-};
+}
 
 function OnClick_Mod(data) {
-    window.log.info("Mod entry clicked");
+    window.log.info("Mod entry clicked: " + data.name);
 
     content.style.backgroundImage = `url("${"./" + data.backgroundimage}")`;
     titleImage.src = data.titleimage;
@@ -54,11 +54,6 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
-
-    // If the mod has a server list, just fill the "serverlist" attribute
-    // in mods.json with anything. If it doesn't, leave it blank.
-    // This was made to avoid the server list button to appear on Gman's
-    // announcer page.
     serverlist.style.display = data.serverlist != "" ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.

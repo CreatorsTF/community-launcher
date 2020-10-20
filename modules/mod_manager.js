@@ -463,21 +463,21 @@ GetModDataByName(name){
 },
 
 //Find the current version of the mod given by name that we have in our config. No version means it is not installed.
-GetCurrentModVersionFromConfig(name){
+GetCurrentModVersionFromConfig(name) {
     let toReturn = null;
-    for(let i = 0; i < global.config.current_mod_versions.length; i++){
+    for (let i = 0; i < global.config.current_mod_versions.length; i++) {
         let element = global.config.current_mod_versions[i];
-        if(element.name && element.name == name){
+        if (element.name && element.name == name) {
             toReturn = element;
             break;
         }
     }
-
     //Return the version if it was there.
-    if(toReturn != null){
+    if (toReturn != null) {
         return toReturn.version;
+    } else {
+        return null;
     }
-    else return null;
 },
 
 GetRealTF2Path(){

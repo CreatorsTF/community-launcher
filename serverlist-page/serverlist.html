@@ -4,7 +4,7 @@
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://creators.tf/; script-src 'self'">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-        <title>Server List</title>
+        <title>Creators.TF Launcher - Alpha Version - Server List</title>
         <link rel="stylesheet" href="../node_modules/flag-icon-css/css/flag-icon.min.css">
         <link rel="stylesheet" href="../node_modules/@mdi/font/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
@@ -13,7 +13,9 @@
     </head>
     <body>
         <h1 id="modname">Creators.TF - Server List</h1>
-        <div id="refreshHolder"><button id="refreshButton"><i class="mdi mdi-refresh-circle blue"></i></button></div>
+        <div id="refreshHolder">
+            <button id="refreshButton"><i class="mdi mdi-refresh-circle blue"></i></button>
+        </div>
         <div id="server-container"></div>
         <div id="loading">LOADING...</div>
         <div id="failMessage"></div>

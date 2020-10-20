@@ -17,11 +17,6 @@ body {
     animation-duration: 0.25s;
 }
 
-@keyframes fadeInSuperFancyTransition {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
 #modname {
     margin: 25px auto;
     font-family: Roboto Bold, Arial, sans-serif;
@@ -70,7 +65,7 @@ p {
 
 ul {
     list-style-image: url(../images/thatarrowfromthetfblog.svg);
-    font-size: 21px;
+    font-size: 20px;
     font-family: Roboto Thin, Arial, sans-serif;
 }
 

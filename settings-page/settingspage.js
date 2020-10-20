@@ -21,10 +21,10 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 800,
-        minHeight: 500,
-        width: 960,
-        height: 550
+        minWidth: 960,
+        minHeight: 600,
+        width: screenWidth-325,
+        height: screenHeight-100
     });
     if (!isDev) settingsWindow.removeMenu();
     settingsWindow.loadFile("./settings-page/settings.html");
@@ -33,7 +33,7 @@ function OpenWindow() {
 
         waitingForSettings = true;
 
-        //Setup some logic to prevent the window from closing when the user closes it initialy.
+        //Setup some logic to prevent the window from closing when the user closes it initially.
         //We can then save the new settings to the config, THEN close it ourselves.
         settingsWindow.addListener("close", (e) => {
             //Only prevent close when we havent saved settings yet

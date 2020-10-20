@@ -13,20 +13,21 @@ body {
     background-color: #111;
     padding: 20px;
     z-index: 1;
+    overflow-x: hidden; /* How */
 }
 
 .entry {
     margin: 0px 0px 10px 0px;
     height: 65px;
     border-radius: 50px;
-    transition: 0.2s;
     color: lightgrey;
     position: relative;
     overflow: hidden;
-    z-index: -1;
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: 0.2s;
+    z-index: -1;
 }
 
 .entrySelected {
@@ -35,8 +36,20 @@ body {
     transition: 0s;
 }
 
+.entrySelected img {
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.35);
+}
+
+.entry:last-child {
+    margin: 0px;
+}
+
 .entry:hover {
     color: #FFF;
+}
+
+.entry:hover img {
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.35);
 }
 
 .entry::before {
@@ -49,8 +62,6 @@ body {
     bottom: 0;
     left: -100px;
     transition: 0.25s;
-    /* transition-timing-function: cubic-bezier(0.55, 0, 0.02, 0.99); */
-    /* transition-timing-function: cubic-bezier(0.37, 0, 0.02, 0.99); */
     z-index: -1;
     transform: skewX(-25deg);
 }
@@ -58,6 +69,10 @@ body {
 .entry:hover::before {
     width: 135%;
     z-index: -1;
+}
+
+.modInfoSidebar {
+    margin: 0px 7px;
 }
 
 .entry h2, .entry p {
@@ -76,18 +91,10 @@ body {
     line-height: 18px;
 }
 
-.modInfoSidebar {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
 .entry img {
     float: left;
     width: 65px;
     height: 65px;
-    margin-right: 7px;
     border-radius: 50px;
     pointer-events: none;
 }
@@ -107,16 +114,6 @@ body {
     width: 100%;
     display: flex;
     margin-bottom: 20px;
-}
-
-button {
-    cursor: pointer;
-    border: none;
-    outline: none;
-}
-
-button:active {
-    background-color: #222;
 }
 
 #boxOfButtons button {
@@ -221,11 +218,6 @@ button:active {
     animation-duration: 0.2s;
 }
 
-@keyframes fadeInSuperFancyTransition {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
 #content-area {
     width: 100%;
     height: 100%;
@@ -305,17 +297,17 @@ button:active {
     margin: 0 auto;
 }
 
-.socialMedia {
-    width: 35px;
-    height: 35px;
-    padding: 8px;
+.modInfoBox button {
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 50px;
     transition: 0.2s;
 }
 
-.socialMedia:hover {
+.modInfoBox button:hover {
     transform: scale(0.9);
     background-color: rgba(1,1,1,0.75);
     cursor: pointer;
@@ -323,10 +315,10 @@ button:active {
 
 /* SOCIAL MEDIA LOGOS */
 #socialMediaTwitter { background-image: url(images/logos/social/twitter.svg); }
-#socialMediaInstagram { background-image: url(images/logos/social/instagram.svg); background-size: 60%; }
+#socialMediaInstagram { background-image: url(images/logos/social/instagram.svg); background-size: 57%; }
 #socialMediaDiscord { background-image: url(images/logos/social/discord.svg); background-size: 77%; }
-#socialMediaWebsite { background-image: url(images/logos/social/websiteicon.svg); background-size: 75%;}
-#socialMediaGithub { background-image: url(images/logos/social/github_light.svg); background-size: 70%;}
+#socialMediaWebsite { background-image: url(images/logos/social/websiteicon.svg); background-size: 73%;}
+#socialMediaGithub { background-image: url(images/logos/social/github_light.svg); background-size: 65%;}
 
 #fadebehindbutton {
     width: 100%;
@@ -337,7 +329,7 @@ button:active {
     background: linear-gradient(to top, #111 25%, transparent 75%);
 }
 
-#install-play-update {
+#install-play-button {
     width: 100%;
     margin: 0 auto;
     padding: 19px;
@@ -354,8 +346,8 @@ button:active {
     z-index: 1;
 }
 
-#install-play-update:hover {
-    filter: brightness(0.8);
+#install-play-button:hover {
+    filter: brightness(0.85);
 }
 
 #version {
@@ -368,37 +360,14 @@ button:active {
     font-size: 15px;
     font-family: monospace;
     border-radius: 3px;
+    display: flex;
+    align-items: center;
+}
+
+#version-text {
+    padding: 2px 0px 0px 7px;
 }
 
 .hidden {
     display: none;
-}
-
-[tooltip] {
-    position: relative;
-}
-
-[tooltip]:after {
-    content: attr(tooltip);
-    background-color: #111;
-    border-radius: 5px;
-    color: #CCC;
-    font-family: Roboto Thin, Arial, sans-serif;
-    font-size: 16px;
-    position: absolute;
-    padding: 5px;
-    bottom: -2em;
-    left: 0;
-    white-space: nowrap;
-    box-shadow: 0px 0px 20px rgba(50,50,50,0.5);
-    z-index: 9999999;
-    visibility: hidden;
-    pointer-events: none;
-    opacity: 0;
-    transition: 0.25s;
-}
-
-[tooltip]:hover:after {
-    opacity: 1;
-    visibility: visible;
 }
