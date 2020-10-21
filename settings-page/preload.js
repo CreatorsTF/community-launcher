@@ -41,7 +41,7 @@ ipcRenderer.on("GetConfig-Reply", (event, config_arg) => {
     log.info("Populating settings values");
     document.getElementById("tf2_directory").value = config_arg.tf2_directory;
     document.getElementById("steam_directory").value = config_arg.steam_directory;
-    document.getElementById("config-contents").innerText = JSON.stringify(config_arg);
+    document.getElementById("config-contents").value = JSON.stringify(config_arg);
 });
 
 ipcRenderer.on("GetNewSettings", (event, arg) => {
