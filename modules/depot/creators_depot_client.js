@@ -47,7 +47,7 @@ var ProgressBar = require("electron-progressbar");
 var strf = require('string-format');
 var isDev = require("electron-is-dev");
 //Checks for updates of local files based on their md5 hash.
-module.exports = /** @class */ (function () {
+var CreatorsDepotClient = /** @class */ (function () {
     function CreatorsDepotClient(modpath) {
         this.allContentURL = "https://creators.tf/api/IDepots/GVersionInfo?depid=1&tags=content";
         this.downloadRequestURL = "https://creators.tf/api/IDepots/GDownloadFile?depid=1&file={0}";
@@ -256,4 +256,5 @@ module.exports = /** @class */ (function () {
     };
     return CreatorsDepotClient;
 }());
+exports.default = CreatorsDepotClient;
 //# sourceMappingURL=creators_depot_client.js.map

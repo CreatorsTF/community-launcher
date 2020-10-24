@@ -12,7 +12,7 @@ const filemanager = require("./file_manager");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
-const CreatorsDepotClient = require("./creators_depot_client.js");
+const CreatorsDepotClient = require("./depot/creators_depot_client.js");
 
 var functionMap = new Map();
 
