@@ -61,9 +61,14 @@ async function GetServerList() {
                     data.push(d);
                 });
                 res.on("end", function() {
-                    var buf = Buffer.concat(data);
-                    let parsed = JSON.parse(buf.toString());
-                    resolve(parsed);
+                    try {
+                        var buf = Buffer.concat(data);
+                        let parsed = JSON.parse(buf.toString());
+                        resolve(parsed);
+                    }
+                    catch {
+                        reject();
+                    }
                 });
             });
             req.on('error', error => {
