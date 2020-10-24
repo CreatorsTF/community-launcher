@@ -27,6 +27,31 @@
             }
         },
         {
+            "name": "Events Server Content",
+            "blurb": "Content for the Creators.TF events server.",
+            "icon": "images/logos/modcirclelogos/creatorstf.svg",
+            "titleimage": "images/logos/modlogos/creatorstf.png",
+            "backgroundimage": "images/backgrounds/events.png",
+            "bordercolor": "red",
+            "backgroundposX": "right",
+            "backgroundposY": "top",
+            "website": "https://creators.tf",
+            "github": "",
+            "twitter": "https://creators.tf/twitter",
+            "instagram": "https://creators.tf/instagram",
+            "discord": "https://creators.tf/discord",
+            "serverlist": "yes",
+            "modid": "",
+            "contenttext": "Content for the Creators.TF events server.",
+            "install": {
+                "type": "jsonlist",
+                "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
+                "targetdirectory": "{tf2_dir}/tf/custom/ctf_events",
+                "version_property_name": "Version",
+                "install_url_property_name": "DownloadLink"
+            }
+        },
+        {
             "name": "GMan Announcer",
             "blurb": "GMan Announcer Pack",
             "icon": "images/logos/modcirclelogos/gmanannouncer.png",

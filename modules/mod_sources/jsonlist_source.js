@@ -39,9 +39,15 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
 
     GetJsonReleaseData(){
         return new Promise((resolve, reject) => {
+            var data = [];
 
-            var data = [], dataLen = 0;
-            let req = https.get(this.url, res => {
+            var options = {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
+                }
+            };
+
+            let req = https.get(this.url, options, res => {
                 console.log(`statusCode: ${res.statusCode}`);
 
                 res.on('data', d => {
