@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Utilities = void 0;
 var electron_1 = require("electron");
 var fs_1 = __importDefault(require("fs"));
 var process_1 = __importDefault(require("process"));
@@ -36,5 +37,5 @@ var Utilities = /** @class */ (function () {
     };
     return Utilities;
 }());
-exports.default = Utilities;
+exports.Utilities = Utilities;
 //# sourceMappingURL=utilities.js.map

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import Utilities from "../utilities";
+import {Utilities} from "../utilities";
 
 class ChecksumCache {
 
@@ -16,7 +16,7 @@ class ChecksumCache {
         return "";
     }
 
-    
+
 
 }
 

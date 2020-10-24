@@ -14,7 +14,7 @@ const patchnotesPage = require("./patchnotes-page/patchnotespage");
 const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
-const Utilities = require("./modules/utilities");
+const {Utilities} = require("./modules/utilities");
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
@@ -206,7 +206,7 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
         event.reply("InstallButtonName-Reply", result);
     }).catch((error) => {
         event.reply("InstallButtonName-Reply", "Internal Error");
-            Utilities.ErrorDialog(isDev ? error.toString() : `Failed to check if mod "${arg}" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.`, "Mod Update Check Error");
+        Utilities.ErrorDialog(isDev ? error.toString() : `Failed to check if mod "${arg}" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.`, "Mod Update Check Error");
     });
 });
 

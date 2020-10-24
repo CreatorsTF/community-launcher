@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreatorsDepotClient = void 0;
 var https_1 = __importDefault(require("https"));
 var fs_1 = __importDefault(require("fs"));
 var crypto_1 = __importDefault(require("crypto"));
@@ -46,6 +47,8 @@ var path_1 = __importDefault(require("path"));
 var ProgressBar = require("electron-progressbar");
 var strf = require('string-format');
 var isDev = require("electron-is-dev");
+var worker_threads_1 = require("worker_threads");
+var ChecksumWorkerData_1 = __importDefault(require("./ChecksumWorkerData"));
 //Checks for updates of local files based on their md5 hash.
 var CreatorsDepotClient = /** @class */ (function () {
     function CreatorsDepotClient(modpath) {
@@ -58,13 +61,24 @@ var CreatorsDepotClient = /** @class */ (function () {
         this.modPath = modpath;
     }
     CreatorsDepotClient.prototype.CheckForUpdates = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var data, _i, _a, group, dir, _b, _c, fileData, filePath, hash;
+        var _this = this;
+        return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+            var data, error_1, workerData, _i, _a, group, dir, _b, _c, fileData, filePath, hash, workersCount, processedWorkerData, runningWorkers, ProcessWorkerResults, i, startIndex, splicedWorkers;
+            var _this = this;
             return __generator(this, function (_d) {
                 switch (_d.label) {
-                    case 0: return [4 /*yield*/, this.GetDepotData()];
+                    case 0:
+                        _d.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.GetDepotData()];
                     case 1:
                         data = _d.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        error_1 = _d.sent();
+                        reject(error_1);
+                        return [3 /*break*/, 3];
+                    case 3:
+                        workerData = new Array();
                         if (data.result == "SUCCESS") {
                             for (_i = 0, _a = data.groups; _i < _a.length; _i++) {
                                 group = _a[_i];
@@ -75,16 +89,40 @@ var CreatorsDepotClient = /** @class */ (function () {
                                     fileData = _c[_b];
                                     filePath = fileData[0];
                                     hash = fileData[1];
-                                    if (this.DoesFileNeedUpdate(path_1.default.join(dir, filePath), hash)) {
-                                        this.filesToUpdate.push(filePath);
-                                    }
+                                    workerData.push(new ChecksumWorkerData_1.default(path_1.default.join(dir, filePath), hash));
+                                    //if(this.DoesFileNeedUpdate(path.join(dir, filePath), hash)){
+                                    //    this.filesToUpdate.push(filePath);
+                                    //}
                                 }
                             }
                         }
-                        return [2 /*return*/, this.filesToUpdate.length > 0];
+                        workersCount = Math.ceil(workerData.length / 4);
+                        processedWorkerData = new Array();
+                        runningWorkers = 0;
+                        ProcessWorkerResults = function () {
+                            for (var _i = 0, processedWorkerData_1 = processedWorkerData; _i < processedWorkerData_1.length; _i++) {
+                                var processedData = processedWorkerData_1[_i];
+                                if (!processedData.GetIsMatch()) {
+                                    _this.filesToUpdate.push(processedData.filePath);
+                                }
+                            }
+                            resolve(_this.filesToUpdate.length > 0);
+                        };
+                        for (i = 0; i < workersCount; i++) {
+                            startIndex = workersCount * i;
+                            splicedWorkers = workerData.splice(startIndex, startIndex + workersCount);
+                            runningWorkers++;
+                            this.RunNewChecksumWorker(splicedWorkers).then(function (result) {
+                                processedWorkerData.push(result);
+                                if (runningWorkers < 1) {
+                                    ProcessWorkerResults();
+                                }
+                            }).catch(reject);
+                        }
+                        return [2 /*return*/];
                 }
             });
-        });
+        }); });
     };
     CreatorsDepotClient.prototype.DoesFileNeedUpdate = function (filePath, md5Hash) {
         if (fs_1.default.existsSync(filePath)) {
@@ -108,6 +146,7 @@ var CreatorsDepotClient = /** @class */ (function () {
                             var req = https_1.default.get(_this.allContentURL, options, function (res) {
                                 if (res.statusCode !== 200) {
                                     var error = "Request failed, response code was: " + res.statusCode;
+                                    reject(error);
                                 }
                                 else {
                                     var data = [], dataLen = 0;
@@ -254,7 +293,18 @@ var CreatorsDepotClient = /** @class */ (function () {
     CreatorsDepotClient.prototype.WriteFile = function (path, data) {
         fs_1.default.writeFileSync(path, data);
     };
+    CreatorsDepotClient.prototype.RunNewChecksumWorker = function (checksumWorkerData) {
+        return new Promise(function (resolve, reject) {
+            var worker = new worker_threads_1.Worker('./checksum_worker.js', { workerData: checksumWorkerData });
+            worker.on('message', resolve);
+            worker.on('error', reject);
+            worker.on('exit', function (code) {
+                if (code !== 0)
+                    reject(new Error("Worker stopped with exit code " + code));
+            });
+        });
+    };
     return CreatorsDepotClient;
 }());
-exports.default = CreatorsDepotClient;
+exports.CreatorsDepotClient = CreatorsDepotClient;
 //# sourceMappingURL=creators_depot_client.js.map

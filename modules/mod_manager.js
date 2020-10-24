@@ -12,7 +12,7 @@ const filemanager = require("./file_manager");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
-const CreatorsDepotClient = require("./depot/creators_depot_client.js");
+const {CreatorsDepotClient} = require("./depot/creators_depot_client");
 
 var functionMap = new Map();
 
@@ -103,7 +103,7 @@ ChangeCurrentMod(name){
             this.depotClient = new CreatorsDepotClient(this.GetRealTF2Path());
             this.depotClient.CheckForUpdates().then((needsUpdate) => {
                 resolve(needsUpdate ? "Update" : "Installed");
-            });
+            }).catch(reject);
         }
         else{
             //We do not have a version for this mod. Method to use is install.

@@ -5,6 +5,8 @@ import path from "path";
 const ProgressBar = require("electron-progressbar");
 const strf = require('string-format');
 const isDev = require("electron-is-dev");
+import { Worker } from 'worker_threads';
+import ChecksumWorkerData from "./ChecksumWorkerData";
 
 //Checks for updates of local files based on their md5 hash.
 class CreatorsDepotClient {
@@ -22,27 +24,63 @@ class CreatorsDepotClient {
         this.modPath = modpath;
     }
 
-    async CheckForUpdates() : Promise<boolean> {
-        var data = await this.GetDepotData();
+    public CheckForUpdates() : Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            var data : any;
+            try{
+                data = await this.GetDepotData();
+            }
+            catch(error){
+                reject(error);
+            }
+            var workerData = new Array<ChecksumWorkerData>();
 
-        if(data.result == "SUCCESS"){
-            for(var group of data.groups){
-                var dir = group.directory.local;
-                dir = dir.replace("Path_Mod/", "");
-                dir = path.join(this.modPath, dir);
+            if(data.result == "SUCCESS"){
+                for(var group of data.groups){
+                    var dir = group.directory.local;
+                    dir = dir.replace("Path_Mod/", "");
+                    dir = path.join(this.modPath, dir);
 
-                for(var fileData of group.files){
-                    let filePath = fileData[0];
-                    let hash = fileData[1];
+                    for(var fileData of group.files){
+                        let filePath = fileData[0];
+                        let hash = fileData[1];
 
-                    if(this.DoesFileNeedUpdate(path.join(dir, filePath), hash)){
-                        this.filesToUpdate.push(filePath);
+                        workerData.push(new ChecksumWorkerData(path.join(dir, filePath), hash));
+
+                        //if(this.DoesFileNeedUpdate(path.join(dir, filePath), hash)){
+                        //    this.filesToUpdate.push(filePath);
+                        //}
                     }
                 }
             }
-        }
 
-        return this.filesToUpdate.length > 0;
+            var workersCount = Math.ceil(workerData.length / 4);
+            var processedWorkerData = new Array<ChecksumWorkerData>();
+            var runningWorkers = 0;
+
+            const ProcessWorkerResults = () => {
+                for(var processedData of processedWorkerData){
+                    if(!processedData.GetIsMatch()){
+                        this.filesToUpdate.push(processedData.filePath);
+                    }
+                }
+
+                resolve(this.filesToUpdate.length > 0);
+            };
+
+            for(var i = 0; i < workersCount; i++){
+                let startIndex = workersCount * i;
+                let splicedWorkers = workerData.splice(startIndex, startIndex + workersCount);
+                runningWorkers++;
+                this.RunNewChecksumWorker(splicedWorkers).then(
+                (result : any) => {
+                    processedWorkerData.push(result);
+                    if(runningWorkers < 1){
+                        ProcessWorkerResults();
+                    }
+                }).catch(reject);
+            }
+        });
     }
 
     private DoesFileNeedUpdate(filePath : string, md5Hash : string) : boolean {
@@ -67,6 +105,7 @@ class CreatorsDepotClient {
                 var req = https.get(this.allContentURL, options, function (res : any) {
                     if (res.statusCode !== 200) {
                         let error = `Request failed, response code was: ${res.statusCode}`;
+                        reject(error);
                     }
                     else {  
                         var data: any[] = [], dataLen = 0;
@@ -220,6 +259,19 @@ class CreatorsDepotClient {
     private WriteFile(path : string, data : Buffer){
         fs.writeFileSync(path, data);
     }
+
+    private RunNewChecksumWorker(checksumWorkerData : ChecksumWorkerData[]) {
+        return new Promise((resolve, reject) => {
+          const worker = new Worker('./checksum_worker.js', { workerData: checksumWorkerData });
+          worker.on('message', resolve);
+          worker.on('error', reject);
+          worker.on('exit', (code) => {
+            if (code !== 0)
+              reject(new Error(`Worker stopped with exit code ${code}`));
+          })
+        })
+    }
+
 }
 
-export default CreatorsDepotClient;
+export {CreatorsDepotClient};

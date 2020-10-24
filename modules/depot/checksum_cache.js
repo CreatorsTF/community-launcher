@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = __importDefault(require("path"));
-var utilities_1 = __importDefault(require("../utilities"));
+var utilities_1 = require("../utilities");
 var ChecksumCache = /** @class */ (function () {
     function ChecksumCache(name) {
         this.name = name;
-        this.cachePath = path_1.default.join(utilities_1.default.GetDataFolder(), "depot_checksum_cache");
+        this.cachePath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), "depot_checksum_cache");
     }
     ChecksumCache.prototype.GetFileChecksum = function (filePath) {
         return "";

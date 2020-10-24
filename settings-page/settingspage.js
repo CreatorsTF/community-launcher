@@ -1,6 +1,7 @@
 const { BrowserWindow, ipcMain, shell } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
+const Utilities = require("../modules/utilities");
 
 var settingsWindow;
 var waitingForSettings = true;
