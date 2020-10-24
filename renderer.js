@@ -152,6 +152,8 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             removeButton.style.display = "none";
             break;
     }
+
+    window.ipcRenderer.send("GetCurrentModVersion", "");
 });
 
 window.ipcRenderer.on("FakeClickMod", (event, moddata) => {
