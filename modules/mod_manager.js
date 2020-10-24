@@ -533,8 +533,8 @@ InstallFiles(files){
         }).catch(reject);
     };
 
-    //Call to process the first entry
-    entryProcess();
+        //Call to process the first entry
+        entryProcess();
     });
 },
 
@@ -648,94 +648,95 @@ function DownloadFiles_UI(urls){
 //Get all the files that exist in this zip file object and create them in the target directory.
 //Also supports multiple zips to install at once.
 function WriteZIPsToDirectory(targetPath, zips, currentModData){
-    var inProgress = 0;
-    var written = 0;
-    var currentZip;
-    var currentIndex = 0;
-    var multipleZips = false;
-
-    //Make JSZip object from each of the zips given
-    let zipConvertsInProgress = 0;
-
-    for(let i = 0; i < zips.length; i++){
-        zipConvertsInProgress++;
-        let index = i;
-        JSZip.loadAsync(zips[index].buffer).then((jszip) => {
-            zips[index] = jszip;
-            zipConvertsInProgress--;
-        });
-    }
-
-    //Load file list object
-    let files_object = filemanager.GetFileListSync(currentModData.name);
-
-    var progressBar = new ProgressBar({
-        text: 'Extracting data',
-        detail: 'Starting data extraction...',
-        browserWindow: {
-            webPreferences: {
-                nodeIntegration: true
-            },
-            parent: global.mainWindow,
-            modal: true,
-            title: "Extracting files...",
-            backgroundColor: "#2b2826"
-        },
-        style: {
-            text: loadingTextStyle,
-            detail: loadingTextStyle,
-            value: loadingTextStyle
-        }
-    });
-      
-    progressBar
-    .on('completed', function() {
-        progressBar.detail = 'Extraction completed. Exiting...';
-    })
-    .on('aborted', function() {
-    });
-
-    if(!fs.existsSync(targetPath)){
-        fs.mkdirSync(targetPath);
-    }
-
-    const Write = (name, d) => {
-        let fullFilePath = path.join(targetPath, name);
-        fs.writeFile(fullFilePath, d, (err) => {
-            if (err) throw err;
-            written++;
-
-            progressBar.detail = `Wrote ${name}. Total Files Written: ${written}.`;
-
-            //Add file that we wrote to the file list
-            if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
-
-            global.log.log(`ZIP extract for${name} was successful.`);
-            inProgress--;
-        });
-    };
-
-    const HandleFile = (relativePath, file) => {
-        inProgress++;
-        if(file.dir){
-            let directory = path.join(targetPath, file.name);
-
-            if(!fs.existsSync(directory)){
-                fs.mkdirSync(directory, {recursive: true});
-                global.log.log("Made the directory: " + directory);
-            }
-            inProgress--;
-        }
-        else{
-            currentZip.file(file.name).async("uint8array").then((d) => { 
-                Write(file.name, d);
-            }).catch((err) => {
-                global.log.log(err);
-            });
-        }
-    };
-
     return new Promise((resolve, reject) => {
+        var inProgress = 0;
+        var written = 0;
+        var currentZip;
+        var currentIndex = 0;
+        var multipleZips = false;
+
+        //Load file list object
+        let files_object = filemanager.GetFileListSync(currentModData.name);
+
+        var progressBar = new ProgressBar({
+            text: 'Extracting data',
+            detail: 'Starting data extraction...',
+            browserWindow: {
+                webPreferences: {
+                    nodeIntegration: true
+                },
+                parent: global.mainWindow,
+                modal: true,
+                title: "Extracting files...",
+                backgroundColor: "#2b2826"
+            },
+            style: {
+                text: loadingTextStyle,
+                detail: loadingTextStyle,
+                value: loadingTextStyle
+            }
+        });
+
+        //Make JSZip object from each of the zips given
+        let zipConvertsInProgress = 0;
+
+        for(let i = 0; i < zips.length; i++){
+            zipConvertsInProgress++;
+            let index = i;
+            JSZip.loadAsync(zips[index].buffer).then((jszip) => {
+                zips[index] = jszip;
+                zipConvertsInProgress--;
+            }).catch(reject);
+        }
+
+        if(!fs.existsSync(targetPath)){
+            fs.mkdirSync(targetPath);
+        }
+
+        const Write = (name, d) => {
+            let fullFilePath = path.join(targetPath, name);
+            fs.writeFile(fullFilePath, d, (err) => {
+                if (err) throw err;
+                written++;
+
+                progressBar.detail = `Wrote ${name}. Total Files Written: ${written}.`;
+
+                //Add file that we wrote to the file list
+                if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
+
+                global.log.log(`ZIP extract for "${name}" was successful.`);
+                inProgress--;
+            });
+        };
+
+        const HandleFile = (relativePath, file) => {
+            inProgress++;
+            if(file.dir){
+                let directory = path.join(targetPath, file.name);
+
+                if(!fs.existsSync(directory)){
+                    fs.mkdirSync(directory, {recursive: true});
+                    global.log.log("Made the directory: " + directory);
+                }
+                inProgress--;
+            }
+            else {
+                currentZip.file(file.name).async("uint8array").then((d) => { 
+                    Write(file.name, d);
+                }).catch((err) => {
+                    global.log.log(err);
+                    reject(err);
+                });
+            }
+        };
+
+        progressBar
+        .on('completed', function() {
+            progressBar.detail = 'Extraction completed. Exiting...';
+        })
+        .on('aborted', function() {
+            reject("Extraction aborted by user");
+        });
 
         const CheckZipCreateDone = () => {
             if(zipConvertsInProgress <= 0){
@@ -805,41 +806,41 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
     var written = 0;
     var inProgress = 0;
 
-    //Load file list object
-    let files_object = filemanager.GetFileListSync(currentModData.name);
-
-    if(!fs.existsSync(targetPath)){
-        fs.mkdirSync(targetPath);
-    }
-
-    var progressBar = new ProgressBar({
-        text: 'Extracting data',
-        detail: 'Starting data extraction...',
-        browserWindow: {
-            webPreferences: {
-                nodeIntegration: true
-            },
-            parent: global.mainWindow,
-            modal: true,
-            title: "Writing files...",
-            backgroundColor: "#2b2826"
-        },
-        style: {
-            text: loadingTextStyle,
-            detail: loadingTextStyle,
-            value: loadingTextStyle
-        }
-    });
-      
-    progressBar
-    .on('completed', function() {
-        progressBar.detail = 'Writing completed. Exiting...';
-    })
-    .on('aborted', function() {
-    });
-
-
     return new Promise((resolve, reject) => {
+        //Load file list object
+        let files_object = filemanager.GetFileListSync(currentModData.name);
+
+        if(!fs.existsSync(targetPath)){
+            fs.mkdirSync(targetPath);
+        }
+
+        var progressBar = new ProgressBar({
+            text: 'Extracting data',
+            detail: 'Starting data extraction...',
+            browserWindow: {
+                webPreferences: {
+                    nodeIntegration: true
+                },
+                parent: global.mainWindow,
+                modal: true,
+                title: "Writing files...",
+                backgroundColor: "#2b2826"
+            },
+            style: {
+                text: loadingTextStyle,
+                detail: loadingTextStyle,
+                value: loadingTextStyle
+            }
+        });
+        
+        progressBar
+        .on('completed', function() {
+            progressBar.detail = 'Writing completed. Exiting...';
+        })
+        .on('aborted', function() {
+            reject("User aborted file write!");
+        });
+
         global.log.log("Waiting for File writing to complete...")
         
         files.forEach((file) => {
