@@ -4,6 +4,9 @@ global.process = require("process");
 global.os = require("os");
 global.https = require("https");
 
+const isDev = require("electron-is-dev");
+global.isDev = isDev;
+
 const { app, BrowserWindow, ipcMain, shell, dialog, screen } = require("electron");
 const config = require("./modules/config");
 const settingsPage = require("./settings-page/settingspage");
@@ -11,7 +14,6 @@ const patchnotesPage = require("./patchnotes-page/patchnotespage");
 const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
-const isDev = require('electron-is-dev');
 const Utilities = require("./modules/utilities");
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
@@ -30,12 +32,14 @@ var mainWindow;
 
 function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    global.screenWidth = width;
+    global.screenHeight = height;
     try {
         mainWindow = new BrowserWindow({
             minWidth: 960,
             minHeight: 540,
-            width: width-200,
-            height: height-150,
+            width: screenWidth-200,
+            height: screenHeight-150,
             webPreferences: {
                 preload: path.join(__dirname, "preload.js"),
                 nodeIntegration: false
@@ -46,7 +50,7 @@ function createWindow() {
             autoHideMenuBar: true,
             darkTheme: true,
             backgroundColor: "#2B2826"
-        })
+        });
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
         global.app = app;
@@ -112,19 +116,18 @@ function logDeviceInfo() {
     log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2)} gb]`);
 }
 
-function updateCheck() {
+function autoUpdateCheckAndSettings() {
     autoUpdater.checkForUpdatesAndNotify();
-    log.info("Currently checking for updates.");
+    autoUpdater.autoDownload = false;
+    log.info("Checking for updates and setting its auto download to DISABLED.");
 }
 
 app.on("ready", () => {
     createWindow();
-    updateCheck();
     getCurrentVersion();
+    autoUpdateCheckAndSettings();
     logDeviceInfo();
     log.info("Launcher was opened/finished initialization.");
-    autoUpdater.autoDownload = false;
-    log.info("Auto download for updates is DISABLED.");
 });
 
 app.on("activate", function() {
@@ -188,6 +191,12 @@ ipcMain.on("ServerListWindow", async (event, someArgument) => {
     serverlistPage.OpenWindow();
 });
 
+// ipcMain.on("app_version", (event) => {
+//     event.sender.send("app_version", {
+//         version: app.getVersion()
+//     });
+// });
+
 ipcMain.on("GetConfig", async (event, someArgument) => {
     event.reply("GetConfig-Reply", global.config);
 });
@@ -197,7 +206,7 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
         event.reply("InstallButtonName-Reply", result);
     }).catch((error) => {
         event.reply("InstallButtonName-Reply", "Internal Error");
-            Utilities.ErrorDialog(isDev ? error.toString() : `Failed to check if mod "${arg}" has updates. Its Website may be down.\nTry again later, if the error persists please report it on our Discord.`, "Mod Update Check Error");
+            Utilities.ErrorDialog(isDev ? error.toString() : `Failed to check if mod "${arg}" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.`, "Mod Update Check Error");
     });
 });
 
@@ -205,13 +214,9 @@ ipcMain.on("install-play-click", async(event, args) => {
     mod_manager.ModInstallPlayButtonClick();
 });
 
-ipcMain.on("Visit-Mod-Website", async(event, arg) => {
-    shell.openExternal(mod_manager.currentModData.website);
-});
-
 ipcMain.on("Visit-Mod-Social", async(event, arg) => {
     let socialLink = mod_manager.currentModData[arg];
-    if(socialLink != null && socialLink != ""){
+    if (socialLink != null && socialLink != "") {
         shell.openExternal(socialLink);
     }
 });
@@ -220,7 +225,9 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     let version;
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
-        if(version == null) version = "?";
+        if (version == null) {
+            version = "?";
+        }
     }
     catch {
         version = "?";
@@ -231,9 +238,9 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
 ipcMain.on("Remove-Mod", async(event, arg) => {
     if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
         dialog.showMessageBox(global.mainWindow, {
-            type: "question",
+            type: "warning",
             title: "Remove Mod",
-            message: `Would you like to uninstall the mod "${mod_manager.currentModData.name}"?`,
+            message: `Would you like to uninstall the mod ${mod_manager.currentModData.name}?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
         }).then((button) => {
@@ -244,7 +251,6 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
         });
     }
 });
-
 
 ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
     if(steamdir != ""){
@@ -259,3 +265,6 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
         Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
     }
 });
+
+// Run games: steam://run/[ID]
+// Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]

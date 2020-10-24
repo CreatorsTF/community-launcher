@@ -20,12 +20,12 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 850,
-        minHeight: 550,
-        width: 950,
-        height: 700
+        minWidth: 960,
+        minHeight: 600,
+        width: screenWidth-300,
+        height: screenHeight-100
     });
-    serverlistWindow.removeMenu();
+    if (!isDev) serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
     serverlistWindow.once("ready-to-show", () => {
         serverlistWindow.show();

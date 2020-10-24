@@ -4,6 +4,76 @@ html, body {
     padding: 0;
 }
 
+@keyframes fadeInSuperFancyTransition {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: 0.2s;
+}
+
+button:active {
+    background-color: #222;
+}
+
+.button {
+    padding: 5px;
+    background: rgba(50,50,50,0.75);
+    border-color: #B35215;
+    border-style: solid;
+    border-width: thin;
+    color: #E6E6E6;
+    font-size: 18px;
+    font-family: Roboto Light, Arial, sans-serif;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    z-index: 0;
+}
+
+.button::before {
+    content: "";
+    background: #B35215;
+    position: absolute;
+    width: 0%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: -6px;
+    transition: 0.2s;
+    z-index: -1;
+    transform: skewX(-20deg);
+}
+
+.button:hover::before {
+    width: 142%;
+    z-index: -1;
+}
+
+.button:hover {
+    color: #FFF;
+}
+
+.button:active {
+    background-color: #222;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.center-noflex {
+    align-items: center;
+    justify-content: center;
+}
+
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #222; }
 ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; }
