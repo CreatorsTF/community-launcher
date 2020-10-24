@@ -1,4 +1,4 @@
-html, body { height: 97%; }
+html, body { height: 100%; }
 
 body {
     background-color: #222;
@@ -15,11 +15,6 @@ body {
     animation-timing-function: ease-in;
     animation-iteration-count: 1;
     animation-duration: 0.25s;
-}
-
-@keyframes fadeInSuperFancyTransition {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
 }
 
 #modname {
@@ -67,15 +62,16 @@ h3 {
 p {
     font-size: 16px;
 }
+
 ul {
     list-style-image: url(../images/thatarrowfromthetfblog.svg);
-    font-size: 21px;
+    font-size: 20px;
     font-family: Roboto Thin, Arial, sans-serif;
 }
 
 code {
-    background-color: rgba(25,25,25,0.9);
-    padding: 0px 5px;
+    background-color: rgba(25,25,25,0.75);
+    padding: 3px 5px;
     border-radius: 5px;
     font-family: Roboto Thin, Arial, sans-serif;
     font-size: 19px;
