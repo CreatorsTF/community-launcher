@@ -2,6 +2,8 @@
 const https = require("https");
 const { ModInstallSource } = require("./mod_source_base.js");
 
+const cloudFlareMessage = "\nFailed to get this mods latest data due to Cloudflare rate limiting. \nPlease wait till normal web service resumes or report on our Discord.";
+
 module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
     url = "";
     fileType = "ARCHIVE";
@@ -51,19 +53,30 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
                 console.log(`statusCode: ${res.statusCode}`);
 
                 res.on('data', d => {
-                    if(res.statusCode != 200){
-                        reject(`Failed accessing ${this.url}: ` + res.statusCode);
+                    if(res.statusCode == 503){
+                        reject(cloudFlareMessage);
                         return;
                     }
-                    
+
                     data.push(d);
                 });
 
                 res.on("end", function () {
                     try{
                         var buf = Buffer.concat(data);
-                        let parsed = JSON.parse(buf.toString());
-                        resolve(parsed);
+                        if(res.statusCode == 503){
+                            reject(cloudFlareMessage);
+                            return;
+                        }
+                        else if(res.statusCode != 200){
+                            reject(`Failed accessing ${this.url}: ${res.statusCode}.`);
+                            global.log.error(buf.toString());
+                            return;
+                        }
+                        else{
+                            let parsed = JSON.parse(buf.toString());
+                            resolve(parsed);
+                        }
                     }
                     catch (error){
                         //Json parsing failed soo reject.
