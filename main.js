@@ -105,13 +105,6 @@ function createWindow() {
     }
 }
 
-function getCurrentVersion() {
-    global.fs.readFile(path.join(__dirname, "package.json"), (err, package) => {
-        var version = JSON.parse(package).version;
-        log.info("Current launcher version: " + version);
-    });
-}
-
 function logDeviceInfo() {
     log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2)} gb]`);
 }
@@ -124,7 +117,11 @@ function autoUpdateCheckAndSettings() {
 
 app.on("ready", () => {
     createWindow();
-    getCurrentVersion();
+
+    var lVer = Utilities.GetCurrentVersion();
+    if(lVer != null) log.info("Current launcher version: " + lVer);
+    else log.error("Failed to get launcher version");
+
     autoUpdateCheckAndSettings();
     logDeviceInfo();
     log.info("Launcher was opened/finished initialization.");
