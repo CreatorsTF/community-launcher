@@ -1,3 +1,15 @@
+## Version 0.1.32 - (ALPHA)
+### 25/10/2020 - 14:35 (GMT)
+- Updated Electron, @mdi/font and marked to its latest versions (v10.1.5, v5.7.55 and v1.2.0 respectively).
+- Fixed the button to update the launcher to the newest version not showing in some cases (Hopefully this time it's fixed for real).
+- Mods now display their version on the top left corner of their pages.
+- Applied dynamic resizing to all windows.
+- Small style changes.
+- Settings page:
+ - Tweaked page a bit.
+ - Added "Copy to Clipboard" button to easier get the config contents.
+
+
 ## Version 0.1.31 - (ALPHA)
 ### 24/09/2020 - 20:49 (GMT)
 - Steam path can now be correctly located again on Linux.
