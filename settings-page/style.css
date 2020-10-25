@@ -41,6 +41,19 @@ body {
 
 }
 
+#launcherVersion {
+    background-color: #111;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    overflow: hidden;
+    color: #FFF;
+    font-size: 16px;
+    font-family: Roboto Thin, Arial, sans-serif;
+}
+
 h1, p { color: #222; }
 
 h1 {
@@ -104,7 +117,7 @@ input {
 }
 
 #reload-button {
-    padding: 5px 8px;
+    padding: 5px 10px;
 }
 
 #config-debug {

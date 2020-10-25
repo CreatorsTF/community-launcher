@@ -59,6 +59,7 @@ function OnClick_Mod(data) {
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
+    window.ipcRenderer.send("GetCurrentModVersion", "");
 }
 
 updateButton_Download.onclick = (downloadUpdate) => {
@@ -119,7 +120,7 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    version.innerText = arg;
+    version.innerText = "Mod version: " + arg;
 });
 
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
@@ -152,8 +153,6 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             removeButton.style.display = "none";
             break;
     }
-
-    window.ipcRenderer.send("GetCurrentModVersion", "");
 });
 
 window.ipcRenderer.on("FakeClickMod", (event, moddata) => {

@@ -115,13 +115,15 @@ function autoUpdateCheckAndSettings() {
     log.info("Checking for updates and setting its auto download to DISABLED.");
 }
 
+function getClientCurrentVersion() {
+    var lVer = Utilities.GetCurrentVersion();
+    if (lVer != null) log.info("Current launcher version: " + lVer);
+    else log.error("Failed to get launcher version");
+}
+
 app.on("ready", () => {
     createWindow();
-
-    var lVer = Utilities.GetCurrentVersion();
-    if(lVer != null) log.info("Current launcher version: " + lVer);
-    else log.error("Failed to get launcher version");
-
+    getClientCurrentVersion();
     autoUpdateCheckAndSettings();
     logDeviceInfo();
     log.info("Launcher was opened/finished initialization.");

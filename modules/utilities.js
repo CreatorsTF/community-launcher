@@ -17,7 +17,7 @@ module.exports = class Utilities {
     static currentLauncherVersion = null;
 
     static GetCurrentVersion() {
-        if(this.currentLauncherVersion == null){
+        if (this.currentLauncherVersion == null) {
             try {
                 let packageJson = global.fs.readFileSync(path.join(__dirname, "../package.json"));
                 this.currentLauncherVersion = JSON.parse(packageJson).version;

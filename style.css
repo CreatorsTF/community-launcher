@@ -351,15 +351,16 @@ body {
 }
 
 #version {
-    background-color: rgba(1, 1, 1, 0.5);
+    background-color: rgba(1, 1, 1, 0.55);
     color: ghostwhite;
     position: absolute;
     left: 0px;
     top: 0px;
-    padding: 6px;
-    font-size: 15px;
-    font-family: monospace;
-    border-radius: 3px;
+    padding: 5px;
+    font-size: 16px;
+    /* font-family: monospace; */
+    font-family: Roboto Thin, Arial, sans-serif;
+    border-radius: 5px;
     display: flex;
     align-items: center;
 }
