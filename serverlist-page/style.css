@@ -42,9 +42,14 @@ h1 {
     color: lightcoral;
     text-align: center;
     font-family: Roboto Black, Arial, sans-serif;
+    transition: 0.2s;
 }
 
-.error p i{
+.error p a:hover {
+    color: lightskyblue;
+}
+
+.error p i {
     font-size: 15px;
 }
 
