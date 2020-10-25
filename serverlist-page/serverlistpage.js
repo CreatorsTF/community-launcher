@@ -37,7 +37,7 @@ ipcMain.on("GetServerList", async (event, arg) => {
         event.reply("GetServerList-Reply", await GetServerList());
     }
     catch (error) {
-        event.reply("GetServerList-Reply", null);
+        event.reply("GetServerList-Reply", error.toString());
     }
 });
 
@@ -55,7 +55,7 @@ async function GetServerList() {
             console.log(`statusCode: ${res.statusCode}`);
                 res.on('data', d => {
                     if (res.statusCode != 200) {
-                        reject(`Failed to access ${apiEndpoint}: ` + res.statusCode);
+                        reject(res.statusCode);
                         return;
                     }
                     data.push(d);

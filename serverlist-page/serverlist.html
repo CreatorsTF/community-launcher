@@ -17,8 +17,18 @@
             <button id="refreshButton"><i class="mdi mdi-refresh-circle blue"></i></button>
         </div>
         <div id="server-container"></div>
-        <div id="loading">LOADING...</div>
-        <div id="failMessage"></div>
+        <div id="loading">...LOADING...</div>
+        <div id="failMessage" class="error">
+            <p>Failed to get servers.</p>
+            <p>Your internet may be down OR Creators.TF may be down.</p>
+            <p>Go to our Twitter (@CreatorsTF) for more info!</p>
+        </div>
+        <div id="cloudflare-error" class="error">
+            <p>The server window is currently unavaliable due to cloudflare.</p>
+            <p><a href="#" id="serverpagea">Please use the server page on our website.</a></p>
+            <br>
+            <p><i>If this error persists for over a few days please check on our Discord for more info.</i></p>
+        </div>
         <script src="../consolewarning.js"></script>
     </body>
 </html>

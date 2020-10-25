@@ -31,13 +31,21 @@ h1 {
     color: #EEE;
 }
 
-#failMessage {
+.error{
     padding-top: 20px;
     margin: 0 auto;
+    display: none;
+}
+
+.error p, .error p a{
     font-size: 20px;
-    color: red;
+    color: lightcoral;
     text-align: center;
     font-family: Roboto Black, Arial, sans-serif;
+}
+
+.error p i{
+    font-size: 15px;
 }
 
 #refreshHolder {

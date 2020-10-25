@@ -3,6 +3,7 @@ const { ipcRenderer, shell } = require("electron");
 const arrowDownHTML = ' <i class="mdi mdi-arrow-down-drop-circle"></i>';
 const arrowRightHTML = ' <i class="mdi mdi-arrow-right-drop-circle"></i>';
 const mapThumb = 'https://creators.tf/api/mapthumb?map=';
+const creatorsServerListPage = "https://creators.tf/servers";
 
 var container;
 var hasCreatedPageContent = false;
@@ -39,6 +40,10 @@ class ServerDOMData {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("serverpagea").addEventListener("click", (ev) => {
+        shell.openExternal(creatorsServerListPage);
+    });
+
     ipcRenderer.send("GetServerList", "");
     container = document.getElementById("server-container");
     refreshButton = document.getElementById("refreshButton");
@@ -111,8 +116,13 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             }
         }
     }
+    else if(serverListData == "503"){
+        loading.remove();
+        document.getElementById("cloudflare-error").style.display = "block";
+    }
     else {
-        document.getElementById("failMessage").innerText = "Failed to get servers.\n\nYour internet may be down\nOR\nCreators.TF may be down\n\nGo to our Twitter (@CreatorsTF) for more info!";
+        loading.remove();
+        document.getElementById("failMessage").style.display = "block";
     }
 });
 
