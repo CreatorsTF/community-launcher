@@ -111,8 +111,10 @@ function logDeviceInfo() {
 
 function autoUpdateCheckAndSettings() {
     autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.logger = log;
+    autoUpdater.logger.transports.file.level = "info";
     autoUpdater.autoDownload = false;
-    log.info("Checking for updates and setting its auto download to DISABLED.");
+    log.info("Checking for updates.");
 }
 
 function getClientCurrentVersion() {
