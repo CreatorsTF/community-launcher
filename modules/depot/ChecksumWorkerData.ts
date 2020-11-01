@@ -1,29 +1,22 @@
 class ChecksumWorkerData {
     public filePath : string;
-    public md5Hash : string;
+    public localMd5Hash : string;
+    public remoteMd5Hash : string;
+    public remotePath : string;
+    
+    public computed : boolean;
+    public ismatch : boolean;
+    public fileExisted : boolean;
 
-    private computed : boolean;
-    private ismatch : boolean;
-
-    constructor(fPath : string, md5 : string){
+    constructor(fPath : string, md5 : string, remotePath : string){
         this.filePath = fPath;
-        this.md5Hash = md5;
+        this.remoteMd5Hash = md5;
+        this.localMd5Hash = "";
         this.computed = false;
         this.ismatch = false;
-    }
-
-    public SetIsMatch(value : boolean){
-        this.ismatch = value;
-        this.computed = true;
-    }
-
-    public GetIsComputed() : boolean{
-        return this.computed;
-    }
-
-    public GetIsMatch() : boolean{
-        return this.ismatch;
+        this.fileExisted = false;
+        this.remotePath = remotePath;
     }
 }
 
-export default ChecksumWorkerData;
+export {ChecksumWorkerData};

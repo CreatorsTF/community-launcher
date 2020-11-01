@@ -5,10 +5,11 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "compileAndStart": "npx tsc && electron .",
     "buildwindows": "electron-builder build --win --x64 --ia32 --publish never",
     "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
     "deploy": "electron-builder build --win --x64 --ia32 --publish always",
-    "tsc": "npx tsc"
+    "compile": "npx tsc"
   },
   "keywords": [
     "TF2",

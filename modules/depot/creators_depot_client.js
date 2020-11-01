@@ -42,13 +42,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatorsDepotClient = void 0;
 var https_1 = __importDefault(require("https"));
 var fs_1 = __importDefault(require("fs"));
-var crypto_1 = __importDefault(require("crypto"));
 var path_1 = __importDefault(require("path"));
 var ProgressBar = require("electron-progressbar");
 var strf = require('string-format');
-var isDev = require("electron-is-dev");
 var worker_threads_1 = require("worker_threads");
-var ChecksumWorkerData_1 = __importDefault(require("./ChecksumWorkerData"));
+var ChecksumWorkerData_1 = require("./ChecksumWorkerData");
 //Checks for updates of local files based on their md5 hash.
 var CreatorsDepotClient = /** @class */ (function () {
     function CreatorsDepotClient(modpath) {
@@ -58,12 +56,13 @@ var CreatorsDepotClient = /** @class */ (function () {
         this.MaxConcurrentDownloads = 3;
         this.updateActive = false;
         this.currentDownloads = 0;
+        this.workerThreadCount = 6;
         this.modPath = modpath;
     }
     CreatorsDepotClient.prototype.CheckForUpdates = function () {
         var _this = this;
         return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-            var data, error_1, workerData, _i, _a, group, dir, _b, _c, fileData, filePath, hash, workersCount, processedWorkerData, runningWorkers, ProcessWorkerResults, i, startIndex, splicedWorkers;
+            var data, error_1, workerData, _i, _a, group, dir, _b, _c, fileData, filePath, hash, remotePath, dataPerWorker, processedWorkerData, runningWorkers, ProcessWorkerResults, _loop_1, this_1, i;
             var _this = this;
             return __generator(this, function (_d) {
                 switch (_d.label) {
@@ -83,54 +82,57 @@ var CreatorsDepotClient = /** @class */ (function () {
                             for (_i = 0, _a = data.groups; _i < _a.length; _i++) {
                                 group = _a[_i];
                                 dir = group.directory.local;
-                                dir = dir.replace("Path_Mod/", "");
-                                dir = path_1.default.join(this.modPath, dir);
+                                dir = dir.replace("Path_Mod", this.modPath);
+                                dir = path_1.default.normalize(dir);
                                 for (_b = 0, _c = group.files; _b < _c.length; _b++) {
                                     fileData = _c[_b];
                                     filePath = fileData[0];
                                     hash = fileData[1];
-                                    workerData.push(new ChecksumWorkerData_1.default(path_1.default.join(dir, filePath), hash));
-                                    //if(this.DoesFileNeedUpdate(path.join(dir, filePath), hash)){
-                                    //    this.filesToUpdate.push(filePath);
-                                    //}
+                                    remotePath = path_1.default.join(group.directory.remote, filePath.replace("\\", "/"));
+                                    workerData.push(new ChecksumWorkerData_1.ChecksumWorkerData(path_1.default.join(dir, filePath), hash, remotePath));
                                 }
                             }
                         }
-                        workersCount = Math.ceil(workerData.length / 4);
+                        dataPerWorker = Math.ceil(workerData.length / this.workerThreadCount);
                         processedWorkerData = new Array();
                         runningWorkers = 0;
-                        ProcessWorkerResults = function () {
+                        ProcessWorkerResults = function (filesToUpdate) {
                             for (var _i = 0, processedWorkerData_1 = processedWorkerData; _i < processedWorkerData_1.length; _i++) {
                                 var processedData = processedWorkerData_1[_i];
-                                if (!processedData.GetIsMatch()) {
-                                    _this.filesToUpdate.push(processedData.filePath);
+                                if (!processedData.ismatch) {
+                                    filesToUpdate.push(processedData);
                                 }
                             }
-                            resolve(_this.filesToUpdate.length > 0);
+                            resolve(filesToUpdate.length > 0);
                         };
-                        for (i = 0; i < workersCount; i++) {
-                            startIndex = workersCount * i;
-                            splicedWorkers = workerData.splice(startIndex, startIndex + workersCount);
+                        _loop_1 = function () {
+                            var startIndex = dataPerWorker * i;
+                            var endIndex = dataPerWorker * (i + 1);
+                            var ourIndex = i;
+                            var splicedWorkers = workerData.slice(startIndex, endIndex);
                             runningWorkers++;
-                            this.RunNewChecksumWorker(splicedWorkers).then(function (result) {
-                                processedWorkerData.push(result);
+                            //@ts-ignore
+                            global.log.log("Starting Checksumworker no:" + i);
+                            this_1.RunNewChecksumWorker(splicedWorkers).then(function (result) {
+                                runningWorkers--;
+                                //@ts-ignore
+                                global.log.log("Worker " + ourIndex + " finished! " + runningWorkers + " remain.");
+                                processedWorkerData = processedWorkerData.concat(result.result);
                                 if (runningWorkers < 1) {
-                                    ProcessWorkerResults();
+                                    //@ts-ignore
+                                    global.log.log("Workers done. Processing results.");
+                                    ProcessWorkerResults(_this.filesToUpdate);
                                 }
                             }).catch(reject);
+                        };
+                        this_1 = this;
+                        for (i = 0; i < this.workerThreadCount; i++) {
+                            _loop_1();
                         }
                         return [2 /*return*/];
                 }
             });
         }); });
-    };
-    CreatorsDepotClient.prototype.DoesFileNeedUpdate = function (filePath, md5Hash) {
-        if (fs_1.default.existsSync(filePath)) {
-            var file = fs_1.default.readFileSync(filePath);
-            var hash = crypto_1.default.createHash("md5").update(file).digest("hex");
-            return (hash != md5Hash);
-        }
-        return true;
     };
     CreatorsDepotClient.prototype.GetDepotData = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -208,20 +210,30 @@ var CreatorsDepotClient = /** @class */ (function () {
                                 reject("Download Cancelled by User!");
                             });
                             _this.updateActive = true;
-                            //We need to download files and write them to disk as soon as we get them to not hold them in memory.
-                            for (var _i = 0, _a = _this.filesToUpdate; _i < _a.length; _i++) {
-                                var url = _a[_i];
-                                //Start downloads equal to files to update length or max amount, whichever is smaller.
-                                for (var i = 0; i < Math.min(_this.filesToUpdate.length, _this.MaxConcurrentDownloads); i++) {
-                                    //Download the file then write to disk strait away.
-                                    _this.UpdateNextFile();
+                            var currentIndex = 0;
+                            //Start downloads equal to files to update length or max amount, whichever is smaller.
+                            for (var i = 0; i < Math.min(_this.filesToUpdate.length, _this.MaxConcurrentDownloads); i++) {
+                                //Download the file then write to disk strait away.
+                                try {
+                                    _this.UpdateNextFile(currentIndex, progressBar);
+                                    currentIndex++;
+                                }
+                                catch (error) {
+                                    reject(error);
                                 }
                             }
-                            if (_this.filesToUpdate.length > 0) {
+                            if (currentIndex < _this.filesToUpdate.length) {
                                 var checkFunction = function () {
                                     if (_this.currentDownloads > 0 && _this.updateActive) {
-                                        if (_this.currentDownloads < _this.MaxConcurrentDownloads) {
-                                            _this.UpdateNextFile();
+                                        //Can we start updating a new file?
+                                        if (_this.currentDownloads < _this.MaxConcurrentDownloads && currentIndex < _this.filesToUpdate.length) {
+                                            try {
+                                                _this.UpdateNextFile(currentIndex, progressBar);
+                                                currentIndex++;
+                                            }
+                                            catch (error) {
+                                                reject(error);
+                                            }
                                         }
                                         //Recheck this in 100ms.
                                         setTimeout(checkFunction, 100);
@@ -231,6 +243,7 @@ var CreatorsDepotClient = /** @class */ (function () {
                                         resolve();
                                     }
                                 };
+                                checkFunction();
                             }
                         }
                     })];
@@ -238,31 +251,24 @@ var CreatorsDepotClient = /** @class */ (function () {
         });
     };
     //Start a download and write the first file from the queue. 
-    CreatorsDepotClient.prototype.UpdateNextFile = function () {
+    CreatorsDepotClient.prototype.UpdateNextFile = function (index, progressBar) {
         var _this = this;
-        try {
-            var fileToUpdate = this.filesToUpdate[0];
-            this.filesToUpdate.splice(0);
-            this.DownloadFile(strf.format(this.downloadRequestURL, fileToUpdate)).then(function (fileBuffer) {
-                _this.WriteFile(fileToUpdate, fileBuffer);
-                _this.currentDownloads--;
-            });
-            this.currentDownloads++;
-        }
-        catch (error) {
-            this.updateActive = false;
-            //We want to rethrow this error in development.
-            //@ts-ignore
-            if (isDev)
-                global.log.error("Tried to update file but an error occured");
-            else
-                throw error;
-        }
+        var fileToUpdate = this.filesToUpdate[index];
+        //Format request url, then fix the slashes used
+        var fileReqURL = strf(this.downloadRequestURL, fileToUpdate.remotePath);
+        fileReqURL = fileReqURL.replace(/\\/g, "/");
+        this.DownloadFile(fileReqURL, progressBar).then(function (fileBuffer) {
+            _this.WriteFile(fileToUpdate.filePath, fileBuffer);
+            _this.currentDownloads--;
+        }).catch(function (e) { throw new Error(e); });
+        this.currentDownloads++;
     };
-    CreatorsDepotClient.prototype.DownloadFile = function (url) {
+    CreatorsDepotClient.prototype.DownloadFile = function (url, progressBar) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
+                        //@ts-ignore
+                        global.log.log("Starting download for " + url);
                         var options = {
                             headers: {
                                 'User-Agent': 'creators-tf-launcher'
@@ -271,6 +277,7 @@ var CreatorsDepotClient = /** @class */ (function () {
                         var req = https_1.default.get(url, options, function (res) {
                             if (res.statusCode !== 200) {
                                 var error = "Request failed, response code was: " + res.statusCode;
+                                reject(error);
                             }
                             else {
                                 var data = [];
@@ -279,6 +286,8 @@ var CreatorsDepotClient = /** @class */ (function () {
                                 });
                                 res.on("end", function () {
                                     var buf = Buffer.concat(data);
+                                    progressBar.detail = "Downloaded " + url;
+                                    progressBar.value++;
                                     resolve(buf);
                                 });
                             }
@@ -291,13 +300,17 @@ var CreatorsDepotClient = /** @class */ (function () {
         });
     };
     CreatorsDepotClient.prototype.WriteFile = function (path, data) {
+        //@ts-ignore
+        global.log.log("Writing file \"" + path + ".\"");
         fs_1.default.writeFileSync(path, data);
     };
     CreatorsDepotClient.prototype.RunNewChecksumWorker = function (checksumWorkerData) {
         return new Promise(function (resolve, reject) {
-            var worker = new worker_threads_1.Worker('./checksum_worker.js', { workerData: checksumWorkerData });
+            var worker = new worker_threads_1.Worker(path_1.default.join(__dirname, 'checksum_worker.js'), { workerData: checksumWorkerData });
             worker.on('message', resolve);
-            worker.on('error', reject);
+            worker.on('error', function (e) {
+                reject(e);
+            });
             worker.on('exit', function (code) {
                 if (code !== 0)
                     reject(new Error("Worker stopped with exit code " + code));

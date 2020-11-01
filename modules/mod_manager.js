@@ -73,6 +73,7 @@ ChangeCurrentMod(name){
         this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
         this.currentModState = State.NOT_INSTALLED;
         this.currentModVersionRemote = 0;
+        this.depotClient = null;
 
         var isDepot = false;
 
@@ -154,60 +155,69 @@ ChangeCurrentMod(name){
 ModInstallPlayButtonClick() {
     global.log.log("Install button was clicked! Reacting based on state: " + this.currentModState)
     if(this.currentModData != null){
-        switch(this.currentModState){
-            case State.NOT_INSTALLED:
-                //We should try to install this mod!
-                //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
-                global.log.log("Will validate TF2 path before starting download...");
-                if(!ValidateTF2Dir()){
-                    this.FakeClickMod();
-                    global.log.error("Ending Install attempt now as validation failed!");
-                    return;
-                } 
 
-                global.log.log("TF2 Path was validated.");
-                    
-                //Perform mod download and install.
-                this.source_manager.GetFileURL().then((_url) => {
-                    global.log.log("Successfully got mod install file urls. Will proceed to try to download them.");
-                    this.ModInstall(_url).then(() => {
-                        this.SetupNewModAsInstalled();
+        if(this.depotClient != null){
+            this.depotClient.UpdateFiles(mainWindow, global.app, loadingTextStyle).then(() => {
+                this.currentModVersionRemote = 1;
+                SetupNewModAsInstalled();
+            });
+        }
+        else{
+            switch(this.currentModState){
+                case State.NOT_INSTALLED:
+                    //We should try to install this mod!
+                    //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
+                    global.log.log("Will validate TF2 path before starting download...");
+                    if(!ValidateTF2Dir()){
+                        this.FakeClickMod();
+                        global.log.error("Ending Install attempt now as validation failed!");
+                        return;
+                    }
+
+                    global.log.log("TF2 Path was validated.");
+                        
+                    //Perform mod download and install.
+                    this.source_manager.GetFileURL().then((_url) => {
+                        global.log.log("Successfully got mod install file urls. Will proceed to try to download them.");
+                        this.ModInstall(_url).then(() => {
+                            this.SetupNewModAsInstalled();
+                        });
+                    }).catch((e) => 
+                    {
+                        this.FakeClickMod();
+                        ErrorDialog(e, "Mod Begin Install Error");
                     });
-                }).catch((e) => 
-                {
-                    this.FakeClickMod();
-                    ErrorDialog(e, "Mod Begin Install Error");
-                });
-                break;
+                    break;
 
-            case State.UPDATE:
-                //We should try to update this mod!
+                case State.UPDATE:
+                    //We should try to update this mod!
 
-                //Setup the message to include the version if we have the data.
-                //Really we should for this state to be active but best to be sure.
-                global.log.log("Asking user if they want to update this mod.");
-                this.source_manager.GetLatestVersionNumber().then((version) => {
-                    let update_msg = `Would you like to update this mod to version "${version}"?`;
+                    //Setup the message to include the version if we have the data.
+                    //Really we should for this state to be active but best to be sure.
+                    global.log.log("Asking user if they want to update this mod.");
+                    this.source_manager.GetLatestVersionNumber().then((version) => {
+                        let update_msg = `Would you like to update this mod to version "${version}"?`;
 
-                    //Ask if the users wants to update or not
-                    dialog.showMessageBox(global.mainWindow, {
-                        type: "question",
-                        title: "Update",
-                        message: update_msg,
-                        buttons: ["Yes", "Cancel"],
-                        cancelId: 1
-                    }).then((button) => {
-                        if (button.response == 0) {
-                            //Do the update!
-                            global.log.log("Starting update process...");
-                            this.UpdateCurrentMod();
-                        }
+                        //Ask if the users wants to update or not
+                        dialog.showMessageBox(global.mainWindow, {
+                            type: "question",
+                            title: "Update",
+                            message: update_msg,
+                            buttons: ["Yes", "Cancel"],
+                            cancelId: 1
+                        }).then((button) => {
+                            if (button.response == 0) {
+                                //Do the update!
+                                global.log.log("Starting update process...");
+                                this.UpdateCurrentMod();
+                            }
+                        });
                     });
-                });
-                break;
-            default:
-                global.log.error("Somehow the install button was clicked when the mod is in the installed state.");
-                break;
+                    break;
+                default:
+                    global.log.error("Somehow the install button was clicked when the mod is in the installed state.");
+                    break;
+            }
         }
     }
     else{
@@ -886,66 +896,6 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
         };
 
         setTimeout(checkFunc, 1000);
-    });
-}
-
-//Depricated
-function DownloadZIP_UI(_url) {
-    return new Promise((resolve, reject) => {
-        global.log.log("Starting GET for mod data zip at: " + _url);
-        var progressBar;
-        let maxProgressVal = 0;
-
-        let progressFunction = (dataLength) => {
-            if(!progressBar.isCompleted()) progressBar.value = dataLength;
-        };
-
-        let headersFunction = (headers) => {
-            let contentLength = headers["content-length"];
-
-            progressBar = new ProgressBar({
-                indeterminate: false,
-                text: "Downloading Mod Files",
-                detail: "Starting Download...",
-                maxValue: parseInt(contentLength),
-                abortOnError: true,
-                closeOnComplete: false,
-                browserWindow: {
-                    webPreferences: {
-                        nodeIntegration: true
-                    },
-                    width: 550,
-                    parent: global.mainWindow,
-                    modal: true,
-                    title: "Downloading Mod Files",
-                    backgroundColor: "#2b2826"
-                },
-                style: {
-                    text: loadingTextStyle,
-                    detail: loadingTextStyle,
-                    value: loadingTextStyle
-                }
-            }, global.app);
-
-            maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;
-
-            progressBar
-                .on('completed', function () {
-                    progressBar.detail = 'Download Finished!';
-                })
-                .on('aborted', function (value) {
-                    global.log.info(`aborted... ${value}`);
-                }).
-                on('progress', function(value) {
-                    progressBar.detail = `Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
-                });
-        };
-
-        DownloadZIP(_url, progressFunction, headersFunction).then((zip) => {
-            progressBar.setCompleted();
-            progressBar.close();
-            resolve(zip);
-        }).catch(reject);
     });
 }
 
