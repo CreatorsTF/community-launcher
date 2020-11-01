@@ -1002,8 +1002,14 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc){
                     global.log.log("Got a 302, re trying on new location.");
                     DoRequest(res.headers.location, retries--);
                 }
+                else if (res.statusCode == 404){
+                    let error = `Remote Mod file was not able to be found. Try again later.\nIf this persists please report this error.`;
+                    global.log.error(error);
+                    global.log.error("404 for: " + _url);
+                    reject(error);
+                }
                 else if (res.statusCode !== 200) {
-                    let error = `Request failed, response code was: ${res.statusCode}`;
+                    let error = `Download File Request failed, response code was: ${res.statusCode}.\nPlease report this error.`;
                     global.log.error(error);
                     reject(error);
                 }
