@@ -1,7 +1,7 @@
-const fs = global.fs;
 const path = global.path;
 const os = global.os;
 
+const fs = require("fs");
 const { dialog } = require('electron');
 const https = require('https');
 const JSZip = require('jszip');
@@ -363,88 +363,117 @@ SetupNewModAsInstalled(){
 RemoveCurrentMod() {
     //Do nothing if this mod is not installed or if there is no mod data.
     if(this.currentModData == null || this.currentModState == State.NOT_INSTALLED) return;
+    var progressBar;
+    try {
+        //Load file list object
+        let files_object = filemanager.GetFileListSync(this.currentModData.name);
+        var running = true;
 
-    //Load file list object
-    let files_object = filemanager.GetFileListSync(this.currentModData.name);
-
-    if(files_object.files != null && files_object.files.length > 0){
-        let progressBar = new ProgressBar({
-            indeterminate: false,
-            text: "Removing Mod Files",
-            detail: "Starting Removal...",
-            maxValue: files_object.files.length,
-            abortOnError: true,
-            closeOnComplete: false,
-            browserWindow: {
-                webPreferences: {
-                    nodeIntegration: true
+        if(files_object.files != null && files_object.files.length > 0){
+            progressBar = new ProgressBar({
+                indeterminate: false,
+                text: "Removing Mod Files",
+                detail: "Starting Removal...",
+                maxValue: files_object.files.length,
+                abortOnError: true,
+                closeOnComplete: false,
+                browserWindow: {
+                    webPreferences: {
+                        nodeIntegration: true
+                    },
+                    width: 550,
+                    parent: global.mainWindow,
+                    modal: true,
+                    title: "Removing Mod Files",
+                    backgroundColor: "#2b2826",
+                    closable: true
                 },
-                width: 550,
-                parent: global.mainWindow,
-                modal: true,
-                title: "Removing Mod Files",
-                backgroundColor: "#2b2826"
-            },
-            style: {
-                text: loadingTextStyle,
-                detail: loadingTextStyle,
-                value: loadingTextStyle
-            }
-        }, global.app);
-
-        //Setup events to display data.
-        progressBar
-        .on('completed', function () {
-            progressBar.detail = 'Removal Done.';
-        })
-        .on('aborted', function (value) {
-            global.log.info(`aborted... ${value}`);
-        }).
-        on('progress', function(value) {
-            progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
-        });
-
-        for(var i = 0; i < files_object.files.length; i++){
-            global.log.log("Deleting file: " + files_object.files[i]);
-            //If the file exists, delete it.
-            if(fs.existsSync(files_object.files[i])) fs.unlinkSync(files_object.files[i]);
-            progressBar.value = i + 1;
-        }
-
-        setTimeout(() => {
-            progressBar.setCompleted();
-            progressBar.close();
-
-            //Remove mod file list.
-            filemanager.RemoveFileList(this.currentModData.name);
-
-            //Remove mod from current config
-            for(let i = 0; i < global.config.current_mod_versions.length; i++){
-                let element = global.config.current_mod_versions[i];
-                if(element.name && element.name == this.currentModData.name){
-                    global.config.current_mod_versions.splice(i, 1);
+                style: {
+                    text: loadingTextStyle,
+                    detail: loadingTextStyle,
+                    value: loadingTextStyle
                 }
-            }
-            config.SaveConfig(global.config);
+            }, global.app);
 
-            dialog.showMessageBox(global.mainWindow, {
-                type: "info",
-                title: "Mod Removal Complete",
-                message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
-                buttons: ["OK"]
+            //Setup events to display data.
+            progressBar
+            .on('completed', function () {
+                progressBar.detail = 'Removal Done.';
+            })
+            .on('aborted', function (value) {
+                running = false;
+                ErrorDialog(`Mod Removal was canceled and may be incomplete. You may need to re install the mod to remove it correctly.`, "Removal Canceled!");
+                this.FakeClickMod();
+            }).
+            on('progress', function(value) {
+                progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
             });
 
-            this.FakeClickMod();
+            for(var i = 0; i < files_object.files.length; i++){
+                if(!running) return;
 
-        }, 300);
+                global.log.log("Deleting file: " + files_object.files[i]);
+                //If the file exists, delete it.
+                if(fs.existsSync(files_object.files[i])) fs.unlinkSync(files_object.files[i]);
+                progressBar.value = i + 1;
+            }
+
+            setTimeout(() => {
+                running = false;
+                progressBar.setCompleted();
+                progressBar.close();
+
+                if(fs.existsSync(files_object.files[0])){
+                    ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
+                    this.FakeClickMod();
+                    return;
+                }
+
+                //Remove mod file list.
+                filemanager.RemoveFileList(this.currentModData.name);
+
+                //Remove mod from current config
+                for(let i = 0; i < global.config.current_mod_versions.length; i++){
+                    let element = global.config.current_mod_versions[i];
+                    if(element.name && element.name == this.currentModData.name){
+                        global.config.current_mod_versions.splice(i, 1);
+                    }
+                }
+                config.SaveConfig(global.config);
+
+                dialog.showMessageBox(global.mainWindow, {
+                    type: "info",
+                    title: "Mod Removal Complete",
+                    message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
+                    buttons: ["OK"]
+                });
+
+                this.FakeClickMod();
+
+            }, 300);
+        }
+        else{
+            dialog.showMessageBox(global.mainWindow, {
+                type: "error",
+                title: "Mod Removal Error",
+                message: "Mod cannot be removed. Please try to remove them manually.",
+                buttons: ["OK"]
+            });
+        }
     }
-    else{
-        dialog.showMessageBox(global.mainWindow, {
-            type: "error",
-            title: "Mod Removal Error",
-            message: "Mod cannot be removed. Please try to remove them manually.",
-            buttons: ["OK"]
-        });
+    catch(e){
+        progressBar.setCompleted();
+        progressBar.close();
+        var errorString;
+        if(e.toString().includes("EBUSY")){
+            errorString = "Mod file(s) were busy or in use. You cannot remove a mod if TF2 is still running.\nSome files may not be deleted and some may remain.\nClose TF2 and try removing the mod again.";
+        }
+        else{
+            errorString = e.toString();
+        }
+
+        ErrorDialog(`Mod Removal Failed.\n${errorString}`, "Mod Removal Error");
+        this.FakeClickMod();
     }
 },
 
@@ -586,7 +615,8 @@ function DownloadFiles_UI(urls){
                     parent: global.mainWindow,
                     modal: true,
                     title: "Downloading Mod Files",
-                    backgroundColor: "#2b2826"
+                    backgroundColor: "#2b2826",
+                    closable: true
                 },
                 style: {
                     text: loadingTextStyle,
@@ -667,7 +697,8 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
                 parent: global.mainWindow,
                 modal: true,
                 title: "Extracting files...",
-                backgroundColor: "#2b2826"
+                backgroundColor: "#2b2826",
+                closable: true
             },
             style: {
                 text: loadingTextStyle,
@@ -734,7 +765,7 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
             progressBar.detail = 'Extraction completed. Exiting...';
         })
         .on('aborted', function() {
-            reject("Extraction aborted by user");
+            reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
         });
 
         const CheckZipCreateDone = () => {
@@ -823,7 +854,8 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
                 parent: global.mainWindow,
                 modal: true,
                 title: "Writing files...",
-                backgroundColor: "#2b2826"
+                backgroundColor: "#2b2826",
+                closable: true
             },
             style: {
                 text: loadingTextStyle,
@@ -837,7 +869,7 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
             progressBar.detail = 'Writing completed. Exiting...';
         })
         .on('aborted', function() {
-            reject("User aborted file write!");
+            reject("User aborted file writing. You will need to restart the installation process to install this mod.");
         });
 
         global.log.log("Waiting for File writing to complete...")
@@ -870,66 +902,6 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
         };
 
         setTimeout(checkFunc, 1000);
-    });
-}
-
-//Depricated
-function DownloadZIP_UI(_url) {
-    return new Promise((resolve, reject) => {
-        global.log.log("Starting GET for mod data zip at: " + _url);
-        var progressBar;
-        let maxProgressVal = 0;
-
-        let progressFunction = (dataLength) => {
-            if(!progressBar.isCompleted()) progressBar.value = dataLength;
-        };
-
-        let headersFunction = (headers) => {
-            let contentLength = headers["content-length"];
-
-            progressBar = new ProgressBar({
-                indeterminate: false,
-                text: "Downloading Mod Files",
-                detail: "Starting Download...",
-                maxValue: parseInt(contentLength),
-                abortOnError: true,
-                closeOnComplete: false,
-                browserWindow: {
-                    webPreferences: {
-                        nodeIntegration: true
-                    },
-                    width: 550,
-                    parent: global.mainWindow,
-                    modal: true,
-                    title: "Downloading Mod Files",
-                    backgroundColor: "#2b2826"
-                },
-                style: {
-                    text: loadingTextStyle,
-                    detail: loadingTextStyle,
-                    value: loadingTextStyle
-                }
-            }, global.app);
-
-            maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;
-
-            progressBar
-                .on('completed', function () {
-                    progressBar.detail = 'Download Finished!';
-                })
-                .on('aborted', function (value) {
-                    global.log.info(`aborted... ${value}`);
-                }).
-                on('progress', function(value) {
-                    progressBar.detail = `Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
-                });
-        };
-
-        DownloadZIP(_url, progressFunction, headersFunction).then((zip) => {
-            progressBar.setCompleted();
-            progressBar.close();
-            resolve(zip);
-        }).catch(reject);
     });
 }
 
