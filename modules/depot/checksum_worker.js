@@ -16,7 +16,7 @@ if (checksumWorkerData.length > 0) {
             var file = fs_1.default.readFileSync(data.filePath);
             var hash = crypto_1.default.createHash("md5").update(file).digest("hex");
             data.localMd5Hash = hash;
-            data.ismatch = hash != data.remoteMd5Hash;
+            data.ismatch = (hash == data.remoteMd5Hash);
             data.fileExisted = true;
         }
         else {

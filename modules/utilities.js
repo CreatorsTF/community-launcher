@@ -7,6 +7,11 @@ exports.Utilities = void 0;
 var electron_1 = require("electron");
 var fs_1 = __importDefault(require("fs"));
 var process_1 = __importDefault(require("process"));
+var ProgressBar = require('electron-progressbar');
+var app = require("electron").app;
+var loadingTextStyle = {
+    color: "ghostwhite"
+};
 var Utilities = /** @class */ (function () {
     function Utilities() {
     }
@@ -34,6 +39,30 @@ var Utilities = /** @class */ (function () {
         if (!fs_1.default.existsSync(_path))
             fs_1.default.mkdirSync(_path);
         return _path;
+    };
+    Utilities.GetNewLoadingPopup = function (title, mainWindow, onCanceled) {
+        var progressBar = new ProgressBar({
+            text: title,
+            detail: '...',
+            browserWindow: {
+                webPreferences: {
+                    nodeIntegration: true
+                },
+                parent: mainWindow,
+                modal: true,
+                title: title,
+                backgroundColor: "#2b2826",
+                closable: true
+            },
+            style: {
+                text: loadingTextStyle,
+                detail: loadingTextStyle,
+                value: loadingTextStyle
+            }
+        }, app);
+        progressBar
+            .on('aborted', onCanceled);
+        return progressBar;
     };
     return Utilities;
 }());

@@ -47,6 +47,7 @@ var ProgressBar = require("electron-progressbar");
 var strf = require('string-format');
 var worker_threads_1 = require("worker_threads");
 var ChecksumWorkerData_1 = require("./ChecksumWorkerData");
+var utilities_1 = require("../utilities");
 //Checks for updates of local files based on their md5 hash.
 var CreatorsDepotClient = /** @class */ (function () {
     function CreatorsDepotClient(modpath) {
@@ -62,7 +63,7 @@ var CreatorsDepotClient = /** @class */ (function () {
     CreatorsDepotClient.prototype.CheckForUpdates = function () {
         var _this = this;
         return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-            var data, error_1, workerData, _i, _a, group, dir, _b, _c, fileData, filePath, hash, remotePath, dataPerWorker, processedWorkerData, runningWorkers, ProcessWorkerResults, _loop_1, this_1, i;
+            var data, error_1, progressBar, detailStr, workerData, _i, _a, group, dir, _b, _c, fileData, filePath, hash, remotePath, dataPerWorker, processedWorkerData, runningWorkers, ProcessWorkerResults, _loop_1, this_1, i;
             var _this = this;
             return __generator(this, function (_d) {
                 switch (_d.label) {
@@ -77,6 +78,9 @@ var CreatorsDepotClient = /** @class */ (function () {
                         reject(error_1);
                         return [3 /*break*/, 3];
                     case 3:
+                        progressBar = utilities_1.Utilities.GetNewLoadingPopup("Checking files for updates", global.mainWindow, reject);
+                        detailStr = "Checking files ";
+                        progressBar.detail = detailStr + ("(" + this.workerThreadCount + "/" + this.workerThreadCount + ") workers left.");
                         workerData = new Array();
                         if (data.result == "SUCCESS") {
                             for (_i = 0, _a = data.groups; _i < _a.length; _i++) {
@@ -93,6 +97,9 @@ var CreatorsDepotClient = /** @class */ (function () {
                                 }
                             }
                         }
+                        else {
+                            reject("Server error, status was: " + data.result);
+                        }
                         dataPerWorker = Math.ceil(workerData.length / this.workerThreadCount);
                         processedWorkerData = new Array();
                         runningWorkers = 0;
@@ -103,6 +110,7 @@ var CreatorsDepotClient = /** @class */ (function () {
                                     filesToUpdate.push(processedData);
                                 }
                             }
+                            progressBar.setCompleted();
                             resolve(filesToUpdate.length > 0);
                         };
                         _loop_1 = function () {
@@ -117,6 +125,7 @@ var CreatorsDepotClient = /** @class */ (function () {
                                 runningWorkers--;
                                 //@ts-ignore
                                 global.log.log("Worker " + ourIndex + " finished! " + runningWorkers + " remain.");
+                                progressBar.detail = detailStr + ("(" + runningWorkers + "/" + _this.workerThreadCount + ") workers left.");
                                 processedWorkerData = processedWorkerData.concat(result.result);
                                 if (runningWorkers < 1) {
                                     //@ts-ignore
@@ -193,7 +202,8 @@ var CreatorsDepotClient = /** @class */ (function () {
                                     parent: mainWindow,
                                     modal: true,
                                     title: "Downloading Mod Files",
-                                    backgroundColor: "#2b2826"
+                                    backgroundColor: "#2b2826",
+                                    closable: true
                                 },
                                 style: {
                                     text: loadingTextStyle,
@@ -226,20 +236,27 @@ var CreatorsDepotClient = /** @class */ (function () {
                                 var checkFunction = function () {
                                     if (_this.currentDownloads > 0 && _this.updateActive) {
                                         //Can we start updating a new file?
-                                        if (_this.currentDownloads < _this.MaxConcurrentDownloads && currentIndex < _this.filesToUpdate.length) {
-                                            try {
-                                                _this.UpdateNextFile(currentIndex, progressBar);
-                                                currentIndex++;
+                                        if (_this.currentDownloads < _this.MaxConcurrentDownloads) {
+                                            if (currentIndex < _this.filesToUpdate.length) {
+                                                try {
+                                                    _this.UpdateNextFile(currentIndex, progressBar);
+                                                    currentIndex++;
+                                                }
+                                                catch (error) {
+                                                    reject(error);
+                                                }
                                             }
-                                            catch (error) {
-                                                reject(error);
+                                            else if (_this.currentDownloads == 0) {
+                                                _this.updateActive = false;
+                                                progressBar.setCompleted();
+                                                progressBar.close();
+                                                resolve();
                                             }
                                         }
                                         //Recheck this in 100ms.
                                         setTimeout(checkFunction, 100);
                                     }
-                                    else {
-                                        //We should be finished. Lets resolve.
+                                    if (!_this.updateActive) {
                                         resolve();
                                     }
                                 };
@@ -299,10 +316,14 @@ var CreatorsDepotClient = /** @class */ (function () {
             });
         });
     };
-    CreatorsDepotClient.prototype.WriteFile = function (path, data) {
+    CreatorsDepotClient.prototype.WriteFile = function (targetpath, data) {
         //@ts-ignore
-        global.log.log("Writing file \"" + path + ".\"");
-        fs_1.default.writeFileSync(path, data);
+        global.log.log("Writing file \"" + targetpath + "\"");
+        var dir = path_1.default.dirname(targetpath);
+        if (!fs_1.default.existsSync(dir)) {
+            fs_1.default.mkdirSync(dir, { recursive: true });
+        }
+        fs_1.default.writeFileSync(targetpath, data);
     };
     CreatorsDepotClient.prototype.RunNewChecksumWorker = function (checksumWorkerData) {
         return new Promise(function (resolve, reject) {

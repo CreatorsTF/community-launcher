@@ -159,7 +159,11 @@ ModInstallPlayButtonClick() {
         if(this.depotClient != null){
             this.depotClient.UpdateFiles(mainWindow, global.app, loadingTextStyle).then(() => {
                 this.currentModVersionRemote = 1;
-                SetupNewModAsInstalled();
+                this.SetupNewModAsInstalled();
+            }).catch((e) => 
+            {
+                this.FakeClickMod();
+                ErrorDialog(e, "Depot Mod Error");
             });
         }
         else{
@@ -409,7 +413,8 @@ RemoveCurrentMod() {
                 parent: global.mainWindow,
                 modal: true,
                 title: "Removing Mod Files",
-                backgroundColor: "#2b2826"
+                backgroundColor: "#2b2826",
+                closable: true
             },
             style: {
                 text: loadingTextStyle,
@@ -612,7 +617,8 @@ function DownloadFiles_UI(urls){
                     parent: global.mainWindow,
                     modal: true,
                     title: "Downloading Mod Files",
-                    backgroundColor: "#2b2826"
+                    backgroundColor: "#2b2826",
+                    closable: true
                 },
                 style: {
                     text: loadingTextStyle,
@@ -693,7 +699,8 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
                 parent: global.mainWindow,
                 modal: true,
                 title: "Extracting files...",
-                backgroundColor: "#2b2826"
+                backgroundColor: "#2b2826",
+                closable: true
             },
             style: {
                 text: loadingTextStyle,
@@ -849,7 +856,8 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
                 parent: global.mainWindow,
                 modal: true,
                 title: "Writing files...",
-                backgroundColor: "#2b2826"
+                backgroundColor: "#2b2826",
+                closable: true
             },
             style: {
                 text: loadingTextStyle,

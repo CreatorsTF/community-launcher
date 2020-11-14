@@ -13,7 +13,7 @@ if(checksumWorkerData.length > 0){
             let file = fs.readFileSync(data.filePath);
             let hash = _crypto.createHash("md5").update(file).digest("hex");
             data.localMd5Hash = hash;
-            data.ismatch = hash != data.remoteMd5Hash;
+            data.ismatch = (hash == data.remoteMd5Hash);
             data.fileExisted = true;
         }
         else {

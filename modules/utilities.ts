@@ -1,6 +1,12 @@
 import { dialog } from "electron";
 import fs from "fs";
 import process from "process";
+const ProgressBar = require('electron-progressbar');
+const {app} = require("electron");
+
+const loadingTextStyle = {
+    color: "ghostwhite"
+}
 
 class Utilities {
 
@@ -32,6 +38,33 @@ class Utilities {
         return _path;
     }
 
+
+    static GetNewLoadingPopup(title : string, mainWindow : any, onCanceled: () => void) : any {
+        var progressBar = new ProgressBar({
+            text: title,
+            detail: '...',
+            browserWindow: {
+                webPreferences: {
+                    nodeIntegration: true
+                },
+                parent: mainWindow,
+                modal: true,
+                title: title,
+                backgroundColor: "#2b2826",
+                closable: true
+            },
+            style: {
+                text: loadingTextStyle,
+                detail: loadingTextStyle,
+                value: loadingTextStyle
+            }
+        }, app);
+        
+        progressBar
+        .on('aborted', onCanceled);
+
+        return progressBar;
+    }
 }
 
 export {Utilities};

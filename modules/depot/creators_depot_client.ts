@@ -6,6 +6,7 @@ const ProgressBar = require("electron-progressbar");
 const strf = require('string-format');
 import { Worker } from 'worker_threads';
 import {ChecksumWorkerData} from "./ChecksumWorkerData";
+import { Utilities } from "../utilities";
 
 //Checks for updates of local files based on their md5 hash.
 class CreatorsDepotClient {
@@ -33,6 +34,12 @@ class CreatorsDepotClient {
             catch(error){
                 reject(error);
             }
+
+            //@ts-ignore
+            var progressBar = Utilities.GetNewLoadingPopup("Checking files for updates", global.mainWindow, reject);
+            var detailStr = "Checking files ";
+            progressBar.detail = detailStr + `(${this.workerThreadCount}/${this.workerThreadCount}) workers left.`;
+
             var workerData = new Array<ChecksumWorkerData>();
 
             if(data.result == "SUCCESS"){
@@ -50,7 +57,11 @@ class CreatorsDepotClient {
                     }
                 }
             }
+            else{
+                reject(`Server error, status was: ${data.result}`);
+            }
 
+            //Setup workers to check and calculate checksums
             var dataPerWorker = Math.ceil(workerData.length / this.workerThreadCount);
             var processedWorkerData = new Array<ChecksumWorkerData>();
             var runningWorkers = 0;
@@ -61,7 +72,7 @@ class CreatorsDepotClient {
                         filesToUpdate.push(processedData);
                     }
                 }
-
+                progressBar.setCompleted();
                 resolve(filesToUpdate.length > 0);
             };
 
@@ -78,8 +89,9 @@ class CreatorsDepotClient {
                     runningWorkers--;
                     //@ts-ignore
                     global.log.log(`Worker ${ourIndex} finished! ${runningWorkers} remain.`);
+                    progressBar.detail = detailStr + `(${runningWorkers}/${this.workerThreadCount}) workers left.`;
                     processedWorkerData = processedWorkerData.concat(result.result);
-                    if(runningWorkers < 1){
+                    if(runningWorkers < 1) {
                         //@ts-ignore
                         global.log.log(`Workers done. Processing results.`);
                         ProcessWorkerResults(this.filesToUpdate);
@@ -147,7 +159,8 @@ class CreatorsDepotClient {
                         parent: mainWindow,
                         modal: true,
                         title: "Downloading Mod Files",
-                        backgroundColor: "#2b2826"
+                        backgroundColor: "#2b2826",
+                        closable: true
                     },
                     style: {
                         text: loadingTextStyle,
@@ -184,21 +197,29 @@ class CreatorsDepotClient {
                     var checkFunction = () => {
                         if(this.currentDownloads > 0 && this.updateActive){
                             //Can we start updating a new file?
-                            if(this.currentDownloads < this.MaxConcurrentDownloads && currentIndex < this.filesToUpdate.length){
-                                try{
-                                    this.UpdateNextFile(currentIndex, progressBar);
-                                    currentIndex++;
+                            if(this.currentDownloads < this.MaxConcurrentDownloads){
+                                if(currentIndex < this.filesToUpdate.length){
+                                    try{
+                                        this.UpdateNextFile(currentIndex, progressBar);
+                                        currentIndex++;
+                                    }
+                                    catch(error : any){
+                                        reject(error);
+                                    }
                                 }
-                                catch(error : any){
-                                    reject(error);
+                                else if(this.currentDownloads == 0){
+                                    this.updateActive = false;
+                                    progressBar.setCompleted();
+                                    progressBar.close();
+                                    resolve();
                                 }
                             }
 
                             //Recheck this in 100ms.
                             setTimeout(checkFunction, 100);
                         }
-                        else {
-                            //We should be finished. Lets resolve.
+
+                        if(!this.updateActive){
                             resolve();
                         }
                     };
