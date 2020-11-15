@@ -267,5 +267,9 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
     }
 });
 
+ipcMain.on("isDev", async(event, arg) => {
+    event.reply("isDev-response", isDev);
+});
+
 // Run games: steam://run/[ID]
 // Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]

@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const moddata = JSON.parse(fs.readFileSync(path.resolve(__dirname, "internal", "mods.json")));
 const { ipcRenderer } = require("electron");
-
 window.ipcRenderer = ipcRenderer;
 
 window.log = require("electron-log");
@@ -14,10 +13,31 @@ window.log.transports.file.maxSize = 10485760;
 window.log.transports.file.getFile();
 window.log.info("Main Window Preload Began.");
 
+var isDev = null;
+var eventsWaiting = 0;
+
+eventsWaiting++;
 window.addEventListener("DOMContentLoaded", () => {
+    eventsWaiting--;
+    CheckToSetup();
+});
+
+eventsWaiting++;
+ipcRenderer.on("isDev-response", (event, arg) => {
+    isDev = arg;
+    eventsWaiting--;
+    CheckToSetup();
+});
+
+function CheckToSetup(){
+    if(eventsWaiting <= 0) Setup();
+}
+
+function Setup(){
     sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach(modentry => {
+        if(!modentry.hasOwnProperty("devOnly") || !modentry.devOnly || (modentry.devOnly && isDev)){
         let div = document.createElement("div");
         div.className = "entry";
         sidebar.appendChild(div);
@@ -51,8 +71,10 @@ window.addEventListener("DOMContentLoaded", () => {
             // Right now it's just a toggle event.
             // div.classList.toggle("entrySelected");
         }, false);
+        }
+    });
 
-        var launcherversionBox = document.getElementById("launcherversion");
+    var launcherversionBox = document.getElementById("launcherversion");
         const config = fs.readFileSync(path.join(__dirname, "package.json"));
         const currentClientVersion = JSON.parse(config).version;
         let request = new XMLHttpRequest();
@@ -71,5 +93,6 @@ window.addEventListener("DOMContentLoaded", () => {
                 launcherversionBox.innerText = "Can't check for updates. Either your internet or GitHub's API is down!";
             }
         }
-    });
-});
+}
+
+setTimeout(() => { ipcRenderer.send("isDev", ""); }, 50);
