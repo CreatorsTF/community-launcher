@@ -1,7 +1,6 @@
 var sidebar;
 const fs = require("fs");
 const path = require("path");
-const moddata = JSON.parse(fs.readFileSync(path.resolve(__dirname, "internal", "mods.json")));
 const { ipcRenderer } = require("electron");
 
 window.ipcRenderer = ipcRenderer;
@@ -15,6 +14,10 @@ window.log.transports.file.getFile();
 window.log.info("Main Window Preload Began.");
 
 window.addEventListener("DOMContentLoaded", () => {
+    ipcRenderer.send("GetModData", "");
+});
+
+ipcRenderer.on("ShowMods", (event, moddata) => {
     sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach(modentry => {
@@ -37,12 +40,6 @@ window.addEventListener("DOMContentLoaded", () => {
         let blurb = document.createElement("p");
         blurb.innerText = modentry.blurb;
         divModInfoSidebar.appendChild(blurb);
-
-        // TODO!!! IMPORTANT!!!
-        // let updatealert = document.createElement("span");
-        // updatealert.className = "updatealertnotification";
-        // updatealert.style.backgroundColor = "#FFF";
-        // div.appendChild(updatealert);
 
         div.addEventListener("click", function(e) {
             OnClick_Mod(modentry);
