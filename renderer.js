@@ -40,7 +40,7 @@ function OnClick_Mod(data) {
     content.style.backgroundPositionY = data.backgroundposY;
 
     contentDummy.remove();
-    content.style.display = "block";
+    content.style.display = "flex";
     content.style.backgroundBlendMode = "soft-light";
 
     installButton.style.background = "";

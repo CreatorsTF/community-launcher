@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
+import ElectronLog from "electron-log";
 
 const modListURLs = [
     "https://fastdl.creators.tf/launcher/mods.json",
@@ -33,6 +34,7 @@ class ModListLoader {
     }
 
     public static async CheckForUpdates() : Promise<boolean> {
+        ElectronLog.log("Checking for modlist updates");
         var data = new Array<any>();
 
         try{
@@ -40,11 +42,14 @@ class ModListLoader {
                 var url = modListURLs[i];
                 //Soo ts shuts up about the method returning any, which it must do otherwise it gets mad.
                 //Seems its not very good with async hidden promises...
-                this.lastDownloaded = await <ModList><unknown>this.TryGetModList(url);
-                break;
+                let remoteModList = await <ModList><unknown>this.TryGetModList(url);
+
+                //Break if we have a valid mod list. If we have null, try again.
+                if (remoteModList != null && remoteModList != undefined) break;
             }
 
             if(this.lastDownloaded != null && this.lastDownloaded.hasOwnProperty("version")){
+                ElectronLog.log(`Local mod list version: ${this.localModList.version}, Remote mod list version: ${this.lastDownloaded.version}.`);
                 return this.localModList.version < this.lastDownloaded.version;
             }
         }
@@ -52,7 +57,7 @@ class ModListLoader {
             console.error("Failed to check for updates. " + error.toString());
             return false;
         }
-        
+        ElectronLog.log("No mod list updates found.");
         return false;
     }
 
@@ -63,7 +68,7 @@ class ModListLoader {
 
             res.on('data', d => {
                 if(res.statusCode != 200){
-                    throw new Error(`Failed accessing ${url}: ` + res.statusCode);
+                    return null;
                 }
                 
                 data.push(d);
@@ -77,13 +82,15 @@ class ModListLoader {
                 }
                 catch (error){
                     //Json parsing failed soo reject.
-                    throw new Error(error.toString());
+                    ElectronLog.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
+                    return null;
                 }
             });
         });
         
         req.on('error', (error: string | undefined) => {
-            throw new Error(error);
+            ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
+            return null;
         });
         
         req.end();
@@ -91,16 +98,30 @@ class ModListLoader {
 
     public static GetLocalModList() : ModList {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
+        var internalModListJSON = fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json"), {encoding:"utf-8"});
+        var internalModList = <ModList>JSON.parse(internalModListJSON);
+        let configPath = path.join(Utilities.GetDataFolder(), localModListName);
+
+        if(fs.existsSync(configPath)){
+            var localConfig = <ModList>JSON.parse(fs.readFileSync(configPath, {encoding:"utf-8"}));
+            if(localConfig.version > internalModList.version){
+                return localConfig;
+            }
+        }
+
+        //Write the internal mod list then return that too.
+        //We also want to re write the internal mod list if its a higher version.
+        fs.writeFileSync(configPath, internalModListJSON);
+        return <ModList>JSON.parse(internalModListJSON);
+    }
+
+    public static DeleteLocalModList() : Boolean {
         let configPath = path.join(Utilities.GetDataFolder(), localModListName);
         if(fs.existsSync(configPath)){
-            return JSON.parse(fs.readFileSync(configPath, {encoding:"utf-8"}));
+            fs.unlinkSync(configPath);
+            return true;
         }
-        else {
-            //Write the internal mod list then return that too.
-            var internalModListJSON = fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json"), {encoding:"utf-8"});
-            fs.writeFileSync(configPath, internalModListJSON);
-            return <ModList>JSON.parse(internalModListJSON);
-        }
+        return false;
     }
 }
 

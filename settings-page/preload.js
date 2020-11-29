@@ -15,6 +15,7 @@ window.addEventListener("DOMContentLoaded", () => {
     var btn_copyCfgContents = document.getElementById("config-copycontents-button");
     var btn_openConfigLoc = document.getElementById("open-config-location");
     var btn_reload = document.getElementById("reload-button");
+    var btn_clearmodlist = document.getElementById("config-clearmodlist");
     
     log.info("Asking for config");
     ipcRenderer.send("GetConfig", "");
@@ -34,6 +35,10 @@ window.addEventListener("DOMContentLoaded", () => {
     btn_reload.onclick = () => {
         const steamdir = document.getElementById("steam_directory").value;
         ipcRenderer.send("config-reload-tf2directory", steamdir);
+    };
+
+    btn_clearmodlist.onclick = () => {
+        ipcRenderer.send("ClearModList", "");
     };
 });
 

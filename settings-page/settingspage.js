@@ -1,6 +1,7 @@
-const { BrowserWindow, ipcMain, shell } = require("electron");
+const { BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
+const {ModListLoader} = require("../modules/mod_list_loader");
 
 var settingsWindow;
 var waitingForSettings = true;
@@ -66,6 +67,17 @@ function OpenWindow() {
 
             //Remove this listner now as it will cause a double subscription.
             ipcMain.removeAllListeners("GetNewSettings-Reply");
+        });
+
+        ipcMain.on("ClearModList", (event, arg) => {
+            if(ModListLoader.DeleteLocalModList()){
+                dialog.showMessageBox({
+                    type: "info",
+                    title: "Settings",
+                    message: "Local mod list cache was cleared.",
+                    buttons: ["OK"]
+                })
+            }
         });
     });
 }

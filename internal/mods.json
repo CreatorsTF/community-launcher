@@ -30,10 +30,10 @@
         {
             "name": "Events Server Content",
             "blurb": "Content for the Creators.TF events server.",
-            "icon": "images/logos/modcirclelogos/creatorstf.svg",
-            "titleimage": "images/logos/modlogos/creatorstf.png",
+            "icon": "images/logos/modcirclelogos/CTFEvents.png",
+            "titleimage": "images/logos/modlogos/eventsbanner.png",
             "backgroundimage": "images/backgrounds/events.png",
-            "bordercolor": "red",
+            "bordercolor": "#2ecc71",
             "backgroundposX": "right",
             "backgroundposY": "top",
             "website": "https://creators.tf",

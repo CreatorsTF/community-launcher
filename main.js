@@ -281,6 +281,7 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
 });
 
 ipcMain.on("GetModData", async (event, args) => {
+    await ModListLoader.CheckForUpdates();
     ModListLoader.UpdateLocalModList();
     event.reply("ShowMods", ModListLoader.GetModList());
 });

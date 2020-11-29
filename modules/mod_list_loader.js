@@ -44,6 +44,7 @@ var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var https_1 = __importDefault(require("https"));
 var utilities_1 = require("./utilities");
+var electron_log_1 = __importDefault(require("electron-log"));
 var modListURLs = [
     "https://fastdl.creators.tf/launcher/mods.json",
     "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json"
@@ -68,41 +69,43 @@ var ModListLoader = /** @class */ (function () {
     };
     ModListLoader.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, i, url, _a, error_1;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var data, i, url, remoteModList, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
+                        electron_log_1.default.log("Checking for modlist updates");
                         data = new Array();
-                        _b.label = 1;
+                        _a.label = 1;
                     case 1:
-                        _b.trys.push([1, 6, , 7]);
+                        _a.trys.push([1, 6, , 7]);
                         i = 0;
-                        _b.label = 2;
+                        _a.label = 2;
                     case 2:
                         if (!(i < modListURLs.length)) return [3 /*break*/, 5];
                         url = modListURLs[i];
-                        //Soo ts shuts up about the method returning any, which it must do otherwise it gets mad.
-                        //Seems its not very good with async hidden promises...
-                        _a = this;
                         return [4 /*yield*/, this.TryGetModList(url)];
                     case 3:
-                        //Soo ts shuts up about the method returning any, which it must do otherwise it gets mad.
-                        //Seems its not very good with async hidden promises...
-                        _a.lastDownloaded = _b.sent();
-                        return [3 /*break*/, 5];
+                        remoteModList = _a.sent();
+                        //Break if we have a valid mod list. If we have null, try again.
+                        if (remoteModList != null && remoteModList != undefined)
+                            return [3 /*break*/, 5];
+                        _a.label = 4;
                     case 4:
                         i++;
                         return [3 /*break*/, 2];
                     case 5:
                         if (this.lastDownloaded != null && this.lastDownloaded.hasOwnProperty("version")) {
+                            electron_log_1.default.log("Local mod list version: " + this.localModList.version + ", Remote mod list version: " + this.lastDownloaded.version + ".");
                             return [2 /*return*/, this.localModList.version < this.lastDownloaded.version];
                         }
                         return [3 /*break*/, 7];
                     case 6:
-                        error_1 = _b.sent();
+                        error_1 = _a.sent();
                         console.error("Failed to check for updates. " + error_1.toString());
                         return [2 /*return*/, false];
-                    case 7: return [2 /*return*/, false];
+                    case 7:
+                        electron_log_1.default.log("No mod list updates found.");
+                        return [2 /*return*/, false];
                 }
             });
         });
@@ -116,7 +119,7 @@ var ModListLoader = /** @class */ (function () {
                     console.log("statusCode: " + res.statusCode);
                     res.on('data', function (d) {
                         if (res.statusCode != 200) {
-                            throw new Error("Failed accessing " + url + ": " + res.statusCode);
+                            return null;
                         }
                         data.push(d);
                     });
@@ -128,12 +131,14 @@ var ModListLoader = /** @class */ (function () {
                         }
                         catch (error) {
                             //Json parsing failed soo reject.
-                            throw new Error(error.toString());
+                            electron_log_1.default.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
+                            return null;
                         }
                     });
                 });
                 req.on('error', function (error) {
-                    throw new Error(error);
+                    electron_log_1.default.error("General request error in a TryGetModList request, error: " + error.toString());
+                    return null;
                 });
                 req.end();
                 return [2 /*return*/];
@@ -142,16 +147,27 @@ var ModListLoader = /** @class */ (function () {
     };
     ModListLoader.GetLocalModList = function () {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
+        var internalModListJSON = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "..", "internal", "mods.json"), { encoding: "utf-8" });
+        var internalModList = JSON.parse(internalModListJSON);
         var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), localModListName);
         if (fs_1.default.existsSync(configPath)) {
-            return JSON.parse(fs_1.default.readFileSync(configPath, { encoding: "utf-8" }));
+            var localConfig = JSON.parse(fs_1.default.readFileSync(configPath, { encoding: "utf-8" }));
+            if (localConfig.version > internalModList.version) {
+                return localConfig;
+            }
         }
-        else {
-            //Write the internal mod list then return that too.
-            var internalModListJSON = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "..", "internal", "mods.json"), { encoding: "utf-8" });
-            fs_1.default.writeFileSync(configPath, internalModListJSON);
-            return JSON.parse(internalModListJSON);
+        //Write the internal mod list then return that too.
+        //We also want to re write the internal mod list if its a higher version.
+        fs_1.default.writeFileSync(configPath, internalModListJSON);
+        return JSON.parse(internalModListJSON);
+    };
+    ModListLoader.DeleteLocalModList = function () {
+        var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), localModListName);
+        if (fs_1.default.existsSync(configPath)) {
+            fs_1.default.unlinkSync(configPath);
+            return true;
         }
+        return false;
     };
     return ModListLoader;
 }());
