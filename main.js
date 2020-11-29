@@ -14,7 +14,8 @@ const patchnotesPage = require("./patchnotes-page/patchnotespage");
 const serverlistPage = require("./serverlist-page/serverlistpage")
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
-const Utilities = require("./modules/utilities");
+const {Utilities} = require("./modules/utilities");
+const {ModListLoader} = require("./modules/mod_list_loader");
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
@@ -26,7 +27,7 @@ log.transports.file.getFile();
 global.log = log;
 
 const path = global.path;
-const majorErrorMessageEnd = "\nPlease report this error to us via email!\nsupport@creators.tf";
+const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
 
 var mainWindow;
 
@@ -55,8 +56,6 @@ function createWindow() {
         global.mainWindow = mainWindow;
         global.app = app;
         if (!isDev) mainWindow.removeMenu();
-        //mainWindow.loadFile(path.resolve(__dirname, 'loading.html'));
-        //Load copy of mods data for this process. The rendering process will load its own.
 
         //Lets load the config file.
         config.GetConfig().then((c) => {
@@ -124,11 +123,25 @@ function getClientCurrentVersion() {
 }
 
 app.on("ready", () => {
-    createWindow();
-    getClientCurrentVersion();
-    autoUpdateCheckAndSettings();
-    logDeviceInfo();
-    log.info("Launcher was opened/finished initialization.");
+    try{
+        ModListLoader.LoadLocalModList();
+        createWindow();
+        getClientCurrentVersion();
+        autoUpdateCheckAndSettings();
+        logDeviceInfo();
+        log.info("Launcher was opened/finished initialization.");
+    }
+    catch(error) {
+        log.error(error.toString());
+        dialog.showMessageBox({
+            type: "error",
+            title: "App Ready Error - Major Initial Error",
+            message: error.toString() + majorErrorMessageEnd,
+            buttons: ["OK"]
+        }).then((button) => {
+            app.quit();
+        });
+    }
 });
 
 app.on("activate", function() {
@@ -265,6 +278,13 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
     else {
         Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
     }
+});
+
+ipcMain.on("GetModData", async (event, args) => {
+    ModListLoader.CheckForUpdates().then(() => {
+        ModListLoader.UpdateLocalModList();
+        event.reply("ShowMods", ModListLoader.GetModList());
+    });
 });
 
 // Run games: steam://run/[ID]

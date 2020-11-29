@@ -18,6 +18,7 @@ var twitter = document.getElementById("socialMediaTwitter");
 var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("serverlist");
+var titleheader = document.getElementById("title-header");
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
@@ -29,18 +30,40 @@ document.onload = () => {
     installButton.disabled = true;
 }
 
+const defaultBackgroundImage = "images/backgrounds/servers.jpg";
+
 function OnClick_Mod(data) {
     window.log.info("Mod entry clicked: " + data.name);
 
-    content.style.backgroundImage = `url("${"./" + data.backgroundimage}")`;
-    titleImage.src = data.titleimage;
+    
+    var bgImg;
+    if(data.backgroundimage != ""){
+        bgImg = data.backgroundimage;
+    }
+    else{
+        bgImg = defaultBackgroundImage;
+    }
+
+    content.style.backgroundImage = `url("${"./" + bgImg}")`;
+
+    if(data.titleimage == ""){
+        titleheader.style.display = "block";
+        titleheader.innerText = data.name;
+        titleImage.style.display = "none";
+    }
+    else {
+        titleImage.src = data.titleimage;
+        titleImage.style.display = "block";
+        titleheader.style.display = "none";
+    }
+
     text.innerText = data.contenttext;
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
     content.style.backgroundPositionY = data.backgroundposY;
 
     contentDummy.remove();
-    content.style.display = "block";
+    content.style.display = "flex";
     content.style.backgroundBlendMode = "soft-light";
 
     installButton.style.background = "";
