@@ -69,41 +69,51 @@ var ModListLoader = /** @class */ (function () {
     };
     ModListLoader.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, i, url, remoteModList, error_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, i, url, remoteModList, _a, error_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         electron_log_1.default.log("Checking for modlist updates");
                         data = new Array();
-                        _a.label = 1;
+                        _b.label = 1;
                     case 1:
-                        _a.trys.push([1, 6, , 7]);
+                        _b.trys.push([1, 9, , 10]);
                         i = 0;
-                        _a.label = 2;
+                        _b.label = 2;
                     case 2:
-                        if (!(i < modListURLs.length)) return [3 /*break*/, 5];
+                        if (!(i < modListURLs.length)) return [3 /*break*/, 8];
                         url = modListURLs[i];
-                        return [4 /*yield*/, this.TryGetModList(url)];
+                        _b.label = 3;
                     case 3:
-                        remoteModList = _a.sent();
-                        //Break if we have a valid mod list. If we have null, try again.
-                        if (remoteModList != null && remoteModList != undefined)
-                            return [3 /*break*/, 5];
-                        _a.label = 4;
+                        _b.trys.push([3, 5, , 6]);
+                        return [4 /*yield*/, this.TryGetModList(url)];
                     case 4:
+                        remoteModList = _b.sent();
+                        return [3 /*break*/, 6];
+                    case 5:
+                        _a = _b.sent();
+                        return [3 /*break*/, 7];
+                    case 6:
+                        //Break if we have a valid mod list. If we have null, try again.
+                        if (remoteModList != null && remoteModList != undefined) {
+                            this.lastDownloaded = remoteModList;
+                            return [3 /*break*/, 8];
+                        }
+                        _b.label = 7;
+                    case 7:
                         i++;
                         return [3 /*break*/, 2];
-                    case 5:
+                    case 8:
                         if (this.lastDownloaded != null && this.lastDownloaded.hasOwnProperty("version")) {
                             electron_log_1.default.log("Local mod list version: " + this.localModList.version + ", Remote mod list version: " + this.lastDownloaded.version + ".");
                             return [2 /*return*/, this.localModList.version < this.lastDownloaded.version];
                         }
-                        return [3 /*break*/, 7];
-                    case 6:
-                        error_1 = _a.sent();
+                        return [3 /*break*/, 10];
+                    case 9:
+                        error_1 = _b.sent();
                         console.error("Failed to check for updates. " + error_1.toString());
                         return [2 /*return*/, false];
-                    case 7:
+                    case 10:
                         electron_log_1.default.log("No mod list updates found.");
                         return [2 /*return*/, false];
                 }
@@ -112,36 +122,37 @@ var ModListLoader = /** @class */ (function () {
     };
     ModListLoader.TryGetModList = function (url) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, req;
             return __generator(this, function (_a) {
-                data = new Array();
-                req = https_1.default.get(url, function (res) {
-                    console.log("statusCode: " + res.statusCode);
-                    res.on('data', function (d) {
-                        if (res.statusCode != 200) {
-                            return null;
-                        }
-                        data.push(d);
-                    });
-                    res.on("end", function () {
-                        try {
-                            var buf = Buffer.concat(data);
-                            var parsed = JSON.parse(buf.toString());
-                            return parsed;
-                        }
-                        catch (error) {
-                            //Json parsing failed soo reject.
-                            electron_log_1.default.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
-                            return null;
-                        }
-                    });
-                });
-                req.on('error', function (error) {
-                    electron_log_1.default.error("General request error in a TryGetModList request, error: " + error.toString());
-                    return null;
-                });
-                req.end();
-                return [2 /*return*/];
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        electron_log_1.default.log("Trying to get mod list from: " + url);
+                        var data = new Array();
+                        var req = https_1.default.get(url, function (res) {
+                            console.log("statusCode: " + res.statusCode);
+                            res.on('data', function (d) {
+                                if (res.statusCode != 200) {
+                                    resolve(null);
+                                }
+                                data.push(d);
+                            });
+                            res.on("end", function () {
+                                try {
+                                    var buf = Buffer.concat(data);
+                                    var parsed = JSON.parse(buf.toString());
+                                    resolve(parsed);
+                                }
+                                catch (error) {
+                                    //Json parsing failed soo reject.
+                                    electron_log_1.default.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
+                                    resolve(null);
+                                }
+                            });
+                        });
+                        req.on('error', function (error) {
+                            electron_log_1.default.error("General request error in a TryGetModList request, error: " + error.toString());
+                            resolve(null);
+                        });
+                        req.end();
+                    })];
             });
         });
     };

@@ -1,5 +1,5 @@
 {
-    "version": 1.0,
+    "version": 1.1,
     "mods":
     [
         {
@@ -28,8 +28,8 @@
             }
         },
         {
-            "name": "Events Server Content",
-            "blurb": "Content for the Creators.TF events server.",
+            "name": "Creators.TF Events Servers Content",
+            "blurb": "Content for the Events & Silly Servers",
             "icon": "images/logos/modcirclelogos/CTFEvents.png",
             "titleimage": "images/logos/modlogos/eventsbanner.png",
             "backgroundimage": "images/backgrounds/events.png",
@@ -43,7 +43,7 @@
             "discord": "https://creators.tf/discord",
             "serverlist": "yes",
             "modid": "",
-            "contenttext": "Content for the Creators.TF events server.",
+            "contenttext": "Do you ever get bored of fighting for gravel? Are you tired of people killing you because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers. These are servers where you can chill on silly maps, with silly server plugins.\nIf you join our Discord server, you’ll also get notified about events like Freak Fortress 2, Deathrun or Funday Sundays!",
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",

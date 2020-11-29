@@ -13,6 +13,7 @@ const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
 const Utilities = require("./utilities");
+const { deserialize } = require("v8");
 
 var functionMap = new Map();
 
@@ -584,6 +585,7 @@ function DownloadFiles_UI(urls){
 
     return new Promise((resolve, reject) => {
         var progressBar;
+        var shouldStop = {value: false};
 
         let maxProgressVal = 0;
 
@@ -631,10 +633,11 @@ function DownloadFiles_UI(urls){
             .on('completed', function () {
                 //progressBar.detail = 'Download Finished!';
             })
-            .on('aborted', function (value) {
+            .on('aborted', function (value) { 
+                shouldStop.value = true;
                 reject("Download Cancelled by User!");
-            }).
-            on('progress', function(value) {
+            })
+            .on('progress', function(value) {
                 try{
                 progressBar.detail = `[File ${currentIndex + 1} of ${urls.length}] Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
                 }
@@ -649,7 +652,7 @@ function DownloadFiles_UI(urls){
         //Setup download sequence for all files
         let downloadFunc = () => {
             global.log.log("Starting Download for file at: " + urls[currentIndex]);
-            DownloadFile(urls[currentIndex], progressFunction, headersFunction).then((file) => {
+            DownloadFile(urls[currentIndex], progressFunction, headersFunction, shouldStop).then((file) => {
                 files.push(file);
                 currentIndex++;
 
@@ -684,6 +687,7 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
         var currentZip;
         var currentIndex = 0;
         var multipleZips = false;
+        var active = true;
 
         //Load file list object
         let files_object = filemanager.GetFileListSync(currentModData.name);
@@ -741,23 +745,25 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
         };
 
         const HandleFile = (relativePath, file) => {
-            inProgress++;
-            if(file.dir){
-                let directory = path.join(targetPath, file.name);
+            if(active){
+                inProgress++;
+                if(file.dir){
+                    let directory = path.join(targetPath, file.name);
 
-                if(!fs.existsSync(directory)){
-                    fs.mkdirSync(directory, {recursive: true});
-                    global.log.log("Made the directory: " + directory);
+                    if(!fs.existsSync(directory)){
+                        fs.mkdirSync(directory, {recursive: true});
+                        global.log.log("Made the directory: " + directory);
+                    }
+                    inProgress--;
                 }
-                inProgress--;
-            }
-            else {
-                currentZip.file(file.name).async("uint8array").then((d) => { 
-                    Write(file.name, d);
-                }).catch((err) => {
-                    global.log.log(err);
-                    reject(err);
-                });
+                else {
+                    currentZip.file(file.name).async("uint8array").then((d) => { 
+                        Write(file.name, d);
+                    }).catch((err) => {
+                        global.log.log(err);
+                        reject(err);
+                    });
+                }
             }
         };
 
@@ -766,6 +772,7 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
             progressBar.detail = 'Extraction completed. Exiting...';
         })
         .on('aborted', function() {
+            active = false;
             reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
         });
 
@@ -796,35 +803,37 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
             currentZip.forEach(HandleFile);
 
             let checkFunc = () => {
-                if(inProgress <= 0){
-                    inProgress = 0;
+                if(active){
+                    if(inProgress <= 0){
+                        inProgress = 0;
 
-                    if(multipleZips){
-                        currentIndex++;
-                        //If we have another zip to install.
-                        if(currentIndex < zips.length){
-                            //Assign the new zip and repeat the processess to handle and write the files.
-                            currentZip = zips[currentIndex];
-                            currentZip.forEach(HandleFile);
+                        if(multipleZips){
+                            currentIndex++;
+                            //If we have another zip to install.
+                            if(currentIndex < zips.length){
+                                //Assign the new zip and repeat the processess to handle and write the files.
+                                currentZip = zips[currentIndex];
+                                currentZip.forEach(HandleFile);
 
-                            //Make sure we set a timeout for the checking function again!!
-                            setTimeout(checkFunc, 200);
+                                //Make sure we set a timeout for the checking function again!!
+                                setTimeout(checkFunc, 200);
+                            }
+                            else {
+                                progressBar.setCompleted();
+                                filemanager.SaveFileListSync(files_object, currentModData.name);
+                                resolve();
+                            }
                         }
                         else {
+                            //Resolve now as we only had one zip to install.
                             progressBar.setCompleted();
                             filemanager.SaveFileListSync(files_object, currentModData.name);
                             resolve();
                         }
+                        
                     }
-                    else{
-                        //Resolve now as we only had one zip to install.
-                        progressBar.setCompleted();
-                        filemanager.SaveFileListSync(files_object, currentModData.name);
-                        resolve();
-                    }
-                    
+                    else setTimeout(checkFunc, 200);
                 }
-                else setTimeout(checkFunc, 200);
             };
 
             setTimeout(checkFunc, 1000);
@@ -840,6 +849,7 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
     return new Promise((resolve, reject) => {
         //Load file list object
         let files_object = filemanager.GetFileListSync(currentModData.name);
+        var active = true;
 
         if(!fs.existsSync(targetPath)){
             fs.mkdirSync(targetPath);
@@ -867,39 +877,45 @@ function WriteFilesToDirectory(targetPath, files, currentModData){
         
         progressBar
         .on('completed', function() {
+            active = false;
             progressBar.detail = 'Writing completed. Exiting...';
         })
         .on('aborted', function() {
+            active = false;
             reject("User aborted file writing. You will need to restart the installation process to install this mod.");
         });
 
         global.log.log("Waiting for File writing to complete...")
         
         files.forEach((file) => {
-            inProgress++;
-            progressBar.detail = `Writing ${file.name}. Total Files Written: ${written}.`;
-    
-            let fullFilePath = path.join(targetPath, file.name);
-            fs.writeFile(fullFilePath, file.buffer, (err) => {
-                if (err) throw err;
-                written++;
-    
-                //Add file that we wrote to the file list
-                if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
-    
-                global.log.log(`File write for '${file.name}' was successful.`);
-                inProgress--;
-            });
+            if(active){
+                inProgress++;
+                progressBar.detail = `Writing ${file.name}. Total Files Written: ${written}.`;
+        
+                let fullFilePath = path.join(targetPath, file.name);
+                fs.writeFile(fullFilePath, file.buffer, (err) => {
+                    if (err) throw err;
+                    written++;
+        
+                    //Add file that we wrote to the file list
+                    if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
+        
+                    global.log.log(`File write for '${file.name}' was successful.`);
+                    inProgress--;
+                });
+            }
         });
 
         let checkFunc = () => {
-            if(inProgress <= 0){
-                
-                progressBar.setCompleted();
-                filemanager.SaveFileListSync(files_object, currentModData.name);
-                resolve();
+            if(active){
+                if(inProgress <= 0){
+                    
+                    progressBar.setCompleted();
+                    filemanager.SaveFileListSync(files_object, currentModData.name);
+                    resolve();
+                }
+                else setTimeout(checkFunc, 200);
             }
-            else setTimeout(checkFunc, 200);
         };
 
         setTimeout(checkFunc, 1000);
@@ -954,8 +970,9 @@ function ValidateTF2Dir(){
     return false;
 }
 
-function DownloadFile(_url, progressFunc, responseHeadersFunc){
+function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop){
     return new Promise((resolve, reject) => {
+
         var options = {
             headers: {
               'User-Agent': 'creators-tf-launcher'
@@ -996,34 +1013,45 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc){
                     // or, if you must, set it to null. In that case the chunk will be a string.
     
                     res.on("data", function (chunk) {
+                        if(shouldStop.value){
+                            res.destroy();
+                            reject();
+                            return;
+                        }
+
                         data.push(chunk);
                         dataLen += chunk.length;
                         if(progressFunc != null) progressFunc(dataLen);
                     });
     
                     res.on("end", function () {
-                        var buf = Buffer.concat(data);
-    
-                        progressFunc = null;
-                        responseHeadersFunc = null;
-                        
-                        global.log.log("File download finished. Returning raw data.");
-                        //This approach to get the file name only works for direct file urls.
-                        //A better solution for later would be via the content-disposition header if this is missing.
-                        var filename;
-                        var contentDispositionHeader = res.headers["content-disposition"];
-                        if(contentDispositionHeader != undefined){
-                            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                            var matches = filenameRegex.exec(contentDispositionHeader);
-                            if (matches != null && matches[1]) { 
-                                filename = matches[1].replace(/['"]/g, '');
-                                global.log.info("Got filename for download fron content-disposition header: " + filename);
+                        if(!shouldStop.value){
+                            var buf = Buffer.concat(data);
+        
+                            progressFunc = null;
+                            responseHeadersFunc = null;
+                            
+                            global.log.log("File download finished. Returning raw data.");
+                            //This approach to get the file name only works for direct file urls.
+                            //A better solution for later would be via the content-disposition header if this is missing.
+                            var filename;
+                            var contentDispositionHeader = res.headers["content-disposition"];
+                            if(contentDispositionHeader != undefined){
+                                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                                var matches = filenameRegex.exec(contentDispositionHeader);
+                                if (matches != null && matches[1]) { 
+                                    filename = matches[1].replace(/['"]/g, '');
+                                    global.log.info("Got filename for download fron content-disposition header: " + filename);
+                                }
                             }
+
+                            if(filename == undefined) GetFileName(__url);
+
+                            resolve(new DownloadedFile(buf, filename));
                         }
-
-                        if(filename == undefined) GetFileName(__url);
-
-                        resolve(new DownloadedFile(buf, filename));
+                        else{
+                            global.log.log("File download was cancled by the user successfully.");
+                        }
                     });
                 }
             });

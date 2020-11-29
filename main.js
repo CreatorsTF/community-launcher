@@ -281,9 +281,10 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
 });
 
 ipcMain.on("GetModData", async (event, args) => {
-    await ModListLoader.CheckForUpdates();
-    ModListLoader.UpdateLocalModList();
-    event.reply("ShowMods", ModListLoader.GetModList());
+    ModListLoader.CheckForUpdates().then(() => {
+        ModListLoader.UpdateLocalModList();
+        event.reply("ShowMods", ModListLoader.GetModList());
+    });
 });
 
 // Run games: steam://run/[ID]

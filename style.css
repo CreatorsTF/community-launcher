@@ -254,6 +254,7 @@ body {
 
 #content-area-front
 {
+    pointer-events: none;
     z-index: 2;
     width: 100%;
     height: 100%;
@@ -328,6 +329,15 @@ body {
     pointer-events: none;
 }
 
+#title-header {
+    font-size: 55px;
+    font-family: Roboto Light, Arial, sans-serif;
+    color: #CCC;
+    line-height: 55px;
+    text-align: center;
+    font-weight: bold;
+}
+
 #content-text {
     margin: 0 auto;
     font-size: 22px;
@@ -342,6 +352,7 @@ body {
 .modInfoBox {
     display: flex;
     margin: 0 auto;
+    pointer-events: auto;
 }
 
 .modInfoBox button {

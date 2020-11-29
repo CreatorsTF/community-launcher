@@ -3,6 +3,7 @@ import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
+import { remote } from "electron";
 
 const modListURLs = [
     "https://fastdl.creators.tf/launcher/mods.json",
@@ -42,10 +43,19 @@ class ModListLoader {
                 var url = modListURLs[i];
                 //Soo ts shuts up about the method returning any, which it must do otherwise it gets mad.
                 //Seems its not very good with async hidden promises...
-                let remoteModList = await <ModList><unknown>this.TryGetModList(url);
+                var remoteModList;
+                try{
+                    remoteModList = await <ModList><unknown>this.TryGetModList(url);
+                }
+                catch {
+                    continue;
+                }
 
                 //Break if we have a valid mod list. If we have null, try again.
-                if (remoteModList != null && remoteModList != undefined) break;
+                if (remoteModList != null && remoteModList != undefined){
+                    this.lastDownloaded = remoteModList;
+                    break;
+                } 
             }
 
             if(this.lastDownloaded != null && this.lastDownloaded.hasOwnProperty("version")){
@@ -61,14 +71,16 @@ class ModListLoader {
         return false;
     }
 
-    private static async TryGetModList(url : string) : Promise<ModList | any> {
+    private static async TryGetModList(url : string) : Promise<ModList> {
+        return new Promise((resolve, reject) => {
+        ElectronLog.log("Trying to get mod list from: " + url);
         var data = new Array<any>();
         let req = https.get(url, res => {
             console.log(`statusCode: ${res.statusCode}`);
 
             res.on('data', d => {
                 if(res.statusCode != 200){
-                    return null;
+                    resolve(null);
                 }
                 
                 data.push(d);
@@ -78,22 +90,23 @@ class ModListLoader {
                 try{
                     var buf = Buffer.concat(data);
                     let parsed = JSON.parse(buf.toString());
-                    return <ModList>parsed;
+                    resolve(parsed);
                 }
                 catch (error){
                     //Json parsing failed soo reject.
                     ElectronLog.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
-                    return null;
+                    resolve(null);
                 }
             });
         });
         
         req.on('error', (error: string | undefined) => {
             ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
-            return null;
+            resolve(null);
         });
         
         req.end();
+        });
     }
 
     public static GetLocalModList() : ModList {

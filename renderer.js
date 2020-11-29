@@ -18,6 +18,7 @@ var twitter = document.getElementById("socialMediaTwitter");
 var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("serverlist");
+var titleheader = document.getElementById("title-header");
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
@@ -44,7 +45,18 @@ function OnClick_Mod(data) {
     }
 
     content.style.backgroundImage = `url("${"./" + bgImg}")`;
-    titleImage.src = data.titleimage;
+
+    if(data.titleimage == ""){
+        titleheader.style.display = "block";
+        titleheader.innerText = data.name;
+        titleImage.style.display = "none";
+    }
+    else {
+        titleImage.src = data.titleimage;
+        titleImage.style.display = "block";
+        titleheader.style.display = "none";
+    }
+
     text.innerText = data.contenttext;
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
