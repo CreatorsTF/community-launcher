@@ -16,6 +16,17 @@ body {
     overflow-x: hidden; /* How */
 }
 
+#modlist-updating
+{
+    width: 300px;
+    color: #CCC;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 30px;
+    text-shadow: 1px 1px 1px #000;
+    padding: 20px;
+    text-align: center;
+}
+
 .entry {
     margin: 0px 0px 10px 0px;
     height: 65px;

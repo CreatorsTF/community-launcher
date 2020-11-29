@@ -18,6 +18,8 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 ipcRenderer.on("ShowMods", (event, moddata) => {
+    document.getElementById("modlist-updating").style.display = "none";
+
     sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach(modentry => {

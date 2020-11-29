@@ -29,10 +29,21 @@ document.onload = () => {
     installButton.disabled = true;
 }
 
+const defaultBackgroundImage = "images/backgrounds/servers.jpg";
+
 function OnClick_Mod(data) {
     window.log.info("Mod entry clicked: " + data.name);
 
-    content.style.backgroundImage = `url("${"./" + data.backgroundimage}")`;
+    
+    var bgImg;
+    if(data.backgroundimage != ""){
+        bgImg = data.backgroundimage;
+    }
+    else{
+        bgImg = defaultBackgroundImage;
+    }
+
+    content.style.backgroundImage = `url("${"./" + bgImg}")`;
     titleImage.src = data.titleimage;
     text.innerText = data.contenttext;
     content.style.borderColor = data.bordercolor;
