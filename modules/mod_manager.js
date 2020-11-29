@@ -725,13 +725,24 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData){
         }
 
         if(!fs.existsSync(targetPath)){
-            fs.mkdirSync(targetPath);
+            fs.mkdirSync(targetPath, {recursive: true});
         }
 
         const Write = (name, d) => {
             let fullFilePath = path.join(targetPath, name);
+
+            //Make missing directories
+            let filePathDir = path.dirname(fullFilePath);
+            if(!fs.existsSync(filePathDir)){
+                fs.mkdirSync(filePathDir, {recursive: true});
+            }
+
             fs.writeFile(fullFilePath, d, (err) => {
-                if (err) throw err;
+                if (err){
+                    written++;
+                    global.log.error(err.toString());
+                    throw err;
+                }
                 written++;
 
                 progressBar.detail = `Wrote ${name}. Total Files Written: ${written}.`;
@@ -1045,7 +1056,7 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop){
                                 }
                             }
 
-                            if(filename == undefined) GetFileName(__url);
+                            if(filename == undefined) filename = GetFileName(__url);
 
                             resolve(new DownloadedFile(buf, filename));
                         }

@@ -202,7 +202,7 @@ body {
 }
 
 #contentdummy {
-    width: 78.5%;
+    width: 75%;
 }
 
 .defaultbg
@@ -341,7 +341,7 @@ body {
 #content-text {
     margin: 0 auto;
     font-size: 20px;
-    width: 75%;
+    width: 100%;
     font-family: Roboto Light, Arial, sans-serif;
     text-align: center;
     text-shadow: 0px 0px 5px #000;
