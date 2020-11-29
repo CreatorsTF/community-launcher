@@ -1,5 +1,5 @@
 ## Version 0.2 - (ALPHA)
-### 29/11/2020 - 5:30 (GMT)
+### 29/11/2020 - 21:00 (GMT)
 - Added Creators.TF Events Servers content to launcher. (Thanks Kaya for the artwork!)
 - Added Ultimate TF2 fixes to the launcher. (Thanks agrastiOs!)
 - Better error handling for Cloud flare issues
@@ -7,6 +7,9 @@
 - Added support to cancel downloads and installs.
 - Should have fixed error of download never finishing. (Please open an Issue if you get this still).
 - Main window content is better centered.
+- Fixed issue with failing to write zip file contents
+- Fixed file name retrieval from downloaded files.
+- Fixed some main page styling issues.
 
 ## Version 0.1.32 - (ALPHA)
 ### 25/10/2020 - 14:35 (GMT)
