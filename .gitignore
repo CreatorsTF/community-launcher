@@ -8,3 +8,4 @@ build.js
 build.bat
 runappfordevtest.bat
 package-lock.json
+*.map

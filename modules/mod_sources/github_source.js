@@ -3,7 +3,6 @@ const https = global.https;
 const { ModInstallSource } = require("./mod_source_base.js");
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
-// Test GET url: https://api.github.com/repos/agrastiOs/Ultimate-TF2-Visual-Fix-Pack/releases
 
 const github_api_url = "https://api.github.com/";
 

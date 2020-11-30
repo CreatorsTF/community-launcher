@@ -1,0 +1,210 @@
+html, body { height: 100%; }
+
+body {
+    background-color: #111;
+    background-image: url(../images/backgrounds/servers.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-blend-mode: multiply;
+    user-select: none;
+    overflow-x: hidden;
+}
+
+h1, h2, p {
+    margin: 0;
+    text-align: center;
+    color: #DDD;
+}
+
+h1 {
+    font-family: Roboto Black, Arial, sans-serif;
+    font-size: 60px;
+    padding: 20px 0px 0px 0px;
+}
+
+#loading {
+    text-align: center;
+    font-family: Roboto Black, Arial, sans-serif;
+    font-size: 40px;
+    padding: 100px 0px;
+    color: #EEE;
+}
+
+.error{
+    padding-top: 20px;
+    margin: 0 auto;
+    display: none;
+}
+
+.error p, .error p a{
+    font-size: 20px;
+    color: lightcoral;
+    text-align: center;
+    font-family: Roboto Black, Arial, sans-serif;
+    transition: 0.2s;
+}
+
+.error p a:hover {
+    color: lightskyblue;
+}
+
+.error p i {
+    font-size: 15px;
+}
+
+#refreshHolder {
+    margin: 10px auto 20px auto;
+    text-align: center;
+}
+
+#refreshButton {
+    border-radius: 50px;
+    padding: 5px;
+    transition: 0.2s;
+}
+
+#refreshButton:hover {
+    transform: rotate(180deg);
+}
+
+#refreshButton i {
+    font-size: 35px;
+}
+
+.serverRegions {
+    margin: 10px auto;
+    font-size: 25px;
+    color: #EEE;
+    font-family: Roboto Light, Arial, sans-serif;
+    cursor: pointer;
+    display: table;
+}
+
+.serverRegions:first-child {
+    margin-top: 0px;
+}
+
+.serverRegions i {
+    margin: 0px 8px;
+    position: relative;
+    top: 1px;
+    border-radius: 3px;
+}
+
+.serverRegions i:last-child {
+    margin: 0px;
+}
+
+p {
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 17px;
+    padding: 0px 5px;
+}
+
+button {
+    padding: 10px 5px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 0;
+    outline: 0;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #CCC;
+}
+
+table {
+    margin: 0 auto;
+    width: 90%;
+}
+
+tr {
+    background-color: #161616;
+    width: 100%;
+    text-align: center;
+    border-radius: 0px 10px 10px 0px;
+    transition: 0.2s;
+}
+
+tr:nth-child(even) {
+    background-color: #292929;
+}
+
+tr:hover {
+    background-color: #454545;
+}
+
+.id {
+    min-width: 43px;
+    width: 6%;
+    border-radius: 10px 0px 0px 10px;
+}
+
+.name {
+    min-width: 328px;
+    width: 37%;
+}
+
+.map {
+    width: 25%;
+    position: relative;
+}
+
+.map:hover .mapCover {
+    opacity: 1;
+}
+
+.mapCover {
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 999;
+}
+
+.players {
+    min-width: 56px;
+    width: 8%;
+}
+
+.connect {
+    width: 14%;
+}
+
+.connect button {
+    width: 100%;
+}
+
+.hb {
+    min-width: 75px;
+    max-width: 100px;
+    width: 10%;
+    font-family: Roboto Thin, Arial, sans-serif;
+    font-size: 15px;
+    color: #EEE;
+    overflow: hidden;
+    cursor: help;
+}
+
+.status {
+    min-width: 35px;
+    width: 5%;
+    border-radius: 0px 10px 10px 0px;
+}
+
+.link-mini {
+    font-size: 20px;
+}
+
+.down { color: red; }
+.up { color: green; }
+.blue { color: #6969FF; }
