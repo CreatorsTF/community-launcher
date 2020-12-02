@@ -142,7 +142,7 @@ var ModListLoader = /** @class */ (function () {
                                 }
                                 catch (error) {
                                     //Json parsing failed soo reject.
-                                    electron_log_1.default.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
+                                    electron_log_1.default.error("Failed to parse json in TryGetModList request for " + url + ", error: " + error.toString());
                                     resolve(null);
                                 }
                             });

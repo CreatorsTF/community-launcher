@@ -94,7 +94,7 @@ class ModListLoader {
                 }
                 catch (error){
                     //Json parsing failed soo reject.
-                    ElectronLog.error("Failed to parse json in a TryGetModList request, error: " + error.toString());
+                    ElectronLog.error(`Failed to parse json in TryGetModList request for ${url}, error: ${error.toString()}`);
                     resolve(null);
                 }
             });

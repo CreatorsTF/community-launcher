@@ -1,5 +1,5 @@
 {
-    "version": 1.2,
+    "version": 1.21,
     "mods":
     [
         {
@@ -38,12 +38,12 @@
             "backgroundposY": "top",
             "website": "https://creators.tf",
             "github": "",
-            "twitter": "https://creators.tf/twitter",
-            "instagram": "https://creators.tf/instagram",
+            "twitter": "",
+            "instagram": "",
             "discord": "https://creators.tf/discord",
             "serverlist": "yes",
             "modid": "",
-            "contenttext": "Tired of fighting or being killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
+            "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
