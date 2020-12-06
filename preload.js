@@ -1,7 +1,6 @@
 var sidebar;
 const fs = require("fs");
 const path = require("path");
-const moddata = JSON.parse(fs.readFileSync(path.resolve(__dirname, "internal", "mods.json")));
 const { ipcRenderer } = require("electron");
 
 window.ipcRenderer = ipcRenderer;
@@ -10,11 +9,17 @@ window.log = require("electron-log");
 window.log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 window.log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 window.log.transports.file.fileName = "renderer.log";
-window.log.transports.file.maxSize = 10485760; //why 10mb? idk.
+window.log.transports.file.maxSize = 10485760;
 window.log.transports.file.getFile();
 window.log.info("Main Window Preload Began.");
 
 window.addEventListener("DOMContentLoaded", () => {
+    ipcRenderer.send("GetModData", "");
+});
+
+ipcRenderer.on("ShowMods", (event, moddata) => {
+    document.getElementById("modlist-updating").style.display = "none";
+
     sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach(modentry => {
@@ -38,26 +43,32 @@ window.addEventListener("DOMContentLoaded", () => {
         blurb.innerText = modentry.blurb;
         divModInfoSidebar.appendChild(blurb);
 
-        div.addEventListener("click", function(e){OnClick_Mod(modentry)}, false);
-    });
+        div.addEventListener("click", function(e) {
+            OnClick_Mod(modentry);
 
-    var launcherversionBox = document.getElementById("launcherversion");
-    const config = require("./package.json");
-    const currentClientVersion = config.version;
-    let request = new XMLHttpRequest();
-    request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
-    request.send();
-    request.onload = () => {
-        if (request.status === 200) {
-            var answer = JSON.parse(request.response);
-            var version = answer.name;
-            if (currentClientVersion === version) {
-                launcherversionBox.remove();
+            // TODO: Check if other element is selected to avoid 2 selected elements.
+            // Right now it's just a toggle event.
+            // div.classList.toggle("entrySelected");
+        }, false);
+
+        var launcherversionBox = document.getElementById("launcherversion");
+        const config = fs.readFileSync(path.join(__dirname, "package.json"));
+        const currentClientVersion = JSON.parse(config).version;
+        let request = new XMLHttpRequest();
+        request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
+        request.send();
+        request.onload = () => {
+            if (request.status === 200) {
+                var answer = JSON.parse(request.response);
+                var version = answer.name;
+                if (currentClientVersion === version) {
+                    launcherversionBox.remove();
+                } else {
+                    launcherversionBox.innerText = "A new update is available for the launcher. Check the website to download the new version. If you are using the auto-updater version, download it automatically by clicking the yellow button!";
+                }
             } else {
-                launcherversionBox.innerText = "A new update is available for the launcher.\nCheck the website to download the new version.\nIf you are using the auto-updater version,\ndownload it automatically by clicking the yellow\nbutton!";
+                launcherversionBox.innerText = "Can't check for updates. Either your internet or GitHub's API is down!";
             }
-        } else {
-            launcherversionBox.innerText = "Can't check for updates.\nEither your internet or GitHub's API is down!";
         }
-    }
+    });
 });
