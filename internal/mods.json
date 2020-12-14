@@ -1,5 +1,5 @@
 {
-    "version": 1.21,
+    "version": 1.22,
     "mods":
     [
         {
@@ -47,7 +47,7 @@
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
-                "targetdirectory": "{tf2_dir}/tf/custom/ctf_events",
+                "targetdirectory": "{tf2_dir}/tf/download/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
             }
