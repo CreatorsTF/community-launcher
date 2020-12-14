@@ -13,7 +13,7 @@ const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
 const Utilities = require("./utilities");
-const { deserialize } = require("v8");
+const {ModListLoader} = require("./mod_list_loader");
 
 var functionMap = new Map();
 
@@ -60,7 +60,7 @@ source_manager: null,
 
 //Sets up the module.
 Setup(){
-    this.all_mods_data = JSON.parse(fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json")));
+    this.all_mods_data = ModListLoader.GetModList();
 
     filemanager.Init();
 },
