@@ -419,7 +419,7 @@ async RemoveCurrentMod() {
             progressBar.close();
 
             if(await fsPromises.fileExists(files_object.files[0])){
-                ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
+                await ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
                 this.FakeClickMod();
                 return;
             }
