@@ -4,6 +4,7 @@ var titleImage = document.getElementById("title-image");
 var text = document.getElementById("content-text");
 var version = document.getElementById("version-text");
 
+var installButton = document.getElementById("install-play-button");
 var removeButton = document.getElementById("remove-mod");
 
 var updateButton_Download = document.getElementById("update-button-download");
@@ -17,6 +18,7 @@ var twitter = document.getElementById("socialMediaTwitter");
 var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("serverlist");
+var titleheader = document.getElementById("title-header");
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
@@ -24,28 +26,49 @@ twitter.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "
 instagram.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
 discord.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
 
-var installButton = document.getElementById("install-play-update");
 document.onload = () => {
     installButton.disabled = true;
-};
+}
+
+const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 
 function OnClick_Mod(data) {
-    window.log.info("Mod entry clicked");
+    window.log.info("Mod entry clicked: " + data.name);
 
-    content.style.backgroundImage = `url("${"./" + data.backgroundimage}")`;
-    titleImage.src = data.titleimage;
+    
+    var bgImg;
+    if(data.backgroundimage != ""){
+        bgImg = data.backgroundimage;
+    }
+    else{
+        bgImg = defaultBackgroundImage;
+    }
+
+    content.style.backgroundImage = `url("${"./" + bgImg}")`;
+
+    if(data.titleimage == ""){
+        titleheader.style.display = "block";
+        titleheader.innerText = data.name;
+        titleImage.style.display = "none";
+    }
+    else {
+        titleImage.src = data.titleimage;
+        titleImage.style.display = "block";
+        titleheader.style.display = "none";
+    }
+
     text.innerText = data.contenttext;
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
     content.style.backgroundPositionY = data.backgroundposY;
 
     contentDummy.remove();
-    content.style.display = "block";
+    content.style.display = "flex";
     content.style.backgroundBlendMode = "soft-light";
 
     installButton.style.background = "";
     installButton.style.backgroundColor = "grey";
-    installButton.style.color = "black";
+    installButton.style.color = "#EEE";
     installButton.innerText = "LOADING...";
     installButton.disabled = true;
 
@@ -54,16 +77,12 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
-
-    // If the mod has a server list, just fill the "serverlist" attribute
-    // in mods.json with anything. If it doesn't, leave it blank.
-    // This was made to avoid the server list button to appear on Gman's
-    // announcer page.
     serverlist.style.display = data.serverlist != "" ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
+    window.ipcRenderer.send("GetCurrentModVersion", "");
 }
 
 updateButton_Download.onclick = (downloadUpdate) => {
@@ -73,7 +92,7 @@ updateButton_Download.onclick = (downloadUpdate) => {
 
 updateButton_Update.onclick = (closeProgramAndUpdate) => {
     window.ipcRenderer.send("restart_app");
-    window.log.info("The launcher was restarted to update" + closeProgramAndUpdate);
+    window.log.info("User chose to restart the launcher to update." + closeProgramAndUpdate);
 }
 
 window.ipcRenderer.on("update_not_available", () => {
@@ -96,7 +115,7 @@ window.ipcRenderer.on("update_downloading", () => {
     window.ipcRenderer.removeAllListeners("update_downloading");
     updateButton_Download.remove();
     updateButton_Downloading.classList.remove("hidden");
-    window.log.info("Downloading update");
+    window.log.info("Downloading update...");
 });
 
 window.ipcRenderer.on("update_downloaded", () => {
@@ -109,12 +128,10 @@ window.ipcRenderer.on("update_downloaded", () => {
 document.getElementById("settings-button").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
-
 document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-
-document.getElementById("serverlist").addEventListener("click", (a, b) => {
+document.getElementById("serverlist").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
@@ -126,7 +143,7 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    version.innerText = arg;
+    version.innerText = "Mod version: " + arg;
 });
 
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
@@ -138,31 +155,24 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
 
     switch(arg) {
         case "installed":
-            installButton.style.background = "linear-gradient(to right, #009028 25%, #007520 75%)"; //Green (light-to-dark)
-            installButton.style.color = "white";
+            installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
             removeButton.style.display = "block";
             break;
         case "install":
-            installButton.style.background = "";
-            installButton.style.backgroundColor = "#FF850A";
-            installButton.style.color = "white";
+            installButton.style.background = "#FF850A";
             removeButton.style.display = "none";
             break;
         case "update":
-            installButton.style.background = "linear-gradient(to left, #1A96FF 25%, #1A70FF 75%)"; //Blue (dark-to-light)
-            installButton.style.color = "white";
+            installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
             removeButton.style.display = "block";
             break;
         case "internal error":
-            installButton.style.background = "";
-            installButton.style.backgroundColor = "#B51804";
-            installButton.style.color = "white";
+            // installButton.style.background = "#B51804";
+            installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
             removeButton.style.display = "none";
             break;
         default:
-            installButton.style.background = "";
-            installButton.style.backgroundColor = "grey";
-            installButton.style.color = "black";
+            installButton.style.background = "grey";
             removeButton.style.display = "none";
             break;
     }

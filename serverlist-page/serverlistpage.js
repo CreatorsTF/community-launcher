@@ -20,12 +20,12 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 850,
-        minHeight: 550,
-        width: 950,
-        height: 700
+        minWidth: 960,
+        minHeight: 600,
+        width: screenWidth-300,
+        height: screenHeight-100
     });
-    serverlistWindow.removeMenu();
+    if (!isDev) serverlistWindow.removeMenu();
     serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
     serverlistWindow.once("ready-to-show", () => {
         serverlistWindow.show();
@@ -37,7 +37,7 @@ ipcMain.on("GetServerList", async (event, arg) => {
         event.reply("GetServerList-Reply", await GetServerList());
     }
     catch (error) {
-        event.reply("GetServerList-Reply", null);
+        event.reply("GetServerList-Reply", error.toString());
     }
 });
 
@@ -55,15 +55,20 @@ async function GetServerList() {
             console.log(`statusCode: ${res.statusCode}`);
                 res.on('data', d => {
                     if (res.statusCode != 200) {
-                        reject(`Failed to access ${apiEndpoint}: ` + res.statusCode);
+                        reject(res.statusCode);
                         return;
                     }
                     data.push(d);
                 });
                 res.on("end", function() {
-                    var buf = Buffer.concat(data);
-                    let parsed = JSON.parse(buf.toString());
-                    resolve(parsed);
+                    try {
+                        var buf = Buffer.concat(data);
+                        let parsed = JSON.parse(buf.toString());
+                        resolve(parsed);
+                    }
+                    catch {
+                        reject();
+                    }
                 });
             });
             req.on('error', error => {

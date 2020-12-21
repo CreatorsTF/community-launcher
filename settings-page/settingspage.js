@@ -1,6 +1,7 @@
-const { BrowserWindow, ipcMain, shell } = require("electron");
+const { BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
+const {ModListLoader} = require("../modules/mod_list_loader");
 
 var settingsWindow;
 var waitingForSettings = true;
@@ -21,19 +22,19 @@ function OpenWindow() {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: 640,
-        minHeight: 500,
-        width: 700,
-        height: 550
+        minWidth: 960,
+        minHeight: 600,
+        width: screenWidth-325,
+        height: screenHeight-100
     });
-    settingsWindow.removeMenu();
+    if (!isDev) settingsWindow.removeMenu();
     settingsWindow.loadFile("./settings-page/settings.html");
     settingsWindow.once("ready-to-show", () => {
         settingsWindow.show();
 
         waitingForSettings = true;
 
-        //Setup some logic to prevent the window from closing when the user closes it initialy.
+        //Setup some logic to prevent the window from closing when the user closes it initially.
         //We can then save the new settings to the config, THEN close it ourselves.
         settingsWindow.addListener("close", (e) => {
             //Only prevent close when we havent saved settings yet
@@ -66,6 +67,17 @@ function OpenWindow() {
 
             //Remove this listner now as it will cause a double subscription.
             ipcMain.removeAllListeners("GetNewSettings-Reply");
+        });
+
+        ipcMain.on("ClearModList", (event, arg) => {
+            if(ModListLoader.DeleteLocalModList()){
+                dialog.showMessageBox({
+                    type: "info",
+                    title: "Settings",
+                    message: "Local mod list cache was cleared.",
+                    buttons: ["OK"]
+                })
+            }
         });
     });
 }

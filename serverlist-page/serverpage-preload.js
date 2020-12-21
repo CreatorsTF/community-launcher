@@ -1,16 +1,9 @@
-const { ipcRenderer, shell, win } = require("electron");
-
-const log = require("electron-log");
-log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-log.transports.file.fileName = "preloadsettingspage.log";
-log.transports.file.maxSize = 10485760;
-log.transports.file.getFile();
-log.silly("Testing log - PRELOAD OF SETTINGS PAGE");
+const { ipcRenderer, shell } = require("electron");
 
 const arrowDownHTML = ' <i class="mdi mdi-arrow-down-drop-circle"></i>';
 const arrowRightHTML = ' <i class="mdi mdi-arrow-right-drop-circle"></i>';
 const mapThumb = 'https://creators.tf/api/mapthumb?map=';
+const creatorsServerListPage = "https://creators.tf/servers";
 
 var container;
 var hasCreatedPageContent = false;
@@ -39,7 +32,7 @@ class ServerDOMData {
     map = null;
     mapPic = null;
     players = null;
-    hearbeat = null;
+    heartbeat = null;
     status = null;
     tr = null;
     button = null;
@@ -47,6 +40,10 @@ class ServerDOMData {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("serverpagea").addEventListener("click", (ev) => {
+        shell.openExternal(creatorsServerListPage);
+    });
+
     ipcRenderer.send("GetServerList", "");
     container = document.getElementById("server-container");
     refreshButton = document.getElementById("refreshButton");
@@ -63,14 +60,14 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
         var serverRegionMap = SortServersIntoRegions(servers);
 
         //Create DOM elements for the servers if not created already.
-        if(!hasCreatedPageContent) {
+        if (!hasCreatedPageContent) {
             CreateServerDOMElements(serverRegionMap);
         }
 
         //Update server DOM elements with the recieved information.
         for (const region of serverRegionMap) {
             var regionName = region[0].toLowerCase();
-            if(!regionDOMData.has(regionName)){
+            if (!regionDOMData.has(regionName)) {
                 continue;
             }
 
@@ -89,7 +86,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
 
                 serverDOMData.players.innerHTML = `<p>${server.online}/${server.maxplayers}</p>`;
-                serverDOMData.hearbeat.innerText = `${server.since_heartbeat}` + "s ago";
+                serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
 
                 if (server.is_down === false) {
                     serverDOMData.status.className = "mdi mdi-check-circle link-mini up";
@@ -103,27 +100,29 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
 
                 if (server.passworded === true) {
                     serverDOMData.button.innerText = `Connect (${server.online}/${server.maxplayers}) `;
-                    if(serverDOMData.lock == null){
+                    if (serverDOMData.lock == null) {
                         serverDOMData.lock = document.createElement("i");
                         serverDOMData.lock.className = "mdi mdi-lock link-mini";
                         serverDOMData.lock.title = "This server requires a password to join";
                     }
-
                     serverDOMData.lock.style.display = "inline";
                     serverDOMData.button.appendChild(serverDOMData.lock);
-                }
-                else{
-                    if(serverDOMData.lock != null){
+                } else {
+                    if (serverDOMData.lock != null) {
                         serverDOMData.lock.style.display = "none";
                     }
-
                     serverDOMData.button.innerText = "Connect";
                 }
             }
         }
     }
+    else if(serverListData == "503"){
+        loading.remove();
+        document.getElementById("cloudflare-error").style.display = "block";
+    }
     else {
-        document.getElementById("failMessage").innerText = "Failed to get servers.\n\nYour internet may be down\nOR\nCreators.TF may be down\n\nGo to our Twitter (@CreatorsTF) for more info!";
+        loading.remove();
+        document.getElementById("failMessage").style.display = "block";
     }
 });
 
@@ -201,7 +200,7 @@ function CreateServerDOMElements(serverRegionMap){
             let hbHolder = document.createElement("td");
             hbHolder.className = "hb";
             let hb = document.createElement("p");
-            domData.hearbeat = hb;
+            domData.heartbeat = hb;
             hbHolder.title = "This is the amount of time that has passed since the last server status check. Typically, the time should not exceed 30 seconds. If it exceeds, it means the server is probably experiencing connection problems.";
             tr.appendChild(hbHolder);
             hbHolder.appendChild(hb);

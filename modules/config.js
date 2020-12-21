@@ -139,18 +139,18 @@ async function GetSteamDirectory() {
     } else if (os.platform() == "linux" || "freebsd" || "openbsd") {
         //Linux solution is untested
         var homedir = process.env.HOME;
-        var steamPaths = {
-            "homePrefix": {
+        var steamPaths = [
+            {
                 "paths": [".steam/steam"],
                 "prefix": homedir
             },
-            "absolutePath": {
+            {
                 "paths": [".local/share/steam"],
                 "prefix": ""
             }
-        }
+        ]
         
-        for(const pathGroup in steamPaths) {
+        for(const pathGroup of steamPaths) {
             basedir = await getExistingPath(pathGroup["paths"], pathGroup["prefix"])
             if(basedir != "") {
                 break;

@@ -1,10 +1,11 @@
 {
+    "version": 1.22,
     "mods":
     [
         {
             "name": "Creators.TF",
             "blurb": "A TF2 celebration project",
-            "icon": "images/logos/modcirclelogos/creatorstf.png",
+            "icon": "images/logos/modcirclelogos/creatorstf.svg",
             "titleimage": "images/logos/modlogos/creatorstf.png",
             "backgroundimage": "images/backgrounds/creatorstf.png",
             "bordercolor": "orange",
@@ -16,6 +17,7 @@
             "instagram": "https://creators.tf/instagram",
             "discord": "https://creators.tf/discord",
             "serverlist": "yes",
+            "modid": "",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
                 "type": "jsonlist",
@@ -26,13 +28,38 @@
             }
         },
         {
+            "name": "Creators.TF Events Servers",
+            "blurb": "Content for the Events & Silly Servers",
+            "icon": "images/logos/modcirclelogos/CTFEvents.png",
+            "titleimage": "images/logos/modlogos/eventsbanner.png",
+            "backgroundimage": "images/backgrounds/events.png",
+            "bordercolor": "#2ecc71",
+            "backgroundposX": "right",
+            "backgroundposY": "top",
+            "website": "https://creators.tf",
+            "github": "",
+            "twitter": "",
+            "instagram": "",
+            "discord": "https://creators.tf/discord",
+            "serverlist": "yes",
+            "modid": "",
+            "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
+            "install": {
+                "type": "jsonlist",
+                "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
+                "targetdirectory": "{tf2_dir}/tf/download/",
+                "version_property_name": "Version",
+                "install_url_property_name": "DownloadLink"
+            }
+        },
+        {
             "name": "GMan Announcer",
-            "blurb": "Creators.TF GMan Announcer Pack",
-            "icon": "images/logos/modcirclelogos/announcer.png",
+            "blurb": "GMan Announcer Pack",
+            "icon": "images/logos/modcirclelogos/gmanannouncer.png",
             "titleimage": "images/logos/modlogos/gmanannouncer.png",
             "backgroundimage": "images/backgrounds/gmanannouncer.jpg",
             "bordercolor": "#6969FF",
-            "backgroundposX": "right",
+            "backgroundposX": "center",
             "backgroundposY": "bottom",
             "website": "",
             "github": "",
@@ -40,6 +67,7 @@
             "instagram": "",
             "discord": "",
             "serverlist": "",
+            "modid": "",
             "contenttext": "Custom Creators.TF G-Man Announcer Pack",
             "install": {
                 "type": "jsonlist",
@@ -47,6 +75,30 @@
                 "targetdirectory": "{tf2_dir}/tf/custom/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
+            }
+        },
+        {
+            "name": "Ultimate TF2 Visual Fix Pack",
+            "blurb": "Community Visual Fix Pack",
+            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.png",
+            "titleimage": "images/logos/modlogos/ultimate_tf2_visual_fixes_largelogo.png",
+            "backgroundimage": "",
+            "bordercolor": "#3e3c3f",
+            "backgroundposX": "left",
+            "backgroundposY": "top",
+            "website": "",
+            "github": "https://github.com/agrastiOs/Ultimate-TF2-Visual-Fix-Pack",
+            "twitter": "",
+            "instagram": "",
+            "discord": "",
+            "serverlist": "",
+            "contenttext": "Community made Visual Fixes for various issues with cosmetics, weapons, particles, visual effects,\n plus fixing Dragon’s Fury lag, opaque and glitchy Flamethrower flames, worse looking stock weapons, and more!",
+            "install": {
+                "type": "github",
+                "owner": "agrastiOs",
+                "name": "Ultimate-TF2-Visual-Fix-Pack",
+                "targetdirectory": "{tf2_dir}/tf/custom/",
+                "asset_index": 0
             }
         }
     ]

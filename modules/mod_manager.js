@@ -1,6 +1,7 @@
 const path = global.path;
 const os = require('os');
 
+const fs = require("fs");
 const { dialog } = require('electron');
 const https = require('https');
 const JSZip = require('jszip');
@@ -14,6 +15,8 @@ const filemanager = require("./file_manager");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
 const {GameBananaSource} = require("./mod_sources/gamebanana_source.js");
+const Utilities = require("./utilities");
+const {ModListLoader} = require("./mod_list_loader");
 
 var functionMap = new Map();
 
@@ -60,7 +63,7 @@ source_manager: null,
 
 //Sets up the module.
 async Setup(){
-    this.all_mods_data = JSON.parse(await fsPromises.readFile(path.resolve(__dirname, "..", "internal", "mods.json")));
+    this.all_mods_data = ModListLoader.GetModList();
 
     await filemanager.Init();
 },
@@ -166,7 +169,7 @@ async ModInstallPlayButtonClick(){
             //Really we should for this state to be active but best to be sure.
             global.log.log("Asking user if they want to update this mod.");
             const version = await this.source_manager.GetLatestVersionNumber();            
-            let update_msg = `Would you like to update this mod to version "${version}"`;
+            let update_msg = `Would you like to update this mod to version "${version}"?`;
 
             //Ask if the users wants to update or not
             
@@ -179,7 +182,7 @@ async ModInstallPlayButtonClick(){
             });
             if(button.response == 0) {
                 //Do the update!
-                global.log.log("Start the update process");
+                global.log.log("Starting update process...");
                 await this.UpdateCurrentMod();
             }
             break;
@@ -190,9 +193,9 @@ async ModInstallPlayButtonClick(){
 },
 
 //Attempt an update. If possible then we do it. Will try to do it incrementally or a full re download.
-async UpdateCurrentMod(){
+async UpdateCurrentMod() {
     //Validate tf2 dir, then make sure we have the current data for the mod.
-    if (!await ValidateTF2Dir()){
+    if (!await ValidateTF2Dir()) {
         this.FakeClickMod();
         return;
     }
@@ -352,86 +355,116 @@ async SetupNewModAsInstalled(){
 async RemoveCurrentMod() {
     //Do nothing if this mod is not installed or if there is no mod data.
     if(this.currentModData == null || this.currentModState == State.NOT_INSTALLED) return;
+    var progressBar;
+    try {
+        //Load file list object
+        let files_object = await filemanager.GetFileList(this.currentModData.name);
+        var running = true;
 
-    //Load file list object
-    let files_object = await filemanager.GetFileList(this.currentModData.name);
 
-    if(files_object.files != null && files_object.files.length > 0){
-        let progressBar = new ProgressBar({
-            indeterminate: false,
-            text: "Removing Mod Files",
-            detail: "Starting Removal...",
-            maxValue: files_object.files.length,
-            abortOnError: true,
-            closeOnComplete: false,
-            browserWindow: {
-                webPreferences: {
-                    nodeIntegration: true
-                },
-                width: 550,
-                parent: global.mainWindow,
-                modal: true,
-                title: "Removing Mod Files",
-                backgroundColor: "#2b2826"
-            },
-            style: {
-                text: loadingTextStyle,
-                detail: loadingTextStyle,
-                value: loadingTextStyle
+        if(files_object.files != null && files_object.files.length > 0){
+            progressBar = new ProgressBar({
+                indeterminate: false,
+                text: "Removing Mod Files",
+                detail: "Starting Removal...",
+                maxValue: files_object.files.length,
+                abortOnError: true,
+                closeOnComplete: false,
+                browserWindow: {
+                    webPreferences: {
+                        nodeIntegration: true
+                    },
+                    width: 550,
+                    parent: global.mainWindow,
+                    modal: true,
+                    title: "Removing Mod Files",
+                    backgroundColor: "#2b2826",
+                    closable: true
+                    },
+                    style: {
+                        text: loadingTextStyle,
+                        detail: loadingTextStyle,
+                        value: loadingTextStyle
+                    }
+                }, global.app);
+
+                //Setup events to display data.
+                progressBar
+                .on('completed', function () {
+                    progressBar.detail = 'Removal Done.';
+                })
+                .on('aborted', function (value) {
+                    running = false;
+                    ErrorDialog(`Mod Removal was canceled and may be incomplete. You may need to re install the mod to remove it correctly.`, "Removal Canceled!");
+                    this.FakeClickMod();
+                }).
+                on('progress', function(value) {
+                    progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
+                });
+
+            for(var i = 0; i < files_object.files.length; i++){
+                if(!running) return;
+
+                global.log.log("Deleting file: " + files_object.files[i]);
+                //If the file exists, delete it.
+                if(await fsPromises.fileExists(files_object.files[i])) await fsPromises.unlink(files_object.files[i]);
+                progressBar.value = i + 1;
             }
-        }, global.app);
 
-        //Setup events to display data.
-        progressBar
-        .on('completed', function () {
-            progressBar.detail = 'Removal Done.';
-        })
-        .on('aborted', function (value) {
-            global.log.info(`aborted... ${value}`);
-        }).
-        on('progress', function(value) {
-            progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
-        });
+            await Delay(300);        
+            running = false;
+            progressBar.setCompleted();
+            progressBar.close();
 
-        for(var i = 0; i < files_object.files.length; i++){
-            global.log.log("Deleting file: " + files_object.files[i]);
-            //If the file exists, delete it.
-            if(await fsPromises.fileExists(files_object.files[i])) await fsPromises.unlink(files_object.files[i]);
-            progressBar.value = i + 1;
+            if(await fsPromises.fileExists(files_object.files[0])){
+                ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
+                this.FakeClickMod();
+                return;
+            }
+
+            //Remove mod file list.
+            await filemanager.RemoveFileList(this.currentModData.name);
+
+            //Remove mod from current config
+            for(let i = 0; i < global.config.current_mod_versions.length; i++){
+                let element = global.config.current_mod_versions[i];
+                if(element.name && element.name == this.currentModData.name){
+                    global.config.current_mod_versions.splice(i, 1);
+                }
+            }
+            await config.SaveConfig(global.config);
+
+            await dialog.showMessageBox(global.mainWindow, {
+                type: "info",
+                title: "Mod Removal Complete",
+                message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
+                buttons: ["OK"]
+            });
+
+            this.FakeClickMod();
         }
-
-        await Delay(300);        
+        else{
+            await dialog.showMessageBox(global.mainWindow, {
+                type: "error",
+                title: "Mod Removal Error",
+                message: "Mod cannot be removed. Please try to remove them manually.",
+                buttons: ["OK"]
+            });
+        }
+    }
+    catch(e){
         progressBar.setCompleted();
         progressBar.close();
-
-        //Remove mod file list.
-        await filemanager.RemoveFileList(this.currentModData.name);
-
-        //Remove mod from current config
-        for(let i = 0; i < global.config.current_mod_versions.length; i++){
-            let element = global.config.current_mod_versions[i];
-            if(element.name && element.name == this.currentModData.name){
-                global.config.current_mod_versions.splice(i, 1);
-            }
+        var errorString;
+        if(e.toString().includes("EBUSY")){
+            errorString = "Mod file(s) were busy or in use. You cannot remove a mod if TF2 is still running.\nSome files may not be deleted and some may remain.\nClose TF2 and try removing the mod again.";
         }
-        await config.SaveConfig(global.config);
+        else{
+            errorString = e.toString();
+        }
 
-        await dialog.showMessageBox(global.mainWindow, {
-            type: "info",
-            title: "Mod Removal Complete",
-            message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
-            buttons: ["OK"]
-        });
-
+        await ErrorDialog(`Mod Removal Failed.\n${errorString}`, "Mod Removal Error");
         this.FakeClickMod();
-    }
-    else{
-        await dialog.showMessageBox(global.mainWindow, {
-            type: "error",
-            title: "Mod Removal Error",
-            message: "Mod cannot be removed. Please try to remove them manually.",
-            buttons: ["OK"]
-        });
     }
 },
 
@@ -450,24 +483,24 @@ GetModDataByName(name){
 },
 
 //Find the current version of the mod given by name that we have in our config. No version means it is not installed.
-GetCurrentModVersionFromConfig(name){
+GetCurrentModVersionFromConfig(name) {
     let toReturn = null;
-    for(let i = 0; i < global.config.current_mod_versions.length; i++){
+    for (let i = 0; i < global.config.current_mod_versions.length; i++) {
         let element = global.config.current_mod_versions[i];
-        if(element.name && element.name == name){
+        if (element.name && element.name == name) {
             toReturn = element;
             break;
         }
     }
-
     //Return the version if it was there.
-    if(toReturn != null){
+    if (toReturn != null) {
         return toReturn.version;
+    } else {
+        return null;
     }
-    else return null;
 },
 
-GetRealTF2Path(){
+GetRealInstallPath(){
     let realPath = this.currentModData.install.targetdirectory;
 
     //To ensure the path is correct when resolved. Good one Zonical.
@@ -507,7 +540,7 @@ async InstallFiles(files){
             func = entry.value[0];
         }
         
-        await func(this.GetRealTF2Path(), entry.value[1], this.currentModData);
+        await func(this.GetRealInstallPath(), entry.value[1], this.currentModData);
         entryIndex++;
         if(entryIndex < sortedFiles.size){
             await entryProcess();
@@ -540,6 +573,7 @@ function DownloadFiles_UI(urls){
 
     return new Promise((resolve, reject) => {
         var progressBar;
+        var shouldStop = {value: false};
 
         let maxProgressVal = 0;
 
@@ -572,7 +606,8 @@ function DownloadFiles_UI(urls){
                     parent: global.mainWindow,
                     modal: true,
                     title: "Downloading Mod Files",
-                    backgroundColor: "#2b2826"
+                    backgroundColor: "#2b2826",
+                    closable: true
                 },
                 style: {
                     text: loadingTextStyle,
@@ -586,10 +621,11 @@ function DownloadFiles_UI(urls){
             .on('completed', function () {
                 //progressBar.detail = 'Download Finished!';
             })
-            .on('aborted', function (value) {
+            .on('aborted', function (value) { 
+                shouldStop.value = true;
                 reject("Download Cancelled by User!");
-            }).
-            on('progress', function(value) {
+            })
+            .on('progress', function(value) {
                 try{
                 progressBar.detail = `[File ${currentIndex + 1} of ${urls.length}] Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
                 }
@@ -604,7 +640,7 @@ function DownloadFiles_UI(urls){
         //Setup download sequence for all files
         let downloadFunc = () => {
             global.log.log("Starting Download for file at: " + urls[currentIndex]);
-            DownloadFile(urls[currentIndex], progressFunction, headersFunction).then((file) => {
+            DownloadFile(urls[currentIndex], progressFunction, headersFunction, shouldStop).then((file) => {
                 files.push(file);
                 currentIndex++;
 
@@ -638,17 +674,7 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
     var currentZip;
     var currentIndex = 0;
     var multipleZips = false;
-
-    //Make JSZip object from each of the zips given
-    let zipConvertsInProgress = 0;
-
-    for(let i = 0; i < zips.length; i++){
-        zipConvertsInProgress++;
-        let index = i;
-        const jszip = await JSZip.loadAsync(zips[index].buffer);
-        zips[index] = jszip;
-        zipConvertsInProgress--;
-    }
+    var active = true;
 
     //Load file list object
     let files_object = await filemanager.GetFileList(currentModData.name);
@@ -663,7 +689,8 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
             parent: global.mainWindow,
             modal: true,
             title: "Extracting files...",
-            backgroundColor: "#2b2826"
+            backgroundColor: "#2b2826",
+            closable: true
         },
         style: {
             text: loadingTextStyle,
@@ -671,13 +698,26 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
             value: loadingTextStyle
         }
     });
-      
+
     progressBar
     .on('completed', function() {
         progressBar.detail = 'Extraction completed. Exiting...';
     })
     .on('aborted', function() {
+        active = false;
+        reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
     });
+
+    //Make JSZip object from each of the zips given
+    let zipConvertsInProgress = 0;
+
+    for(let i = 0; i < zips.length; i++){
+        zipConvertsInProgress++;
+        let index = i;
+        const jszip = await JSZip.loadAsync(zips[index].buffer);
+        zips[index] = jszip;
+        zipConvertsInProgress--;
+    }
 
     await fsPromises.ensureDirectoryExists(targetPath);
 
@@ -691,11 +731,15 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
         //Add file that we wrote to the file list
         if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
 
-        global.log.log(`ZIP extract for${name} was successful.`);
+        global.log.log(`ZIP extract for "${name}" was successful.`);
         inProgress--;
     };
 
     const HandleFile = async (relativePath, file) => {
+        if(!active){
+            return;
+        }
+
         inProgress++;
         if(file.dir){
             let directory = path.join(targetPath, file.name);
@@ -709,6 +753,7 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
                 await Write(file.name, d);
             } catch (err) {
                 log.error(err);
+                throw err;
             }
         }
     };
@@ -799,6 +844,7 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
 
     //Load file list object
     let files_object = await filemanager.GetFileList(currentModData.name);
+    var active = true;
 
     await fsPromises.ensureDirectoryExists(targetPath);
 
@@ -812,7 +858,8 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
             parent: global.mainWindow,
             modal: true,
             title: "Writing files...",
-            backgroundColor: "#2b2826"
+            backgroundColor: "#2b2826",
+            closable: true
         },
         style: {
             text: loadingTextStyle,
@@ -820,17 +867,23 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
             value: loadingTextStyle
         }
     });
-      
+
     progressBar
     .on('completed', function() {
+        active = false;
         progressBar.detail = 'Writing completed. Exiting...';
     })
     .on('aborted', function() {
+        active = false;
+        reject("User aborted file writing. You will need to restart the installation process to install this mod.");
     });
-
+    
     global.log.log("Waiting for File writing to complete...")
 
     for (let index = 0; index < files.length; index++) {
+        if(!active){
+            continue;
+        }
         const file = files[index];
         inProgress++;
         progressBar.detail = `Writing ${file.name}. Total Files Written: ${written}.`;
@@ -850,66 +903,6 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
     progressBar.setCompleted();
     await filemanager.SaveFileList(files_object, currentModData.name);
     return;
-}
-
-//Depricated
-function DownloadZIP_UI(_url) {
-    return new Promise((resolve, reject) => {
-        global.log.log("Starting GET for mod data zip at: " + _url);
-        var progressBar;
-        let maxProgressVal = 0;
-
-        let progressFunction = (dataLength) => {
-            if(!progressBar.isCompleted()) progressBar.value = dataLength;
-        };
-
-        let headersFunction = (headers) => {
-            let contentLength = headers["content-length"];
-
-            progressBar = new ProgressBar({
-                indeterminate: false,
-                text: "Downloading Mod Files",
-                detail: "Starting Download...",
-                maxValue: parseInt(contentLength),
-                abortOnError: true,
-                closeOnComplete: false,
-                browserWindow: {
-                    webPreferences: {
-                        nodeIntegration: true
-                    },
-                    width: 550,
-                    parent: global.mainWindow,
-                    modal: true,
-                    title: "Downloading Mod Files",
-                    backgroundColor: "#2b2826"
-                },
-                style: {
-                    text: loadingTextStyle,
-                    detail: loadingTextStyle,
-                    value: loadingTextStyle
-                }
-            }, global.app);
-
-            maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;
-
-            progressBar
-                .on('completed', function () {
-                    progressBar.detail = 'Download Finished!';
-                })
-                .on('aborted', function (value) {
-                    global.log.info(`aborted... ${value}`);
-                }).
-                on('progress', function(value) {
-                    progressBar.detail = `Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
-                });
-        };
-
-        DownloadZIP(_url, progressFunction, headersFunction).then((zip) => {
-            progressBar.setCompleted();
-            progressBar.close();
-            resolve(zip);
-        }).catch(reject);
-    });
 }
 
 //Validates the tf2 directory. Can trigger dialogues depending on the outcome.
@@ -960,8 +953,9 @@ async function ValidateTF2Dir(){
     return false;
 }
 
-function DownloadFile(_url, progressFunc, responseHeadersFunc){
+function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop){
     return new Promise((resolve, reject) => {
+
         var options = {
             headers: {
               'User-Agent': 'creators-tf-launcher'
@@ -981,8 +975,14 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc){
                     global.log.log("Got a 302, re trying on new location.");
                     DoRequest(res.headers.location, retries--);
                 }
+                else if (res.statusCode == 404){
+                    let error = `Remote Mod file was not able to be found. Try again later.\nIf this persists please report this error.`;
+                    global.log.error(error);
+                    global.log.error("404 for: " + _url);
+                    reject(error);
+                }
                 else if (res.statusCode !== 200) {
-                    let error = `Request failed, response code was: ${res.statusCode}`;
+                    let error = `Download File Request failed, response code was: ${res.statusCode}.\nPlease report this error.`;
                     global.log.error(error);
                     reject(error);
                 }
@@ -996,21 +996,45 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc){
                     // or, if you must, set it to null. In that case the chunk will be a string.
     
                     res.on("data", function (chunk) {
+                        if(shouldStop.value){
+                            res.destroy();
+                            reject();
+                            return;
+                        }
+
                         data.push(chunk);
                         dataLen += chunk.length;
                         if(progressFunc != null) progressFunc(dataLen);
                     });
     
                     res.on("end", function () {
-                        var buf = Buffer.concat(data);
-    
-                        progressFunc = null;
-                        responseHeadersFunc = null;
-                        
-                        global.log.log("File download finished. Returning raw data.");
-                        //This approach to get the file name only works for direct file urls.
-                        //A better solution for later would be via the content-disposition header if this is missing.
-                        resolve(new DownloadedFile(buf, GetFileName(__url)));
+                        if(!shouldStop.value){
+                            var buf = Buffer.concat(data);
+        
+                            progressFunc = null;
+                            responseHeadersFunc = null;
+                            
+                            global.log.log("File download finished. Returning raw data.");
+                            //This approach to get the file name only works for direct file urls.
+                            //A better solution for later would be via the content-disposition header if this is missing.
+                            var filename;
+                            var contentDispositionHeader = res.headers["content-disposition"];
+                            if(contentDispositionHeader != undefined){
+                                const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                                var matches = filenameRegex.exec(contentDispositionHeader);
+                                if (matches != null && matches[1]) { 
+                                    filename = matches[1].replace(/['"]/g, '');
+                                    global.log.info("Got filename for download fron content-disposition header: " + filename);
+                                }
+                            }
+
+                            if(filename == undefined) filename = GetFileName(__url);
+
+                            resolve(new DownloadedFile(buf, filename));
+                        }
+                        else{
+                            global.log.log("File download was cancled by the user successfully.");
+                        }
                     });
                 }
             });
@@ -1045,7 +1069,7 @@ function SetNewModVersion(version, currentModName){
 }
 
 async function ErrorDialog(error, title){
-    global.log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
+    global.log.error(`Error Dialog shown: ${title} : ${error.toString()}.\nError Stack:${error.stack}`);
     await dialog.showMessageBox(global.mainWindow, {
         type: "error",
         title: title,
