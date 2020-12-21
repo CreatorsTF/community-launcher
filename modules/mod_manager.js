@@ -83,6 +83,9 @@ async ChangeCurrentMod(name){
         case "jsonlist":
             this.source_manager = new JsonListSource(this.currentModData.install);
             break;
+        case "github":
+            this.source_manager = new GithubSource(this.currentModData.install);
+            break;
         case "gamebanana":
             this.source_manager = new GameBananaSource(this.currentModData.install);
             break;
@@ -360,7 +363,6 @@ async RemoveCurrentMod() {
         //Load file list object
         let files_object = await filemanager.GetFileList(this.currentModData.name);
         var running = true;
-
 
         if(files_object.files != null && files_object.files.length > 0){
             progressBar = new ProgressBar({
@@ -699,15 +701,6 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
         }
     });
 
-    progressBar
-    .on('completed', function() {
-        progressBar.detail = 'Extraction completed. Exiting...';
-    })
-    .on('aborted', function() {
-        active = false;
-        reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
-    });
-
     //Make JSZip object from each of the zips given
     let zipConvertsInProgress = 0;
 
@@ -757,6 +750,15 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
             }
         }
     };
+
+    progressBar
+    .on('completed', function() {
+        progressBar.detail = 'Extraction completed. Exiting...';
+    })
+    .on('aborted', function() {
+        active = false;
+        reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
+    });
 
     const HandleZips = async (zips) => {
         const promises = [];
@@ -840,7 +842,6 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
 //Writes files to disk that are not in a zip but are just a buffer.
 async function WriteFilesToDirectory(targetPath, files, currentModData){
     var written = 0;
-    var inProgress = 0;
 
     //Load file list object
     let files_object = await filemanager.GetFileList(currentModData.name);
@@ -885,7 +886,6 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
             continue;
         }
         const file = files[index];
-        inProgress++;
         progressBar.detail = `Writing ${file.name}. Total Files Written: ${written}.`;
 
         let fullFilePath = path.join(targetPath, file.name);
@@ -897,7 +897,6 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
         if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
 
         global.log.log(`File write for '${file.name}' was successful.`);
-        inProgress--;
     }
 
     progressBar.setCompleted();
