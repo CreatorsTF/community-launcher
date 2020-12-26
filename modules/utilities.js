@@ -10,6 +10,7 @@ var process_1 = __importDefault(require("process"));
 var path_1 = __importDefault(require("path"));
 var ProgressBar = require('electron-progressbar');
 var app = require("electron").app;
+var electron_log_1 = __importDefault(require("electron-log"));
 var loadingTextStyle = {
     color: "ghostwhite"
 };
@@ -40,6 +41,9 @@ var Utilities = /** @class */ (function () {
         if (!fs_1.default.existsSync(_path))
             fs_1.default.mkdirSync(_path);
         return _path;
+    };
+    Utilities.GetLogsFolder = function () {
+        return electron_log_1.default.transports.file.getFile().path;
     };
     Utilities.GetNewLoadingPopup = function (title, mainWindow, onCanceled) {
         var progressBar = new ProgressBar({

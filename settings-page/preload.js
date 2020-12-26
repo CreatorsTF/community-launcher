@@ -14,6 +14,7 @@ window.addEventListener("DOMContentLoaded", () => {
     var btn_showCfgClose = document.getElementById("config-dontshow-button");
     var btn_copyCfgContents = document.getElementById("config-copycontents-button");
     var btn_openConfigLoc = document.getElementById("open-config-location");
+    var btn_openLogLoc = document.getElementById("open-log-location");
     var btn_reload = document.getElementById("reload-button");
     var btn_clearmodlist = document.getElementById("config-clearmodlist");
     
@@ -28,6 +29,9 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     btn_openConfigLoc.onclick = () => {
         ipcRenderer.send("open-config-location", "");
+    };
+    btn_openLogLoc.onclick = () => {
+        ipcRenderer.send("open-log-location", "");
     };
     btn_copyCfgContents.onclick = () => {
         copyCfgContentsToClipboard();

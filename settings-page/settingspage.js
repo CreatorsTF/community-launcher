@@ -2,6 +2,7 @@ const { BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
 const {ModListLoader} = require("../modules/mod_list_loader");
+const {Utilities} = require("../modules/utilities");
 
 var settingsWindow;
 var waitingForSettings = true;
@@ -88,5 +89,14 @@ ipcMain.on("open-config-location", (event, arg) => {
     }
     catch(e) {
         global.log.error("Failed to open config location: " + e.toString());
+    }
+});
+
+ipcMain.on("open-log-location", (event, arg) => {
+    try {
+        shell.showItemInFolder(Utilities.GetLogsFolder());
+    }
+    catch(e) {
+        global.log.error("Failed to open log location: " + e.toString());
     }
 });
