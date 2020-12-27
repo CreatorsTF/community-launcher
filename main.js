@@ -11,11 +11,11 @@ const { app, BrowserWindow, ipcMain, shell, dialog, screen } = require("electron
 const config = require("./modules/config");
 const settingsPage = require("./settings-page/settingspage");
 const patchnotesPage = require("./patchnotes-page/patchnotespage");
-const serverlistPage = require("./serverlist-page/serverlistpage")
+const {ServerListPage} = require("./serverlist-page/serverlistpage");
 const mod_manager = require("./modules/mod_manager");
 const { autoUpdater } = require("electron-updater");
 const {Utilities} = require("./modules/utilities");
-const {ModListLoader} = require("./modules/mod_list_loader");
+const { ModListLoader, ModList } = require("./modules/mod_list_loader");
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 const log = require("electron-log");
@@ -195,14 +195,19 @@ ipcMain.on("restart_app", () => {
     log.info("Restarting program to install an update");
 });
 
-ipcMain.on("SettingsWindow", async (event, someArgument) => {
+ipcMain.on("SettingsWindow", async (event, arg) => {
     settingsPage.OpenWindow();
 });
-ipcMain.on("PatchNotesWindow", async (event, someArgument) => {
+ipcMain.on("PatchNotesWindow", async (event, arg) => {
     patchnotesPage.OpenWindow();
 });
-ipcMain.on("ServerListWindow", async (event, someArgument) => {
-    serverlistPage.OpenWindow();
+ipcMain.on("ServerListWindow", async (event, arg) => {
+    var modList = ModListLoader.GetModList();
+    //Make sacrificial object soo the local method exists. Thanks js on your half assed oo.
+    var realModList = new ModList();
+    Object.assign(realModList, modList);
+    var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
+    ServerListPage.OpenWindow(mainWindow, global.screenWidth, global.screenHeight, providers);
 });
 
 // ipcMain.on("app_version", (event) => {
@@ -211,7 +216,7 @@ ipcMain.on("ServerListWindow", async (event, someArgument) => {
 //     });
 // });
 
-ipcMain.on("GetConfig", async (event, someArgument) => {
+ipcMain.on("GetConfig", async (event, arg) => {
     event.reply("GetConfig-Reply", global.config);
 });
 

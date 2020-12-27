@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModList = exports.ModListLoader = void 0;
+exports.ModListEntry = exports.ModList = exports.ModListLoader = void 0;
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var https_1 = __importDefault(require("https"));
@@ -186,7 +186,22 @@ exports.ModListLoader = ModListLoader;
 var ModList = /** @class */ (function () {
     function ModList() {
     }
+    ModList.prototype.GetMod = function (name) {
+        for (var _i = 0, _a = this.mods; _i < _a.length; _i++) {
+            var entry = _a[_i];
+            if (entry.name == name) {
+                return entry;
+            }
+        }
+        return null;
+    };
     return ModList;
 }());
 exports.ModList = ModList;
+var ModListEntry = /** @class */ (function () {
+    function ModListEntry() {
+    }
+    return ModListEntry;
+}());
+exports.ModListEntry = ModListEntry;
 //# sourceMappingURL=mod_list_loader.js.map

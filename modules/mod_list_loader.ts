@@ -141,31 +141,45 @@ class ModListLoader {
 class ModList
 {
     version: number;
-    mods: Array<{
-        name: string;
-        blurb: string;
-        icon: string;
-        titleimage: string;
-        backgroundimage: string;
-        bordercolor: string;
-        backgroundposX: string;
-        backgroundposY: string;
-        website: string;
-        github: string;
-        twitter: string;
-        instagram: string;
-        discord: string;
-        serverlist: string;
-        modid: string;
-        contenttext: string;
-        install: {
-            type: string;
-            get_url: string;
-            targetdirectory: string;
-            version_property_name: string;
-            install_url_property_name: string;
-        };
-    }>;
+    mods: Array<ModListEntry>;
+
+    public GetMod(name : any) : ModListEntry{
+        for(var entry of this.mods){
+            if(entry.name == name){
+                return entry;
+            }
+        }
+
+        return null;
+    }
 }
 
-export { ModListLoader, ModList }
+class ModListEntry
+{
+    name: string;
+    blurb: string;
+    icon: string;
+    titleimage: string;
+    backgroundimage: string;
+    bordercolor: string;
+    backgroundposX: string;
+    backgroundposY: string;
+    website: string;
+    github: string;
+    twitter: string;
+    instagram: string;
+    discord: string;
+    serverlist: string;
+    serverlistproviders: Array<number>;
+    modid: string;
+    contenttext: string;
+    install: {
+        type: string;
+        get_url: string;
+        targetdirectory: string;
+        version_property_name: string;
+        install_url_property_name: string;
+    };
+}
+
+export { ModListLoader, ModList, ModListEntry }

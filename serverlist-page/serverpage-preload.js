@@ -23,6 +23,18 @@ serverNames.set("ru", "Russia");
 serverNames.set("au", "Australia");
 serverNames.set("sg", "Singapore");
 
+//Remove certain characters from remote data.
+String.prototype.escape = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
+};
+
 class ServerDOMData {
     _region = "";
     _id = "";
@@ -38,13 +50,16 @@ class ServerDOMData {
     button = null;
     lock = null;
 }
-
+window.gotServerList = false;
 window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("serverpagea").addEventListener("click", (ev) => {
         shell.openExternal(creatorsServerListPage);
     });
 
-    ipcRenderer.send("GetServerList", "");
+    if(!window.gotServerList){
+        ipcRenderer.send("GetServerList", "");
+        window.gotServerList = true;
+    }
     container = document.getElementById("server-container");
     refreshButton = document.getElementById("refreshButton");
     refreshButton.addEventListener("click", Refresh);
@@ -76,9 +91,9 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             for (let server of region[1]) {
                 var serverDOMData = regionDOMs.get(parseInt(server.id));
 
-                serverDOMData.id.innerHTML = `<p>${server.id}</p>`;
-                serverDOMData.hostname.innerHTML = `<p>${server.hostname}</p>`;
-                serverDOMData.map.innerHTML = `<p>${server.map}</p>`;
+                serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
+                serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
+                serverDOMData.map.innerHTML = `<p>${server.map.toString().escape()}</p>`;
 
                 let mapPic = document.createElement("div");
                 serverDOMData.map.appendChild(mapPic);
@@ -123,6 +138,8 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     else {
         loading.remove();
         document.getElementById("failMessage").style.display = "block";
+        console.error("Server list result: " + serverListData.result);
+        console.log(serverListData);
     }
 });
 
