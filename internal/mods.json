@@ -23,6 +23,7 @@
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/ctfpack.json",
+                "cloudflarebypass": true,
                 "targetdirectory": "{tf2_dir}/tf/download/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
@@ -48,6 +49,7 @@
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
+                "cloudflarebypass": true,
                 "targetdirectory": "{tf2_dir}/tf/download/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
@@ -73,6 +75,7 @@
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
+                "cloudflarebypass": true,
                 "targetdirectory": "{tf2_dir}/tf/custom/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
