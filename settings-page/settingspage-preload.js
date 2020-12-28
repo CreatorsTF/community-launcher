@@ -6,9 +6,10 @@ log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}]
 log.transports.file.fileName = "preloadsettingspage.log";
 log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
-log.silly("Testing log - PRELOAD OF SETTINGS PAGE");
 
 window.addEventListener("DOMContentLoaded", () => {
+    ipcRenderer.send("GetCurrentVersion", "");
+
     var cfg_debug = document.getElementById("config-debug");
     var btn_showCfg = document.getElementById("config-show-button");
     var btn_showCfgClose = document.getElementById("config-dontshow-button");
@@ -58,6 +59,10 @@ ipcRenderer.on("GetNewSettings", (event, arg) => {
     arg.tf2_directory = document.getElementById("tf2_directory").value;
     arg.steam_directory = document.getElementById("steam_directory").value;
     ipcRenderer.send("GetNewSettings-Reply", arg);
+});
+
+ipcRenderer.on("GetCurrentVersion-Reply", async (event, version) => {
+    document.getElementById("version-box").innerHTML = `<p>Launcher Version: ${version}</p>`;
 });
 
 function copyCfgContentsToClipboard() {

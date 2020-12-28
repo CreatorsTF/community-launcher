@@ -13,7 +13,7 @@ function OpenWindow() {
     settingsWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "settingspage-preload.js"),
             nodeIntegration: false
         },
         modal: true,
@@ -99,4 +99,8 @@ ipcMain.on("open-log-location", (event, arg) => {
     catch(e) {
         global.log.error("Failed to open log location: " + e.toString());
     }
+});
+
+ipcMain.on("GetCurrentVersion", (event, arg) => {
+    event.reply("GetCurrentVersion-Reply", Utilities.GetCurrentVersion());
 });
