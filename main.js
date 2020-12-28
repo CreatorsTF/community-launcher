@@ -202,12 +202,23 @@ ipcMain.on("PatchNotesWindow", async (event, arg) => {
     patchnotesPage.OpenWindow();
 });
 ipcMain.on("ServerListWindow", async (event, arg) => {
+    //Get the mod list data so we can get the server providers for the current mod.
+
     var modList = ModListLoader.GetModList();
     //Make sacrificial object soo the local method exists. Thanks js on your half assed oo.
     var realModList = new ModList();
     Object.assign(realModList, modList);
+
     var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
-    ServerListPage.OpenWindow(mainWindow, global.screenWidth, global.screenHeight, providers);
+    if(providers != null) ServerListPage.OpenWindow(mainWindow, global.screenWidth, global.screenHeight, providers);
+    else{
+        if (isDev){
+            Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
+        }
+        else {
+            log.error("There were no providers for the current mod! Did not open server list page.");
+        }
+    }
 });
 
 // ipcMain.on("app_version", (event) => {
@@ -288,6 +299,7 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
 ipcMain.on("GetModData", async (event, args) => {
     ModListLoader.CheckForUpdates().then(() => {
         ModListLoader.UpdateLocalModList();
+        log.verbose("Latest mod list was sent to renderer");
         event.reply("ShowMods", ModListLoader.GetModList());
     });
 });

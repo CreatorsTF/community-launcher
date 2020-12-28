@@ -5,6 +5,8 @@ import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
 import { remote } from "electron";
 
+//URLs to try to get mod lists from.
+//More than one allows fallbacks.
 const modListURLs = [
     "https://fastdl.creators.tf/launcher/mods.json",
     "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json"
@@ -12,6 +14,9 @@ const modListURLs = [
 
 const localModListName = "mods.json";
 
+/**
+ * Responsible for providing the latest mod list avaliable.
+ */
 class ModListLoader {
 
     private static lastDownloaded : ModList;
@@ -25,6 +30,9 @@ class ModListLoader {
         return this.localModList;
     }
 
+    /**
+     * Update the local mod list file on disk to contain the latest data we found.
+     */
     public static UpdateLocalModList() : Boolean {
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
             let configPath = path.join(Utilities.GetDataFolder(), localModListName);
@@ -34,6 +42,9 @@ class ModListLoader {
         return false;
     }
 
+    /**Check if there is a newer mod list online.
+     * Also checks if the internal version is newer than the local, written version.
+     */
     public static async CheckForUpdates() : Promise<boolean> {
         ElectronLog.log("Checking for modlist updates");
         var data = new Array<any>();

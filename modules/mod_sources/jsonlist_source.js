@@ -13,6 +13,7 @@ module.exports.JsonListSource = class JsonListSource extends ModInstallSource {
         super(install_data);
         this.url = install_data.get_url;
 
+        //If this property is present, lets add a random query on the end of the URL to get an un cached version of this file.
         if(install_data.cloudflarebypass != null){
             this.url += `?${Math.floor(Math.random() * 1000000000)}`;
         }

@@ -90,6 +90,8 @@ class ServerListPage {
         var serverData = null;
         //Get server data for the given providers.
         for(let provider of this.latestProviders){
+            //Request server data for this specific provider id.
+            //If it fails we just use what we have.
             let response = await getProviderServerList(provider.toString());
             if(response != null && response.result != null && response.result == "SUCCESS"){
                 if(serverData == null){
@@ -108,6 +110,11 @@ class ServerListPage {
         return serverData;
     }
 
+    /**
+     * Combines the server data of these two objects together.
+     * @param oldData Main object to add to.
+     * @param newData Other obect to take the .servers property from.
+     */
     private static CombineServerData(oldData : any, newData: any) : any{
         if(oldData.hasOwnProperty("servers")){
             oldData.servers = oldData.servers.concat(newData.servers);
