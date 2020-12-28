@@ -11,7 +11,10 @@ const https = require('https');
 const JSZip = require('jszip');
 const url = require("url");
 const ProgressBar = require('electron-progressbar');
+const log = require('electron-log');
+const fsPromises = require('./fs_extensions');
 const config = require('./config');
+const errors = require('./errors');
 const filemanager = require("./file_manager");
 const {GithubSource} = require("./mod_sources/github_source.js");
 const {JsonListSource} = require("./mod_sources/jsonlist_source.js");
@@ -63,268 +66,255 @@ files_object: null,
 source_manager: null,
 
 //Sets up the module.
-Setup(){
+async Setup(){
     this.all_mods_data = ModListLoader.GetModList();
 
-    filemanager.Init();
+    await filemanager.Init();
 },
 
 //Change the currently selected mod, return its installation button text.
-ChangeCurrentMod(name){
-    return new Promise((resolve, reject) => {
-        //Get this mods data and store it for use.
-        this.currentModData = this.GetModDataByName(name);
-        this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
-        this.currentModState = State.NOT_INSTALLED;
-        this.currentModVersionRemote = 0;
+async ChangeCurrentMod(name){
+    //Get this mods data and store it for use.
+    this.currentModData = this.GetModDataByName(name);
+    this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
+    this.currentModState = State.NOT_INSTALLED;
+    this.currentModVersionRemote = 0;
 
-        global.log.log(`Set current mod to: ${this.currentModData.name}`);
+    global.log.log(`Set current mod to: ${this.currentModData.name}`);
 
-        //Setup the source manager object depending on the type of the mod.
-        switch(this.currentModData.install.type){
-            case "jsonlist":
-                this.source_manager = new JsonListSource(this.currentModData.install);
+    //Setup the source manager object depending on the type of the mod.
+    switch(this.currentModData.install.type){
+        case "jsonlist":
+            this.source_manager = new JsonListSource(this.currentModData.install);
             break;
-            case "github":
-                this.source_manager = new GithubSource(this.currentModData.install);
-                break;
-            case "gamebanana":
-                this.source_manager = new GameBananaSource(this.currentModData.install);
-                break;
+        case "github":
+            this.source_manager = new GithubSource(this.currentModData.install);
+            break;
+        case "gamebanana":
+            this.source_manager = new GameBananaSource(this.currentModData.install);
+            break;
+        default:
+            this.source_manager = null;
+            throw new Error("Mod install type was not recognised: " + this.currentModData.install.type);
+            return;
+    }
+
+    //We do not have a version for this mod. Method to use is install.
+    if(this.currentModVersion == null || this.currentModVersion == 0){
+        try {
+            const version = await this.source_manager.GetLatestVersionNumber();
+            this.currentModState = State.NOT_INSTALLED;
+            this.currentModVersionRemote = version;
+            return "Install";
+        } catch (e) {
+            throw new errors.InnerError("Failed to get mod version: " + e.toString(), e)
+        }
+    }
+    else {
+        //We have a version, now we need to determine if there is an update or not.
+        const version = await this.source_manager.GetLatestVersionNumber();
+        
+        //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
+        this.currentModVersionRemote = version;
+
+        if(version > this.currentModVersion) 
+            this.currentModState = State.UPDATE;
+        else 
+            this.currentModState = State.INSTALLED;
+
+        //Time to resolve with the text to show on the button
+        switch(this.currentModState){
+            case State.INSTALLED:
+                return "Installed";
+            case State.UPDATE:
+                return "Update";
             default:
-                this.source_manager = null;
-                reject("Mod install type was not recognised: " + this.currentModData.install.type);
-                return;
+                return "Install";
         }
-
-        //We do not have a version for this mod. Method to use is install.
-        if(this.currentModVersion == null || this.currentModVersion == 0){
-            this.source_manager.GetLatestVersionNumber().then((version) => {
-                this.currentModState = State.NOT_INSTALLED;
-                this.currentModVersionRemote = version;
-                resolve("Install");
-            }).catch((e) => {
-                reject("Failed to get mod version: " + e.toString());
-            });
-        }
-        else {
-            //We have a version, now we need to determine if there is an update or not.
-            this.source_manager.GetLatestVersionNumber().then(
-                (version) => {
-                    //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
-
-                    this.currentModVersionRemote = version;
-
-                    if(version > this.currentModVersion) 
-                        this.currentModState = State.UPDATE;
-                    else 
-                        this.currentModState = State.INSTALLED;
-
-                    //Time to resolve with the text to show on the button
-                    switch(this.currentModState){
-                        case State.INSTALLED:
-                            resolve("Installed");
-                            break;
-                        case State.UPDATE:
-                            resolve("Update");
-                            break;
-                        default:
-                            resolve("Install");
-                            break;
-                    }
-                }).catch((e) => {
-                    reject(e);
-            });
-        }
-    });
+    }
 },
 
 //Trigger the correct response to the current mod depending on its state.
 //This is called when the Install / Update / Installed button is pressed in the UI.
-ModInstallPlayButtonClick() {
+async ModInstallPlayButtonClick(){
     global.log.log("Install button was clicked! Reacting based on state: " + this.currentModState)
-    if(this.currentModData != null){
-        switch(this.currentModState){
-            case State.NOT_INSTALLED:
-                //We should try to install this mod!
-                //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
-                global.log.log("Will validate TF2 path before starting download...");
-                if(!ValidateTF2Dir()){
-                    this.FakeClickMod();
-                    global.log.error("Ending Install attempt now as validation failed!");
-                    return;
-                } 
-
-                global.log.log("TF2 Path was validated.");
-                    
-                //Perform mod download and install.
-                this.source_manager.GetFileURL().then((_url) => {
-                    global.log.log("Successfully got mod install file urls. Will proceed to try to download them.");
-                    this.ModInstall(_url).then(() => {
-                        this.SetupNewModAsInstalled();
-                    });
-                }).catch((e) => 
-                {
-                    this.FakeClickMod();
-                    ErrorDialog(e, "Mod Begin Install Error");
-                });
-                break;
-
-            case State.UPDATE:
-                //We should try to update this mod!
-
-                //Setup the message to include the version if we have the data.
-                //Really we should for this state to be active but best to be sure.
-                global.log.log("Asking user if they want to update this mod.");
-                this.source_manager.GetLatestVersionNumber().then((version) => {
-                    let update_msg = `Would you like to update this mod to version "${version}"?`;
-
-                    //Ask if the users wants to update or not
-                    dialog.showMessageBox(global.mainWindow, {
-                        type: "question",
-                        title: "Update",
-                        message: update_msg,
-                        buttons: ["Yes", "Cancel"],
-                        cancelId: 1
-                    }).then((button) => {
-                        if (button.response == 0) {
-                            //Do the update!
-                            global.log.log("Starting update process...");
-                            this.UpdateCurrentMod();
-                        }
-                    });
-                });
-                break;
-            default:
-                global.log.error("Somehow the install button was clicked when the mod is in the installed state.");
-                break;
-        }
-    }
-    else{
+    if (this.currentModData == null){
         this.FakeClickMod();
-        ErrorDialog("Mod data was not able to be read.\nPlease report this error.", "Mod Install Start Error")
+        await ErrorDialog("Mod data was not able to be read.\nPlease report this error.", "Mod Install Start Error")
+        return;
+    }
+
+    switch(this.currentModState){
+        case State.NOT_INSTALLED:
+            //We should try to install this mod!
+            //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
+            global.log.log("Will validate TF2 path before starting download...");
+            if(!await ValidateTF2Dir()){                
+                this.FakeClickMod();
+                global.log.error("Ending Install attempt now as validation failed!");
+                return;
+            }
+            global.log.log("TF2 Path was validated.");
+                
+            //Perform mod download and install.
+            try {
+                const _url = await this.source_manager.GetFileURL();
+                global.log.log("Successfuly got mod install file urls. Will proceed to try to download them.");
+                await this.ModInstall(_url);
+                await this.SetupNewModAsInstalled();
+            } catch (e) {
+                this.FakeClickMod();
+                await ErrorDialog(e, "Mod Begin Install Error");
+            }
+            
+            break;
+
+        case State.UPDATE:
+            //We should try to update this mod!
+
+            //Setup the message to include the version if we have the data.
+            //Really we should for this state to be active but best to be sure.
+            global.log.log("Asking user if they want to update this mod.");
+            const version = await this.source_manager.GetLatestVersionNumber();            
+            let update_msg = `Would you like to update this mod to version "${version}"?`;
+
+            //Ask if the users wants to update or not
+            
+            const button = await dialog.showMessageBox(global.mainWindow, {
+                type: "question",
+                title: "Update",
+                message: update_msg,
+                buttons: ["Yes", "Cancel"],
+                cancelId: 1
+            });
+            if(button.response == 0) {
+                //Do the update!
+                global.log.log("Starting update process...");
+                await this.UpdateCurrentMod();
+            }
+            break;
+        default:
+            global.log.error("Somehow the install button was clicked when the mod is in the installed state.");
+            break;
     }
 },
 
 //Attempt an update. If possible then we do it. Will try to do it incrementally or a full re download.
-UpdateCurrentMod() {
+async UpdateCurrentMod() {
     //Validate tf2 dir, then make sure we have the current data for the mod.
-    if (!ValidateTF2Dir()) {
+    if (!await ValidateTF2Dir()) {
         this.FakeClickMod();
         return;
     }
 
     //Re validate the latest version is higher than ours.
-    this.source_manager.GetLatestVersionNumber().then( (version) => {
-    //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
+    const version = await this.source_manager.GetLatestVersionNumber();
 
-    if (version > this.currentModVersion) {
-    //Check mod type.
-    if (this.currentModData.install.type == "jsonlist") {
-        //For an update, we will check if there is a list of update archives and try to create a list of ones to download.
-        //Then we can incrementally update hopefully and download a lot less.
-        this.source_manager.GetJsonData().then((data) => {
-            var urls = [];
-            if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
-                //There should be urls to patch zips for each update.
-                let patchObjects = data.PatchUpdates;
-                let patchURLS = [];
-                patchObjects.forEach((patch) => {
-                    if (patch.Version > this.currentModVersion) patchURLS.push(patch);
-                });
+    try {
+        //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
 
-                //Sort the urls soo we apply updates from the oldest update to the newest.
-                patchURLS.sort((a, b) => {
-                    //We want to sort smaller version numbers FIRST
-                    //Soo they get applied first later.
-                    if (a.Version > b.Version) return 1;
-                    if (a.Version < b.Version) return -1;
-
-                    return 0;
-                });
-
-                //Get out the urls for easier use later.
-                for (let i = 0; i < patchURLS.length; i++) {
-                    urls.push(patchURLS[i].DownloadURL);
-                }
-            }
+        if (version > this.currentModVersion) {
+            //Check mod type.
+            if (this.currentModData.install.type == "jsonlist") {
+                //For an update, we will check if there is a list of update archives and try to create a list of ones to download.
+                //Then we can incrementally update hopefully and download a lot less.
+                const data = await this.source_manager.GetJsonData();
                 
-            if(urls.length > 0) {
-                global.log.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
-                this.ModInstall(urls).then(() => {
+                var urls = [];
+                if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
+                    //There should be urls to patch zips for each update.
+                    let patchObjects = data.PatchUpdates;
+                    let patchURLS = [];
+                    patchObjects.forEach((patch) => {
+                        if (patch.Version > this.currentModVersion) patchURLS.push(patch);
+                    });
+
+                    //Sort the urls soo we apply updates from the oldest update to the newest.
+                    patchURLS.sort((a, b) => {
+                        //We want to sort smaller version numbers FIRST
+                        //Soo they get applied first later.
+                        if (a.Version > b.Version) return 1;
+                        if (a.Version < b.Version) return -1;
+
+                        return 0;
+                    });
+
+                    //Get out the urls for easier use later.
+                    for (let i = 0; i < patchURLS.length; i++) {
+                        urls.push(patchURLS[i].DownloadURL);
+                    }
+                }
+                    
+                if(urls.length > 0) {
+                    global.log.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
+                    await this.ModInstall(urls);
+                
                     //Update the version for the mod.
                     
                     SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
                     //Save the config changes.
-                    config.SaveConfig(global.config);
+                    await config.SaveConfig(global.config);
 
                     this.FakeClickMod();
 
-                    dialog.showMessageBox(global.mainWindow, {
+                    await dialog.showMessageBox(global.mainWindow, {
                         type: "info",
                         title: "Mod Update",
                         message: `Mod update for ${this.currentModData.name} was completed successfully.`,
                         buttons: ["OK"]
                     });
+                }
+                else {
+                    //We need to update using the main zip. Not ideal but works.
+                    global.log.warn("Update source does not have patch data! Will have to download again fully.");
+                    const _url = await this.source_manager.GetFileURL();
+                    await this.ModInstall(_url);
+                    SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
-                });
-            }
-            else {
-                //We need to update using the main zip. Not ideal but works.
-                global.log.warn("Update source does not have patch data! Will have to download again fully.");
-                this.source_manager.GetFileURL().then((_url) => {
-                    this.ModInstall(_url).then( () => {
-                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                    //Save the config changes.
+                    await config.SaveConfig(global.config);
 
-                        //Save the config changes.
-                        config.SaveConfig(global.config);
+                    this.FakeClickMod();
 
-                        this.FakeClickMod();
-
-                        dialog.showMessageBox(global.mainWindow, {
-                            type: "info",
-                            title: "Mod Update",
-                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
-                            buttons: ["OK"]
-                        });
+                    await dialog.showMessageBox(global.mainWindow, {
+                        type: "info",
+                        title: "Mod Update",
+                        message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                        buttons: ["OK"]
                     });
-                });
+                }
             }
-        });
-    }
-    else if (this.currentModData.install.type == "github") {
-        //Current mod is not a jsonlist type. Just get and install the latest.
-        this.source_manager.GetFileURL().then((_url) => {
-            global.log.log("Mod is type GitHub, will update using the most recent release url: " + _url);
-            this.ModInstall(_url).then(() => {
+            else if (this.currentModData.install.type == "github") {
+                //Current mod is not a jsonlist type. Just get and install the latest.
+                const _url = await this.source_manager.GetFileURL();
+                global.log.log("Mod is type GitHub, will update using the most recent release url: " + _url);
+                await this.ModInstall(_url);
                 SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                 //Save the config changes.
-                config.SaveConfig(global.config);
+                await config.SaveConfig(global.config);
 
                 this.FakeClickMod();
 
-                dialog.showMessageBox(global.mainWindow, {
+                await dialog.showMessageBox(global.mainWindow, {
                     type: "info",
                     title: "Mod Update",
                     message: `Mod update for ${this.currentModData.name} was completed successfully.`,
                     buttons: ["OK"]
                 });
-
-            })
-        });
+            }
+            else {
+                global.log.error("Unknown mod type found during update attempt.");
+                await ErrorDialog("Unknown mod type found during update attempt.", "Error");
+            }
+        }
+        
+    } catch (e) {
+        await ErrorDialog(e, "Mod Update Error"); 
     }
-    else {
-        global.log.error("Unknown mod type found during update attempt.");
-        ErrorDialog("Unknown mod type found during update attempt.", "Error");
-    }
-    }
-    }).catch((e) => { ErrorDialog(e, "Mod Update Error"); });
 },
 
-ModInstall(contentURL){
-    return new Promise((resolve, reject) => {
-
+async ModInstall(contentURL){
     let urlArray;
     if(Array.isArray(contentURL)) urlArray = contentURL;
     else{
@@ -332,17 +322,20 @@ ModInstall(contentURL){
         urlArray.push(contentURL);
     }
     
-    DownloadFiles_UI(urlArray).then((files) => {
-        this.InstallFiles(files).then(() => {
-            resolve();
-        }).catch((e) => { ErrorDialog(e, "Mod Install Error"); this.FakeClickMod();});
-    }).catch((e) => { ErrorDialog(e, "Mod Files Download Error"); this.FakeClickMod();});
-
-    });
+    try {   
+        const files = await DownloadFiles_UI(urlArray);     
+        try {        
+            await this.InstallFiles(files);
+        } catch (e) {
+            await ErrorDialog(e, "Mod Install Error"); this.FakeClickMod();
+        }
+    } catch (e) {
+        await ErrorDialog(e, "Mod Files Download Error"); this.FakeClickMod();
+    }
 },
 
 //Set up the config information to actually define this mod as installed. MUST BE DONE.
-SetupNewModAsInstalled(){
+async SetupNewModAsInstalled(){
     //Finish up the installation process.
     //Set the current version of the mod in the config.
 
@@ -352,13 +345,13 @@ SetupNewModAsInstalled(){
     if(!versionUpdated) global.config.current_mod_versions.push({name: this.currentModData.name, version: this.currentModVersionRemote})
 
     //Save the config changes.
-    config.SaveConfig(global.config);
+    await config.SaveConfig(global.config);
 
     this.currentModState = State.INSTALLED;
 
     this.FakeClickMod();
 
-    dialog.showMessageBox(global.mainWindow, {
+    await dialog.showMessageBox(global.mainWindow, {
         type: "info",
         title: "Mod Install",
         message: `Mod files installation for ${this.currentModData.name} was completed successfully.`,
@@ -366,13 +359,13 @@ SetupNewModAsInstalled(){
     });
 },
 
-RemoveCurrentMod() {
+async RemoveCurrentMod() {
     //Do nothing if this mod is not installed or if there is no mod data.
     if(this.currentModData == null || this.currentModState == State.NOT_INSTALLED) return;
     var progressBar;
     try {
         //Load file list object
-        let files_object = filemanager.GetFileListSync(this.currentModData.name);
+        let files_object = await filemanager.GetFileList(this.currentModData.name);
         var running = true;
 
         if(files_object.files != null && files_object.files.length > 0){
@@ -393,73 +386,71 @@ RemoveCurrentMod() {
                     title: "Removing Mod Files",
                     backgroundColor: "#2b2826",
                     closable: true
-                },
-                style: {
-                    text: loadingTextStyle,
-                    detail: loadingTextStyle,
-                    value: loadingTextStyle
-                }
-            }, global.app);
+                    },
+                    style: {
+                        text: loadingTextStyle,
+                        detail: loadingTextStyle,
+                        value: loadingTextStyle
+                    }
+                }, global.app);
 
-            //Setup events to display data.
-            progressBar
-            .on('completed', function () {
-                progressBar.detail = 'Removal Done.';
-            })
-            .on('aborted', function (value) {
-                running = false;
-                ErrorDialog(`Mod Removal was canceled and may be incomplete. You may need to re install the mod to remove it correctly.`, "Removal Canceled!");
-                this.FakeClickMod();
-            }).
-            on('progress', function(value) {
-                progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
-            });
+                //Setup events to display data.
+                progressBar
+                .on('completed', function () {
+                    progressBar.detail = 'Removal Done.';
+                })
+                .on('aborted', function (value) {
+                    running = false;
+                    ErrorDialog(`Mod Removal was canceled and may be incomplete. You may need to re install the mod to remove it correctly.`, "Removal Canceled!");
+                    this.FakeClickMod();
+                }).
+                on('progress', function(value) {
+                    progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
+                });
 
             for(var i = 0; i < files_object.files.length; i++){
                 if(!running) return;
 
                 global.log.log("Deleting file: " + files_object.files[i]);
                 //If the file exists, delete it.
-                if(fs.existsSync(files_object.files[i])) fs.unlinkSync(files_object.files[i]);
+                if(await fsPromises.fileExists(files_object.files[i])) await fsPromises.unlink(files_object.files[i]);
                 progressBar.value = i + 1;
             }
 
-            setTimeout(() => {
-                running = false;
-                progressBar.setCompleted();
-                progressBar.close();
+            await Delay(300);        
+            running = false;
+            progressBar.setCompleted();
+            progressBar.close();
 
-                if(fs.existsSync(files_object.files[0])){
-                    ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
-                    this.FakeClickMod();
-                    return;
-                }
-
-                //Remove mod file list.
-                filemanager.RemoveFileList(this.currentModData.name);
-
-                //Remove mod from current config
-                for(let i = 0; i < global.config.current_mod_versions.length; i++){
-                    let element = global.config.current_mod_versions[i];
-                    if(element.name && element.name == this.currentModData.name){
-                        global.config.current_mod_versions.splice(i, 1);
-                    }
-                }
-                config.SaveConfig(global.config);
-
-                dialog.showMessageBox(global.mainWindow, {
-                    type: "info",
-                    title: "Mod Removal Complete",
-                    message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
-                    buttons: ["OK"]
-                });
-
+            if(await fsPromises.fileExists(files_object.files[0])){
+                await ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
                 this.FakeClickMod();
+                return;
+            }
 
-            }, 300);
+            //Remove mod file list.
+            await filemanager.RemoveFileList(this.currentModData.name);
+
+            //Remove mod from current config
+            for(let i = 0; i < global.config.current_mod_versions.length; i++){
+                let element = global.config.current_mod_versions[i];
+                if(element.name && element.name == this.currentModData.name){
+                    global.config.current_mod_versions.splice(i, 1);
+                }
+            }
+            await config.SaveConfig(global.config);
+
+            await dialog.showMessageBox(global.mainWindow, {
+                type: "info",
+                title: "Mod Removal Complete",
+                message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
+                buttons: ["OK"]
+            });
+
+            this.FakeClickMod();
         }
         else{
-            dialog.showMessageBox(global.mainWindow, {
+            await dialog.showMessageBox(global.mainWindow, {
                 type: "error",
                 title: "Mod Removal Error",
                 message: "Mod cannot be removed. Please try to remove them manually.",
@@ -478,7 +469,7 @@ RemoveCurrentMod() {
             errorString = e.toString();
         }
 
-        ErrorDialog(`Mod Removal Failed.\n${errorString}`, "Mod Removal Error");
+        await ErrorDialog(`Mod Removal Failed.\n${errorString}`, "Mod Removal Error");
         this.FakeClickMod();
     }
 },
@@ -528,8 +519,7 @@ GetRealInstallPath(){
     return path.normalize(realPath.replace("{tf2_dir}", global.config.tf2_directory));
 },
 
-InstallFiles(files){
-    return new Promise((resolve, reject) => {
+async InstallFiles(files){
     //Sort files based on their handle function.
     let sortedFiles = new Map();
     for(let i = 0; i < files.length; i++){
@@ -550,26 +540,21 @@ InstallFiles(files){
     let entry;
     let func;
 
-    let entryProcess = () => {
+    let entryProcess = async () => {
         entry = fileEntries.next();
         if(entry != null){
             func = entry.value[0];
         }
         
-        func(this.GetRealInstallPath(), entry.value[1], this.currentModData).then(() => {
-            entryIndex++;
-            if(entryIndex < sortedFiles.size){
-                entryProcess();
-            }
-            else{
-                resolve();
-            }
-        }).catch(reject);
+        await func(this.GetRealInstallPath(), entry.value[1], this.currentModData);
+        entryIndex++;
+        if(entryIndex < sortedFiles.size){
+            await entryProcess();
+        }
     };
 
-        //Call to process the first entry
-        entryProcess();
-    });
+    //Call to process the first entry
+    await entryProcess();
 },
 
 FakeClickMod(){
@@ -583,6 +568,11 @@ FakeClickMod(){
 //END OF EXPORT FUNCTIONS ############
 }// END OF EXPORT OBJECT. ##########################
 
+
+async function Delay(ms)
+{
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 function DownloadFiles_UI(urls){
     var currentIndex = 0;
     var files = [];
@@ -684,296 +674,277 @@ function DownloadFiles_UI(urls){
 
 //Get all the files that exist in this zip file object and create them in the target directory.
 //Also supports multiple zips to install at once.
-function WriteZIPsToDirectory(targetPath, zips, currentModData){
-    return new Promise((resolve, reject) => {
-        var inProgress = 0;
-        var written = 0;
-        var currentZip;
-        var currentIndex = 0;
-        var multipleZips = false;
-        var active = true;
+async function WriteZIPsToDirectory(targetPath, zips, currentModData){
+    var inProgress = 0;
+    var written = 0;
+    var currentZip;
+    var currentIndex = 0;
+    var multipleZips = false;
+    var active = true;
 
-        //Load file list object
-        let files_object = filemanager.GetFileListSync(currentModData.name);
+    //Load file list object
+    let files_object = await filemanager.GetFileList(currentModData.name);
 
-        var progressBar = new ProgressBar({
-            text: 'Extracting data',
-            detail: 'Starting data extraction...',
-            browserWindow: {
-                webPreferences: {
-                    nodeIntegration: true
-                },
-                parent: global.mainWindow,
-                modal: true,
-                title: "Extracting files...",
-                backgroundColor: "#2b2826",
-                closable: true
+    var progressBar = new ProgressBar({
+        text: 'Extracting data',
+        detail: 'Starting data extraction...',
+        browserWindow: {
+            webPreferences: {
+                nodeIntegration: true
             },
-            style: {
-                text: loadingTextStyle,
-                detail: loadingTextStyle,
-                value: loadingTextStyle
-            }
-        });
-
-        //Make JSZip object from each of the zips given
-        let zipConvertsInProgress = 0;
-
-        for(let i = 0; i < zips.length; i++){
-            zipConvertsInProgress++;
-            let index = i;
-            JSZip.loadAsync(zips[index].buffer).then((jszip) => {
-                zips[index] = jszip;
-                zipConvertsInProgress--;
-            }).catch(reject);
-        }
-
-        if(!fs.existsSync(targetPath)){
-            fs.mkdirSync(targetPath, {recursive: true});
-        }
-
-        const Write = (name, d) => {
-            let fullFilePath = path.join(targetPath, name);
-
-            //Make missing directories
-            let filePathDir = path.dirname(fullFilePath);
-            if(!fs.existsSync(filePathDir)){
-                fs.mkdirSync(filePathDir, {recursive: true});
-            }
-
-            fs.writeFile(fullFilePath, d, (err) => {
-                if (err){
-                    written++;
-                    global.log.error(err.toString());
-                    throw err;
-                }
-                written++;
-
-                progressBar.detail = `Wrote ${name}. Total Files Written: ${written}.`;
-
-                //Add file that we wrote to the file list
-                if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
-
-                global.log.log(`ZIP extract for "${name}" was successful.`);
-                inProgress--;
-            });
-        };
-
-        const HandleFile = (relativePath, file) => {
-            if(active){
-                inProgress++;
-                if(file.dir){
-                    let directory = path.join(targetPath, file.name);
-
-                    if(!fs.existsSync(directory)){
-                        fs.mkdirSync(directory, {recursive: true});
-                        global.log.log("Made the directory: " + directory);
-                    }
-                    inProgress--;
-                }
-                else {
-                    currentZip.file(file.name).async("uint8array").then((d) => { 
-                        Write(file.name, d);
-                    }).catch((err) => {
-                        global.log.log(err);
-                        reject(err);
-                    });
-                }
-            }
-        };
-
-        progressBar
-        .on('completed', function() {
-            progressBar.detail = 'Extraction completed. Exiting...';
-        })
-        .on('aborted', function() {
-            active = false;
-            reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
-        });
-
-        const CheckZipCreateDone = () => {
-            if(zipConvertsInProgress <= 0){
-
-                //Get the target zip.
-                if(!Array.isArray(zips)){
-                    currentZip = zips;
-                    multipleZips = false;
-                }
-                else{
-                    currentZip = zips[0];
-                    multipleZips = true;
-                }
-
-                DoExtract();
-            }
-            else{
-                setTimeout(CheckZipCreateDone, 50);
-            }
-        };
-
-        setTimeout(CheckZipCreateDone, 50);
-
-        const DoExtract = () => {
-            global.log.log("Waiting for ZIP exraction to complete...")
-            currentZip.forEach(HandleFile);
-
-            let checkFunc = () => {
-                if(active){
-                    if(inProgress <= 0){
-                        inProgress = 0;
-
-                        if(multipleZips){
-                            currentIndex++;
-                            //If we have another zip to install.
-                            if(currentIndex < zips.length){
-                                //Assign the new zip and repeat the processess to handle and write the files.
-                                currentZip = zips[currentIndex];
-                                currentZip.forEach(HandleFile);
-
-                                //Make sure we set a timeout for the checking function again!!
-                                setTimeout(checkFunc, 200);
-                            }
-                            else {
-                                progressBar.setCompleted();
-                                filemanager.SaveFileListSync(files_object, currentModData.name);
-                                resolve();
-                            }
-                        }
-                        else {
-                            //Resolve now as we only had one zip to install.
-                            progressBar.setCompleted();
-                            filemanager.SaveFileListSync(files_object, currentModData.name);
-                            resolve();
-                        }
-                        
-                    }
-                    else setTimeout(checkFunc, 200);
-                }
-            };
-
-            setTimeout(checkFunc, 1000);
+            parent: global.mainWindow,
+            modal: true,
+            title: "Extracting files...",
+            backgroundColor: "#2b2826",
+            closable: true
+        },
+        style: {
+            text: loadingTextStyle,
+            detail: loadingTextStyle,
+            value: loadingTextStyle
         }
     });
+
+    //Make JSZip object from each of the zips given
+    let zipConvertsInProgress = 0;
+
+    for(let i = 0; i < zips.length; i++){
+        zipConvertsInProgress++;
+        let index = i;
+        const jszip = await JSZip.loadAsync(zips[index].buffer);
+        zips[index] = jszip;
+        zipConvertsInProgress--;
+    }
+
+    await fsPromises.ensureDirectoryExists(targetPath);
+
+    const Write = async (name, d) => {
+        let fullFilePath = path.join(targetPath, name);
+        await fsPromises.writeFile(fullFilePath, d);
+        written++;
+
+        progressBar.detail = `Wrote ${name}. Total Files Written: ${written}.`;
+
+        //Add file that we wrote to the file list
+        if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
+
+        global.log.log(`ZIP extract for "${name}" was successful.`);
+        inProgress--;
+    };
+
+    const HandleFile = async (relativePath, file) => {
+        if(!active){
+            return;
+        }
+
+        inProgress++;
+        if(file.dir){
+            let directory = path.join(targetPath, file.name);
+
+            await fsPromises.ensureDirectoryExists(directory);
+            inProgress--;
+        }
+        else{
+            try {
+                const d = await currentZip.file(file.name).async("uint8array");
+                await Write(file.name, d);
+            } catch (err) {
+                log.error(err);
+                throw err;
+            }
+        }
+    };
+
+    progressBar
+    .on('completed', function() {
+        progressBar.detail = 'Extraction completed. Exiting...';
+    })
+    .on('aborted', function() {
+        active = false;
+        reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
+    });
+
+    const HandleZips = async (zips) => {
+        const promises = [];
+        zips.forEach((rf, f) => {
+            const promise = HandleFile(rf, f);
+            promises.push(promise);
+        })
+        return Promise.all(promises);
+    }
+
+    const DoExtract = async () => {
+        global.log.log("Waiting for ZIP exraction to complete...")
+        await HandleZips(currentZip);
+        
+        let checkFunc = async () => {
+            if(inProgress <= 0){
+                inProgress = 0;
+
+                if(multipleZips){
+                    currentIndex++;
+                    //If we have another zip to install.
+                    if(currentIndex < zips.length){
+                        //Assign the new zip and repeat the processess to handle and write the files.
+                        currentZip = zips[currentIndex];
+                        await HandleZips(currentZip);
+
+                        //Make sure we set a timeout for the checking function again!!
+                        await Delay(200);
+                        await checkFunc();
+                    }
+                    else {
+                        progressBar.setCompleted();
+                        await filemanager.SaveFileList(files_object, currentModData.name);
+                        return;
+                    }
+                }
+                else{
+                    //Resolve now as we only had one zip to install.
+                    progressBar.setCompleted();
+                    await filemanager.SaveFileList(files_object, currentModData.name);
+                    return;
+                }
+                
+            }
+            else {
+                await Delay(200);
+                await checkFunc();
+                return;
+            };
+        };
+
+        await Delay(1000);
+        await checkFunc();
+    }
+
+    const CheckZipCreateDone = async() => {
+        if(zipConvertsInProgress <= 0){
+
+            //Get the target zip.
+            if(!Array.isArray(zips)){
+                currentZip = zips;
+                multipleZips = false;
+            }
+            else{
+                currentZip = zips[0];
+                multipleZips = true;
+            }
+
+            await DoExtract();
+        }
+        else{
+            await Delay(50);
+            await CheckZipCreateDone();
+        }
+    };
+
+    await Delay(50);
+    await CheckZipCreateDone();
 }
 
 //Writes files to disk that are not in a zip but are just a buffer.
-function WriteFilesToDirectory(targetPath, files, currentModData){
+async function WriteFilesToDirectory(targetPath, files, currentModData){
     var written = 0;
-    var inProgress = 0;
 
-    return new Promise((resolve, reject) => {
-        //Load file list object
-        let files_object = filemanager.GetFileListSync(currentModData.name);
-        var active = true;
+    //Load file list object
+    let files_object = await filemanager.GetFileList(currentModData.name);
+    var active = true;
 
-        if(!fs.existsSync(targetPath)){
-            fs.mkdirSync(targetPath);
-        }
+    await fsPromises.ensureDirectoryExists(targetPath);
 
-        var progressBar = new ProgressBar({
-            text: 'Extracting data',
-            detail: 'Starting data extraction...',
-            browserWindow: {
-                webPreferences: {
-                    nodeIntegration: true
-                },
-                parent: global.mainWindow,
-                modal: true,
-                title: "Writing files...",
-                backgroundColor: "#2b2826",
-                closable: true
+    var progressBar = new ProgressBar({
+        text: 'Extracting data',
+        detail: 'Starting data extraction...',
+        browserWindow: {
+            webPreferences: {
+                nodeIntegration: true
             },
-            style: {
-                text: loadingTextStyle,
-                detail: loadingTextStyle,
-                value: loadingTextStyle
-            }
-        });
-        
-        progressBar
-        .on('completed', function() {
-            active = false;
-            progressBar.detail = 'Writing completed. Exiting...';
-        })
-        .on('aborted', function() {
-            active = false;
-            reject("User aborted file writing. You will need to restart the installation process to install this mod.");
-        });
-
-        global.log.log("Waiting for File writing to complete...")
-        
-        files.forEach((file) => {
-            if(active){
-                inProgress++;
-                progressBar.detail = `Writing ${file.name}. Total Files Written: ${written}.`;
-        
-                let fullFilePath = path.join(targetPath, file.name);
-                fs.writeFile(fullFilePath, file.buffer, (err) => {
-                    if (err) throw err;
-                    written++;
-        
-                    //Add file that we wrote to the file list
-                    if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
-        
-                    global.log.log(`File write for '${file.name}' was successful.`);
-                    inProgress--;
-                });
-            }
-        });
-
-        let checkFunc = () => {
-            if(active){
-                if(inProgress <= 0){
-                    
-                    progressBar.setCompleted();
-                    filemanager.SaveFileListSync(files_object, currentModData.name);
-                    resolve();
-                }
-                else setTimeout(checkFunc, 200);
-            }
-        };
-
-        setTimeout(checkFunc, 1000);
+            parent: global.mainWindow,
+            modal: true,
+            title: "Writing files...",
+            backgroundColor: "#2b2826",
+            closable: true
+        },
+        style: {
+            text: loadingTextStyle,
+            detail: loadingTextStyle,
+            value: loadingTextStyle
+        }
     });
+
+    progressBar
+    .on('completed', function() {
+        active = false;
+        progressBar.detail = 'Writing completed. Exiting...';
+    })
+    .on('aborted', function() {
+        active = false;
+        reject("User aborted file writing. You will need to restart the installation process to install this mod.");
+    });
+    
+    global.log.log("Waiting for File writing to complete...")
+
+    for (let index = 0; index < files.length; index++) {
+        if(!active){
+            continue;
+        }
+        const file = files[index];
+        progressBar.detail = `Writing ${file.name}. Total Files Written: ${written}.`;
+
+        let fullFilePath = path.join(targetPath, file.name);
+
+        await fsPromises.writeFile(fullFilePath, file.buffer);
+        written++;
+
+        //Add file that we wrote to the file list
+        if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
+
+        global.log.log(`File write for '${file.name}' was successful.`);
+    }
+
+    progressBar.setCompleted();
+    await filemanager.SaveFileList(files_object, currentModData.name);
+    return;
 }
 
 //Validates the tf2 directory. Can trigger dialogues depending on the outcome.
-function ValidateTF2Dir(){
+async function ValidateTF2Dir(){
     //Check we have a config object
     if(!global.config){
-        ErrorDialog("The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!", "Internal Error");
+        await ErrorDialog("The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!", "Internal Error");
         return false;
     }
 
     //If no path is specified. Maybe the auto locate failed?
     if(global.config.tf2_directory == ""){
-        ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error");
+        await ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error");
         return false;
     }
 
     //Check if the directory actually exists.
-    if(!fs.existsSync(global.config.tf2_directory)){
-        ErrorDialog("The current TF2 directory specified does not exist. Please check your settings.", "TF2 Path Error");
+    if(!await fsPromises.pathExists(global.config.tf2_directory)){
+        await ErrorDialog("The current TF2 directory specified does not exist. Please check your settings.", "TF2 Path Error");
         return false;
     }
 
     //Check if the directory contains an hl2 win32 executable if we are on windows.
     const plat = os.platform();
     if(plat == "win32"){
-        if(fs.existsSync(path.join(global.config.tf2_directory, "hl2.exe"))){
+        if(await fsPromises.fileExists(path.join(global.config.tf2_directory, "hl2.exe"))){
             return true;
         }
-    }
+    }    
     else if (plat == "linux" || plat == "freebsd" || plat == "openbsd"){
-        if(fs.existsSync(path.join(global.config.tf2_directory, "hl2_linux"))){
+        if(await fsPromises.pathExists(path.join(global.config.tf2_directory, "hl2_linux"))){
             return true;
         }
     }
-
+    
     //Check if the directory has the app id txt and it has 440 in it.
     let appid_path = path.join(global.config.tf2_directory, "steam_appid.txt");
-    if(fs.existsSync(appid_path)){
-        let content = fs.readFileSync(appid_path, "utf-8");
+    if(await fsPromises.fileExists(appid_path)){
+        let content = await fsPromises.readFile(appid_path, {encoding: "utf8"});
         let appid = content.split("\n")[0];
         if(appid != null && appid == "440"){
             return true;
@@ -981,7 +952,7 @@ function ValidateTF2Dir(){
     }
 
     //All the tests failed, show dialogue for that.
-    ErrorDialog("The current TF2 directory specified does exist, but it did not pass validation.\nCheck it links only to the 'Team Fortress 2' folder and not to the sub 'tf' folder.\nPlease check your settings.", "TF2 Validation Error");
+    await ErrorDialog("The current TF2 directory specified does exist, but it did not pass validation.\nCheck it links only to the 'Team Fortress 2' folder and not to the sub 'tf' folder.\nPlease check your settings.", "TF2 Validation Error");
     return false;
 }
 
@@ -1100,9 +1071,9 @@ function SetNewModVersion(version, currentModName){
     return false;
 }
 
-function ErrorDialog(error, title){
+async function ErrorDialog(error, title){
     global.log.error(`Error Dialog shown: ${title} : ${error.toString()}.\nError Stack:${error.stack}`);
-    dialog.showMessageBox(global.mainWindow, {
+    await dialog.showMessageBox(global.mainWindow, {
         type: "error",
         title: title,
         message: error.toString(),
@@ -1110,16 +1081,15 @@ function ErrorDialog(error, title){
     });
 }
 
-function FatalError(errorMessage){
-    dialog.showMessageBox(global.mainWindow, {
+async function FatalError(errorMessage){
+    await dialog.showMessageBox(global.mainWindow, {
         type: "error",
         title: title,
         message: errorMessage.toString(),
         buttons: ["OK"]
-    }).then(() => {
-        global.log.error("A fatal error was encountered! Program quit. Reason: " + errorMessage);
-        global.app.quit();
     });
+    global.log.error("A fatal error was encountered! Program quit. Reason: " + errorMessage);
+    global.app.quit();
 }
 
 function GetFileWriteFunction(extension){
@@ -1137,6 +1107,6 @@ functionMap.set("zip", WriteZIPsToDirectory);
 functionMap.set("vpk", WriteFilesToDirectory);
 
 //Some extras to check just incase the downloads are not something we can handle or a windows exe.
-functionMap.set("rar", () => { FatalError("Cannot handle .rar files currently. This should not happen. Exiting..."); });
-functionMap.set("7z", () => { FatalError("Cannot handle .7z files currently. This should not happen. Exiting..."); });
-functionMap.set("exe", () => { FatalError("Downloaded file was windows executable. This should not happen, exiting. File was not written."); });
+functionMap.set("rar", async() => { await FatalError("Cannot handle .rar files currently. This should not happen. Exiting..."); });
+functionMap.set("7z", async() => { await FatalError("Cannot handle .7z files currently. This should not happen. Exiting..."); });
+functionMap.set("exe", async() => { await FatalError("Downloaded file was windows executable. This should not happen, exiting. File was not written."); });

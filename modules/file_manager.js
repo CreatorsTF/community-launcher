@@ -1,5 +1,5 @@
+const fsPromises = require('./fs_extensions');
 var fileListPath;
-var fs = global.fs;
 var process = global.process;
 
 "use strict";
@@ -7,60 +7,38 @@ var process = global.process;
 module.exports =
 {
 
-Init(){
-    fileListPath = this.GetPath();
+async Init(){
+    fileListPath = await this.GetPath();
 }, 
 
-GetFileList(modName){
-    return new Promise((resolve, reject) => {
-        let path = fileListPath + modName + "_files.json";
-        if(fs.existsSync(path)){
-            resolve(JSON.parse(fs.readFileSync(path, "utf8")));
-        }
-        else{
-            //Make new object and return it.
-            resolve( {
-                files: []
-            });
-        }
-    });
-},
-
-GetFileListSync(modName){
+async GetFileList(modName){
     let path = fileListPath + modName + "_files.json";
-    if(fs.existsSync(path)){
-        return (JSON.parse(fs.readFileSync(path, "utf8")));
+    if(await fsPromises.fileExists(path)){
+        const json = await fsPromises.readFile(path, { encoding: "utf8" });
+        return JSON.parse(json);
     }
     else{
         //Make new object and return it.
-        return ( {
+        return {
             files: []
-        });
+        };
     }
 },
 
-SaveFileList(filelist, modName){
-    return new Promise((resolve, reject) => {
-        let path = fileListPath + modName + "_files.json";
-        fs.writeFileSync(path, filelist, "utf8");
-        resolve();
-    });
-},
-
-SaveFileListSync(filelist, modName){
+async SaveFileList(filelist, modName){
     let path = fileListPath + modName + "_files.json";
-    fs.writeFileSync(path, JSON.stringify(filelist), 'utf8');
+    await fsPromises.writeFile(path, JSON.stringify(filelist), "utf-8");
 },
 
-RemoveFileList(modName){
+async RemoveFileList(modName){
     let path = fileListPath + modName + "_files.json";
-    if(fs.existsSync(path)) fs.unlinkSync(path);
+    if(await fsPromises.fileExists(path)) await fsPromises.unlink(path);
 },
 
-GetPath(){
+async GetPath(){
     let path = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
     
-    if(!fs.existsSync(path)) fs.mkdirSync(path);
+    await fsPromises.ensureDirectoryExists(path);
 
     let fullpath = path + "/";
     return fullpath;
