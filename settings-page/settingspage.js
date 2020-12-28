@@ -2,6 +2,7 @@ const { BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
 const {ModListLoader} = require("../modules/mod_list_loader");
+const {Utilities} = require("../modules/utilities");
 
 var settingsWindow;
 var waitingForSettings = true;
@@ -12,7 +13,7 @@ function OpenWindow() {
     settingsWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "settingspage-preload.js"),
             nodeIntegration: false
         },
         modal: true,
@@ -89,4 +90,17 @@ ipcMain.on("open-config-location", async (event, arg) => {
     catch(e) {
         global.log.error("Failed to open config location: " + e.toString());
     }
+});
+
+ipcMain.on("open-log-location", (event, arg) => {
+    try {
+        shell.showItemInFolder(Utilities.GetLogsFolder());
+    }
+    catch(e) {
+        global.log.error("Failed to open log location: " + e.toString());
+    }
+});
+
+ipcMain.on("GetCurrentVersion", (event, arg) => {
+    event.reply("GetCurrentVersion-Reply", Utilities.GetCurrentVersion());
 });

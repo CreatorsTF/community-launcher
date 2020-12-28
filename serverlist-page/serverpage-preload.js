@@ -9,8 +9,10 @@ var container;
 var hasCreatedPageContent = false;
 var refreshButton;
 var refreshing = false;
+var serverCount = 0;
 const regionDOMData = new Map();
 const refreshTime = 10 * 1000;
+const maxServersForCollapsingAll = 15;
 
 //Simple way to make server names look better for now.
 //Country flags are appended automatically to each new region name, so
@@ -22,6 +24,19 @@ serverNames.set("us", "North America");
 serverNames.set("ru", "Russia");
 serverNames.set("au", "Australia");
 serverNames.set("sg", "Singapore");
+serverNames.set("no", "Norway");
+
+//Remove certain characters from remote data.
+String.prototype.escape = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
+};
 
 class ServerDOMData {
     _region = "";
@@ -38,13 +53,16 @@ class ServerDOMData {
     button = null;
     lock = null;
 }
-
+window.gotServerList = false;
 window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("serverpagea").addEventListener("click", (ev) => {
         shell.openExternal(creatorsServerListPage);
     });
 
-    ipcRenderer.send("GetServerList", "");
+    if(!window.gotServerList){
+        ipcRenderer.send("GetServerList", "");
+        window.gotServerList = true;
+    }
     container = document.getElementById("server-container");
     refreshButton = document.getElementById("refreshButton");
     refreshButton.addEventListener("click", Refresh);
@@ -56,7 +74,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     refreshing = false;
     if (serverListData != null && serverListData.result == "SUCCESS") {
         var servers = serverListData.servers;
-
+        serverCount = servers.length;
         var serverRegionMap = SortServersIntoRegions(servers);
 
         //Create DOM elements for the servers if not created already.
@@ -76,9 +94,9 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
             for (let server of region[1]) {
                 var serverDOMData = regionDOMs.get(parseInt(server.id));
 
-                serverDOMData.id.innerHTML = `<p>${server.id}</p>`;
-                serverDOMData.hostname.innerHTML = `<p>${server.hostname}</p>`;
-                serverDOMData.map.innerHTML = `<p>${server.map}</p>`;
+                serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
+                serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
+                serverDOMData.map.innerHTML = `<p>${server.map.toString().escape()}</p>`;
 
                 let mapPic = document.createElement("div");
                 serverDOMData.map.appendChild(mapPic);
@@ -123,6 +141,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     else {
         loading.remove();
         document.getElementById("failMessage").style.display = "block";
+        console.error("Server list failed to show.");
     }
 });
 
@@ -216,7 +235,8 @@ function CreateServerDOMElements(serverRegionMap){
             SetButtonEventListener(button, server.ip, server.port);
             table.appendChild(tr);
         }
-        table.style.display = "none";
+
+        if(serverCount > maxServersForCollapsingAll) table.style.display = "none";
     }
 
     hasCreatedPageContent = true;

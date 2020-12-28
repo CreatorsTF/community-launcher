@@ -1,5 +1,5 @@
 {
-    "version": 1.22,
+    "version": 1.31,
     "mods":
     [
         {
@@ -17,11 +17,13 @@
             "instagram": "https://creators.tf/instagram",
             "discord": "https://creators.tf/discord",
             "serverlist": "yes",
+            "serverlistproviders": [15, 1756],
             "modid": "",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/ctfpack.json",
+                "cloudflarebypass": true,
                 "targetdirectory": "{tf2_dir}/tf/download/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
@@ -36,17 +38,18 @@
             "bordercolor": "#2ecc71",
             "backgroundposX": "right",
             "backgroundposY": "top",
-            "website": "https://creators.tf",
+            "website": "https://creators.tf/post/blog/83",
             "github": "",
             "twitter": "",
             "instagram": "",
             "discord": "https://creators.tf/discord",
-            "serverlist": "yes",
+            "serverlistproviders": [11919],
             "modid": "",
             "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
+                "cloudflarebypass": true,
                 "targetdirectory": "{tf2_dir}/tf/download/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"
@@ -72,6 +75,7 @@
             "install": {
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
+                "cloudflarebypass": true,
                 "targetdirectory": "{tf2_dir}/tf/custom/",
                 "version_property_name": "Version",
                 "install_url_property_name": "DownloadLink"

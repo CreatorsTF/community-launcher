@@ -172,3 +172,21 @@ input {
     padding-bottom: 10px;
     justify-content: space-between;
 }
+
+#version-box
+{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: 160px;
+    height: 25px;
+    background-color: black;
+    text-align: center;
+    padding: 2px;
+}
+
+#version-box p
+{
+    color: white;
+    font-size: 14px;
+}

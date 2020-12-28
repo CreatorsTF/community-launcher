@@ -4,6 +4,7 @@ import process from "process";
 import path from "path";
 const ProgressBar = require('electron-progressbar');
 const {app} = require("electron");
+import log from "electron-log";
 
 const loadingTextStyle = {
     color: "ghostwhite"
@@ -37,6 +38,10 @@ class Utilities {
         if(!fs.existsSync(_path)) fs.mkdirSync(_path);
 
         return _path;
+    }
+
+    static GetLogsFolder() : string {
+        return log.transports.file.getFile().path;
     }
 
 

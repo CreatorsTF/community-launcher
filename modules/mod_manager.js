@@ -1,6 +1,10 @@
-const path = global.path;
-const os = require('os');
+//Manages main functions mod installation, downloading and removal.
 
+//Is due for a revamp and conversion to TS. Will be updated to use OO properly. 
+//For now it is left as is until I get round to it. (Yea I know is baddd) -Rob
+
+const path = require("path");
+const os = require("os");
 const fs = require("fs");
 const { dialog } = require('electron');
 const https = require('https');
