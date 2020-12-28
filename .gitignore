@@ -3,7 +3,6 @@
 /build
 electron-builder.yml
 *.code-workspace
-.vscode
 build.js
 build.bat
 runappfordevtest.bat

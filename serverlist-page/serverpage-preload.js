@@ -9,8 +9,10 @@ var container;
 var hasCreatedPageContent = false;
 var refreshButton;
 var refreshing = false;
+var serverCount = 0;
 const regionDOMData = new Map();
 const refreshTime = 10 * 1000;
+const maxServersForCollapsingAll = 15;
 
 //Simple way to make server names look better for now.
 //Country flags are appended automatically to each new region name, so
@@ -22,6 +24,7 @@ serverNames.set("us", "North America");
 serverNames.set("ru", "Russia");
 serverNames.set("au", "Australia");
 serverNames.set("sg", "Singapore");
+serverNames.set("no", "Norway");
 
 //Remove certain characters from remote data.
 String.prototype.escape = function() {
@@ -71,7 +74,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     refreshing = false;
     if (serverListData != null && serverListData.result == "SUCCESS") {
         var servers = serverListData.servers;
-
+        serverCount = servers.length;
         var serverRegionMap = SortServersIntoRegions(servers);
 
         //Create DOM elements for the servers if not created already.
@@ -138,8 +141,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     else {
         loading.remove();
         document.getElementById("failMessage").style.display = "block";
-        console.error("Server list result: " + serverListData.result);
-        console.log(serverListData);
+        console.error("Server list failed to show.");
     }
 });
 
@@ -233,7 +235,8 @@ function CreateServerDOMElements(serverRegionMap){
             SetButtonEventListener(button, server.ip, server.port);
             table.appendChild(tr);
         }
-        table.style.display = "none";
+
+        if(serverCount > maxServersForCollapsingAll) table.style.display = "none";
     }
 
     hasCreatedPageContent = true;
