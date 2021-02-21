@@ -20,6 +20,18 @@ button:active {
     background-color: #222;
 }
 
+input {
+    width: 100%;
+    padding: 5px;
+    border: 0px;
+    outline: 0px;
+    border-radius: 5px;
+    text-align: center;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 18px;
+    box-shadow: -3px 3px 0px #000;
+}
+
 .button {
     padding: 5px;
     background: rgba(50,50,50,0.75);
@@ -44,10 +56,10 @@ button:active {
     top: 0;
     right: 0;
     bottom: 0;
-    left: -7px;
-    transition: 0.2s;
+    left: -8px;
     z-index: -1;
     transform: skewX(-20deg);
+    transition: 0.2s;
 }
 
 .button:hover::before {

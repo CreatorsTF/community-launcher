@@ -27,7 +27,7 @@ log.transports.file.getFile();
 global.log = log;
 
 const path = global.path;
-const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
+const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by creating a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report it via our Discord.";
 
 var mainWindow;
 
@@ -37,10 +37,10 @@ function createWindow() {
     global.screenHeight = height;
     try {
         mainWindow = new BrowserWindow({
-            minWidth: 960,
-            minHeight: 540,
+            minWidth: 1000,
+            minHeight: 700,
             width: screenWidth-200,
-            height: screenHeight-150,
+            height: screenHeight-200,
             webPreferences: {
                 preload: path.join(__dirname, "preload.js"),
                 nodeIntegration: false
@@ -145,16 +145,12 @@ app.on("ready", () => {
 });
 
 app.on("activate", function() {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
     }
 });
 
 app.on("window-all-closed", function() {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
         app.quit();
         log.info("Launcher was closed.");
@@ -220,12 +216,6 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
         }
     }
 });
-
-// ipcMain.on("app_version", (event) => {
-//     event.sender.send("app_version", {
-//         version: app.getVersion()
-//     });
-// });
 
 ipcMain.on("GetConfig", async (event, arg) => {
     event.reply("GetConfig-Reply", global.config);

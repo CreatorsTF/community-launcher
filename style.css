@@ -13,11 +13,10 @@ body {
     background-color: #111;
     padding: 20px;
     z-index: 1;
-    overflow-x: hidden; /* How */
+    overflow-x: hidden;
 }
 
-#modlist-updating
-{
+#modlist-updating {
     width: 300px;
     color: #CCC;
     font-family: Roboto Light, Arial, sans-serif;
@@ -205,12 +204,11 @@ body {
     width: 75%;
 }
 
-.defaultbg
-{
+.defaultbg {
     background-image: url(images/logos/tf2logo_dark_fade.svg);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 115%;
+    background-size: cover;
     opacity: 0.2;
 }
 
@@ -235,45 +233,25 @@ body {
 }
 
 #content-area {
-    flex: grow;
     height: 100%;
-    width: 100%;
     z-index: 1;
     position: relative;
 }
 
-#content-area-back
-{
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    top: 0px;
-    left: 0px;
-}
-
-#content-area-front
-{
+#content-area-mod {
     pointer-events: none;
-    z-index: 2;
     width: 100%;
     height: 100%;
-    position: absolute;
-    top: 0px;
-    left: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.mod-info
-{
+#mod-info {
     display: flex;
     flex-direction: column;
-    padding: 0px;
-    margin: 0px;
-    width: auto;
-    height: auto;
+    align-items: center;
+    justify-content: center;
 }
 
 #boxOfModButtons {
@@ -319,9 +297,7 @@ body {
 }
 
 #title-image-holder {
-    max-width: 600px;
-    margin: 0 auto;
-    z-index: 0;
+    max-width: 65%;
 }
 
 #title-image {
@@ -339,10 +315,9 @@ body {
 }
 
 #content-text {
-    margin: 0 auto;
-    font-size: 20px;
-    width: 100%;
-    font-family: Roboto Light, Arial, sans-serif;
+    margin: 0;
+    font-size: 18px;
+    font-family: Roboto Thin, Arial, sans-serif;
     text-align: center;
     text-shadow: 0px 0px 5px #000;
     padding: 10px;
@@ -352,7 +327,6 @@ body {
 
 .modInfoBox {
     display: flex;
-    margin: 0 auto;
     pointer-events: auto;
 }
 
@@ -381,7 +355,7 @@ body {
 
 #fadebehindbutton {
     width: 100%;
-    height: 35%;
+    height: 50%;
     position: absolute;
     left: 0px;
     bottom: 0px;
@@ -389,18 +363,18 @@ body {
 }
 
 #install-play-button {
-    width: 100%;
-    margin: 0 auto;
-    padding: 19px;
+    width: -webkit-fill-available;
+    position: absolute;
+    bottom: 0;
+    margin: 20px;
+    padding: 20px;
     font-size: 45px;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     font-family: Roboto Medium, Arial, sans-serif;
     display: block;
-    flex: initial;
     border: none;
     text-shadow: 1px 1px 25px #000;
-    transition: 0.2s;
     z-index: 1;
 }
 
@@ -416,15 +390,14 @@ body {
     top: 20px;
     padding: 5px;
     font-size: 16px;
-    /* font-family: monospace; */
     font-family: Roboto Thin, Arial, sans-serif;
     border-radius: 5px;
     display: flex;
     align-items: center;
 }
 
-#version-text {
-    padding: 2px 0px 0px 7px;
+#version i {
+    margin-right: 5px;
 }
 
 .hidden {

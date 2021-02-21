@@ -41,19 +41,6 @@ body {
 
 }
 
-#launcherVersion {
-    background-color: #111;
-    padding: 5px;
-    border-radius: 5px;
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    overflow: hidden;
-    color: #FFF;
-    font-size: 16px;
-    font-family: Roboto Thin, Arial, sans-serif;
-}
-
 h1, p { color: #222; }
 
 h1 {
@@ -61,21 +48,20 @@ h1 {
     font-size: 80px;
     margin: 0px auto 10px auto;
     text-shadow: 0px 0px 2px #000;
-    color: #FAFAFA;
+    color: #EEE;
 }
 
 p {
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 20px;
-    margin: 5px 0px;
+    margin: 0;
+    color: #EEE;
 }
 
 button {
-    padding: 5px;
     border-radius: 5px;
-    font-family: Roboto Light, Arial, sans-serif;
-    font-size: 18px;
     margin-left: 10px;
+    transition: 0.2s;
 }
 
 button:first-child {
@@ -85,35 +71,23 @@ button:first-child {
 .inputLabelRow {
     margin: 5px auto;
     text-align: center;
-    text-shadow: 0px 0px 25px #000;
-    font-family: Roboto Light, Arial, sans-serif;
-    font-size: 23px;
-    color: #FFF;
+    text-shadow: 0px 0px 25px #0007;
+    font-family: Roboto Medium, Arial, sans-serif;
+    font-size: 28px;
+    color: #EEE;
 }
 
 .inputRow {
-    width: 50%;
-    margin: 0px 0px 20px 0px;
+    width: 55%;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     text-align: center;
 }
 
-.inputRow:nth-last-child(3) {
-    margin: 0px !important;
-}
-
-input {
-    width: 100%;
-    padding: 5px;
-    border: 0px;
-    outline: 0px;
-    border-radius: 5px;
-    text-align: center;
-    font-family: Roboto Light, Arial, sans-serif;
-    font-size: 18px;
-    box-shadow: -3px 3px 0px #000;
+.inputRow:nth-last-of-type(3) {
+    margin-bottom: 0px !important;
 }
 
 #reload-button {
@@ -173,20 +147,16 @@ input {
     justify-content: space-between;
 }
 
-#version-box
-{
+#version-box {
     position: absolute;
     left: 0px;
     bottom: 0px;
-    width: 160px;
-    height: 25px;
     background-color: black;
     text-align: center;
-    padding: 2px;
+    padding: 7px;
+    border-radius: 0px 10px 0px 0px;
 }
 
-#version-box p
-{
-    color: white;
+#version-box p {
     font-size: 14px;
 }

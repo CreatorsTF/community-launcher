@@ -918,7 +918,7 @@ async function ValidateTF2Dir(){
 
     //If no path is specified. Maybe the auto locate failed?
     if(global.config.tf2_directory == ""){
-        await ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error");
+        await ErrorDialog("No TF2 path has been specified. Please, manually enter this in the settings.\ne.g.: 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error");
         return false;
     }
 

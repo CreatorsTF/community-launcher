@@ -2,7 +2,8 @@ var content = document.getElementById("content");
 var contentDummy = document.getElementById("contentdummy");
 var titleImage = document.getElementById("title-image");
 var text = document.getElementById("content-text");
-var version = document.getElementById("version-text");
+var version = document.getElementById("version");
+var versionText = document.getElementById("version-text");
 
 var installButton = document.getElementById("install-play-button");
 var removeButton = document.getElementById("remove-mod");
@@ -35,18 +36,17 @@ const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 function OnClick_Mod(data) {
     window.log.info("Mod entry clicked: " + data.name);
 
-    
     var bgImg;
-    if(data.backgroundimage != ""){
+    if (data.backgroundimage != "") {
         bgImg = data.backgroundimage;
     }
-    else{
+    else {
         bgImg = defaultBackgroundImage;
     }
 
     content.style.backgroundImage = `url("${"./" + bgImg}")`;
 
-    if(data.titleimage == ""){
+    if (data.titleimage == "") {
         titleheader.style.display = "block";
         titleheader.innerText = data.name;
         titleImage.style.display = "none";
@@ -143,7 +143,12 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    version.innerText = "Mod version: " + arg;
+    if (arg == "?") {
+        version.style.display = "none";
+    } else {
+        version.style.display = "block";
+        versionText.innerText = "Mod version: " + arg;
+    }
 });
 
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
@@ -167,7 +172,6 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             removeButton.style.display = "block";
             break;
         case "internal error":
-            // installButton.style.background = "#B51804";
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
             removeButton.style.display = "none";
             break;
