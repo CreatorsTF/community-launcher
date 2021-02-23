@@ -14,7 +14,7 @@ body {
     animation-fill-mode: both;
     animation-timing-function: ease-in;
     animation-iteration-count: 1;
-    animation-duration: 0.25s;
+    animation-duration: 0.2s;
 }
 
 #modname {
@@ -34,7 +34,7 @@ body {
 
 #patchnotes {
     margin: 20px auto;
-    background-color: rgba(0,0,0,0.65);
+    background-color: rgba(0,0,0,0.7);
     padding: 25px 25px 10px 25px;
     border-radius: 5px;
     font-family: Roboto Thin, Arial, sans-serif;

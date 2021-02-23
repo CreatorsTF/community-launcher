@@ -35,12 +35,15 @@ function createWindow() {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     global.screenWidth = width;
     global.screenHeight = height;
+
+    global.minWindowWidth = 1000;
+    global.minWindowHeight = 700;
     try {
         mainWindow = new BrowserWindow({
-            minWidth: 1000,
-            minHeight: 700,
+            minWidth: minWindowWidth,
+            minHeight: minWindowHeight,
             width: screenWidth-200,
-            height: screenHeight-200,
+            height: screenHeight-150,
             webPreferences: {
                 preload: path.join(__dirname, "preload.js"),
                 nodeIntegration: false

@@ -27,8 +27,8 @@ body {
 }
 
 .entry {
-    margin: 0px 0px 10px 0px;
-    height: 65px;
+    margin-bottom: 10px;
+    height: 70px;
     border-radius: 50px;
     color: lightgrey;
     position: relative;
@@ -37,7 +37,6 @@ body {
     align-items: center;
     cursor: pointer;
     transition: 0.2s;
-    z-index: -1;
 }
 
 .entrySelected {
@@ -82,29 +81,25 @@ body {
 }
 
 .modInfoSidebar {
-    margin: 0px 7px;
+    margin-left: 7px;
 }
 
 .entry h2, .entry p {
     margin: 0;
+    line-height: 100%;
+    font-family: Roboto Light, Arial, sans-serif;
 }
 
 .entry h2 {
     font-size: 25px;
-    font-family: Roboto Light, Arial, sans-serif;
-    line-height: 25px;
 }
 
 .entry p {
     font-size: 15px;
-    font-family: Roboto Light, Arial, sans-serif;
-    line-height: 18px;
 }
 
 .entry img {
-    float: left;
-    width: 65px;
-    height: 65px;
+    width: 70px;
     border-radius: 50px;
     pointer-events: none;
 }
@@ -120,13 +115,13 @@ body {
     height: 10px;
 }
 
-#boxOfButtons {
+#box-of-buttons {
     width: 100%;
     display: flex;
     margin-bottom: 20px;
 }
 
-#boxOfButtons button {
+#box-of-buttons button {
     width: 100%;
     font-size: 22px;
     font-family: Roboto Light, Arial, sans-serif;
@@ -136,15 +131,15 @@ body {
     margin-left: 10px;
 }
 
-#boxOfButtons button:first-child {
+#box-of-buttons button:first-child {
     margin-left: 0px;
 }
 
-#boxOfButtons button:hover {
+#box-of-buttons button:hover {
     filter: brightness(1.25);
 }
 
-#boxOfButtons button:active {
+#box-of-buttons button:active {
     color: #EEE;
 }
 
@@ -254,7 +249,7 @@ body {
     justify-content: center;
 }
 
-#boxOfModButtons {
+#box-of-mod-buttons {
     display: inline-flex;
     position: absolute;
     padding: 20px;
@@ -270,7 +265,7 @@ body {
     background-color: #B74848;
 }
 
-#boxOfModButtons button {
+#box-of-mod-buttons button {
     display: block;
     margin-left: 10px;
     padding: 10px;
@@ -282,16 +277,16 @@ body {
     z-index: 1;
 }
 
-#boxOfModButtons button:hover {
+#box-of-mod-buttons button:hover {
     filter: brightness(0.9);
     transform: scale(0.95);
 }
 
-#boxOfModButtons button:first-child {
+#box-of-mod-buttons button:first-child {
     margin-left: 0px;
 }
 
-#boxOfModButtons button:active {
+#box-of-mod-buttons button:active {
     background-color: #222;
     transform: scale(0.9);
 }

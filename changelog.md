@@ -7,14 +7,15 @@
 - Events servers can now be seen on the server list when viewed from the "Creators.TF Events Servers" mod.
 - Updated events content logo.
 - Fixed bug preventing mod installation using new mod list data.
-- Changed Events server content install location to /download/ (existing installations un affected).
+- Changed Events server content install location to `/download/` (existing installations are unaffected).
 - Added cache work around to ensure launcher can get latest mod information sooner.
+
 
 ## Version 0.2 - (ALPHA)
 ### 29/11/2020 - 21:00 (GMT)
 - Added Creators.TF Events Servers content to launcher. (Thanks Kaya for the artwork!)
 - Added Ultimate TF2 fixes to the launcher. (Thanks agrastiOs!)
-- Better error handling for Cloud flare issues
+- Better error handling for Cloudflare issues
 - Fixed bug with mod removal failing.
 - Added support to cancel downloads and installs.
 - Should have fixed error of download never finishing. (Please open an Issue if you get this still).
@@ -22,6 +23,7 @@
 - Fixed issue with failing to write zip file contents
 - Fixed file name retrieval from downloaded files.
 - Fixed some main page styling issues.
+
 
 ## Version 0.1.32 - (ALPHA)
 ### 25/10/2020 - 14:35 (GMT)

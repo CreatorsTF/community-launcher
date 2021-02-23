@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://api.github.com/; script-src 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest; img-src 'self'; style-src 'self'; base-uri 'self'; form-action 'self'; font-src 'self';">
         <title>Creators.TF Launcher - Alpha Version</title>
         <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="fonts/fonts.css">
@@ -10,7 +10,7 @@
     </head>
     <body>
         <div id="sidebar">
-            <div id="boxOfButtons">
+            <div id="box-of-buttons">
                 <button id="settings-button" title="Settings section. This is where you can change your folder directories and see other technical stuff."><i class="mdi mdi-cog"></i></button>
                 <button id="patchnotes-button" title="Patch notes. Here we put all the changes that happened related to the launcher."><i class="mdi mdi-format-list-bulleted-square"></i></button>
                 <button id="update-button-updated" class="hidden" title="Your launcher is up to date."><i class="mdi mdi-check-bold"></i></button>
@@ -27,7 +27,7 @@
                 <div id="version">
                     <i class="mdi mdi-hammer-wrench"></i> <span id="version-text">MOD VERSION</span>
                 </div>
-                <div id="boxOfModButtons">
+                <div id="box-of-mod-buttons">
                     <button id="serverlist" title="Server list."><i class="mdi mdi-server"></i></button>
                     <button id="remove-mod" title="Uninstall mod."><i class="mdi mdi-delete-forever"></i></button>
                 </div>

@@ -11,7 +11,7 @@ class ServerListPage {
     static serverlistWindow: BrowserWindow;
     static latestProviders: Array<number>
 
-    static OpenWindow(mainWindow : any, screenWidth: number, screenHeight: number, providers: Array<number>) {
+    static OpenWindow(mainWindow: any, screenWidth: number, screenHeight: number, minWindowWidth: number, minWindowHeight: number, providers: Array<number>) {
         log.info("Loading Server List window...");
         this.serverlistWindow = new BrowserWindow({
             parent: mainWindow,
@@ -26,9 +26,9 @@ class ServerListPage {
             maximizable: true,
             resizable: true,
             autoHideMenuBar: true,
-            minWidth: 960,
-            minHeight: 600,
-            width: screenWidth-300,
+            minWidth: minWindowWidth,
+            minHeight: minWindowHeight,
+            width: screenWidth-250,
             height: screenHeight-100
         });
         if (!isDev) this.serverlistWindow.removeMenu();
