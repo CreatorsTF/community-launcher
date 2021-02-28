@@ -53,7 +53,8 @@ function createWindow() {
             resizable: true,
             autoHideMenuBar: true,
             darkTheme: true,
-            backgroundColor: "#2B2826"
+            backgroundColor: "#2B2826",
+            show: false
         });
         module.exports.mainWindow = mainWindow;
         global.mainWindow = mainWindow;
@@ -68,7 +69,10 @@ function createWindow() {
             //Also setup the mod manager.
             try {
                 mod_manager.Setup()
-                    .then(() => mainWindow.loadFile(path.resolve(__dirname, "index.html")))                ;
+                    .then(() => mainWindow.loadFile(path.resolve(__dirname, "index.html")));
+                mainWindow.once("ready-to-show", () => {
+                    mainWindow.show();
+                });
             }
             catch(e) {
                 log.error(e.toString());

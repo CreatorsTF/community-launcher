@@ -1,16 +1,36 @@
+:root {
+    --branding-orange: #CA712D;
+    --branding-black: #2C3436;
+    --white: #FFF;
+    --white-2: #EEE;
+    --black: #000;
+    --black-2: #111;
+    --gray: #252525;
+    --default-bg-color: #2B2826;
+    --subtle-shadow: rgba(0,0,0,0.35);
+    --not-so-subtle-shadow: rgba(0,0,0,0.7);
+    --button-update-download-color: #EBBD34;
+    --button-update-downloading-color: #F5F238;
+    --button-update-update-color: #388DF5;
+    --button-update-updated-color: #47B82E;
+    --button-update-alert-secondary-color: #2963A9;
+    --button-server-list: #FF8E37;
+    --button-remove-mod: #B74848;
+}
+
 html, body { height: 100%; }
 
 body {
     font-family: Roboto Medium, Arial, sans-serif;
     display: flex;
-    background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 100%);
+    background: linear-gradient(0deg, var(--black) 0%, var(--gray) 100%);
     user-select: none;
 }
 
 #sidebar {
     min-width: 300px;
     width: 390px;
-    background-color: #111;
+    background-color: var(--black-2);
     padding: 20px;
     z-index: 1;
     overflow-x: hidden;
@@ -21,7 +41,7 @@ body {
     color: #CCC;
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 30px;
-    text-shadow: 1px 1px 1px #000;
+    text-shadow: 1px 1px 1px var(--black);
     padding: 20px;
     text-align: center;
 }
@@ -41,12 +61,12 @@ body {
 
 .entrySelected {
     background-color: #B35215;
-    color: #FFF;
+    color: var(--white);
     transition: 0s;
 }
 
 .entrySelected img {
-    box-shadow: 0px 0px 20px rgba(0,0,0,0.35);
+    box-shadow: 0px 0px 20px var(--subtle-shadow);
 }
 
 .entry:last-child {
@@ -54,11 +74,11 @@ body {
 }
 
 .entry:hover {
-    color: #FFF;
+    color: var(--white);
 }
 
 .entry:hover img {
-    box-shadow: 0px 0px 20px rgba(0,0,0,0.35);
+    box-shadow: 0px 0px 20px var(--subtle-shadow);
 }
 
 .entry::before {
@@ -91,7 +111,7 @@ body {
 }
 
 .entry h2 {
-    font-size: 25px;
+    font-size: 23px;
 }
 
 .entry p {
@@ -123,7 +143,7 @@ body {
 
 #box-of-buttons button {
     width: 100%;
-    font-size: 22px;
+    font-size: 25px;
     font-family: Roboto Light, Arial, sans-serif;
     padding: 5px;
     transition: 0.2s;
@@ -140,7 +160,7 @@ body {
 }
 
 #box-of-buttons button:active {
-    color: #EEE;
+    color: var(--white-2);
 }
 
 .mdi-loading::before {
@@ -157,21 +177,21 @@ body {
 }
 
 @keyframes updateAlert {
-    0% { background-color: #388DF5; }
-    100% { background-color: #2963A9; }
+    0% { background-color: var(--button-update-update-color); }
+    100% { background-color: var(--button-update-update-color); }
 }
 
 #update-button-download {
-    background-color: #EBBD34;
+    background-color: var(--button-update-download-color);
 }
 
 #update-button-downloading {
-    background-color: #F5F238;
+    background-color: var(--button-update-downloading-color);
     pointer-events: none;
 }
 
 #update-button-update {
-    background-color: #388DF5;
+    background-color: var(--button-update-update-color);
     animation-name: updateAlert;
     animation-timing-function: ease-in;
     animation-duration: 2s;
@@ -179,8 +199,12 @@ body {
 }
 
 #update-button-updated {
-    background-color: #47B82E;
-    pointer-events: painted;
+    background-color: var(--button-update-updated-color);
+    cursor: default;
+}
+
+#update-button-updated:active {
+    color: var(--white-2) !important;
 }
 
 #launcherversion {
@@ -188,7 +212,7 @@ body {
     color: #CCC;
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 15px;
-    text-shadow: 1px 1px 1px #000;
+    text-shadow: 1px 1px 1px var(--black);
     padding: 20px;
     position: absolute;
     left: 0;
@@ -211,14 +235,14 @@ body {
     width: 75%;
     height: 100%;
     min-width: 235px;
-    background-color: #2B2826;
+    background-color: var(--default-bg-color);
     background-size: cover;
     background-position: center;
     display: none;
     overflow: hidden;
     position: relative;
     border-left: solid;
-    border-color: #0F0F0F;
+    border-color: var(--black-2);
     transition: 0.2s;
     animation-name: fadeInSuperFancyTransition;
     animation-fill-mode: both;
@@ -258,20 +282,20 @@ body {
 }
 
 #serverlist {
-    background-color: #FF8E37;
+    background-color: var(--button-server-list);
 }
 
 #remove-mod {
-    background-color: #B74848;
+    background-color: var(--button-remove-mod);
 }
 
 #box-of-mod-buttons button {
     display: block;
     margin-left: 10px;
     padding: 10px;
-    text-shadow: 1px 1px 20px #000;
+    text-shadow: 1px 1px 20px var(--black);
     font-size: 1.5em;
-    color: whitesmoke;
+    color: var(--white-2);
     border-radius: 50px;
     transition: 0.2s;
     z-index: 1;
@@ -287,7 +311,7 @@ body {
 }
 
 #box-of-mod-buttons button:active {
-    background-color: #222;
+    background-color: var(--gray);
     transform: scale(0.9);
 }
 
@@ -314,18 +338,18 @@ body {
     font-size: 18px;
     font-family: Roboto Thin, Arial, sans-serif;
     text-align: center;
-    text-shadow: 0px 0px 5px #000;
+    text-shadow: 0px 0px 5px var(--black);
     padding: 10px;
     transition: 0.2s;
-    color: #FFF;
+    color: var(--white);
 }
 
-.modInfoBox {
+.mod-info-box {
     display: flex;
     pointer-events: auto;
 }
 
-.modInfoBox button {
+.mod-info-box button {
     width: 50px;
     height: 50px;
     background-color: transparent;
@@ -335,9 +359,9 @@ body {
     transition: 0.2s;
 }
 
-.modInfoBox button:hover {
+.mod-info-box button:hover {
     transform: scale(0.9);
-    background-color: rgba(1,1,1,0.75);
+    background-color: var(--not-so-subtle-shadow);
     cursor: pointer;
 }
 
@@ -354,7 +378,7 @@ body {
     position: absolute;
     left: 0px;
     bottom: 0px;
-    background: linear-gradient(to top, #111 25%, transparent 75%);
+    background: linear-gradient(to top, var(--black-2) 25%, transparent 75%);
 }
 
 #install-play-button {
@@ -369,7 +393,7 @@ body {
     font-family: Roboto Medium, Arial, sans-serif;
     display: block;
     border: none;
-    text-shadow: 1px 1px 25px #000;
+    text-shadow: 1px 1px 25px var(--black);
     z-index: 1;
 }
 
@@ -378,7 +402,7 @@ body {
 }
 
 #version {
-    background-color: rgba(1, 1, 1, 0.55);
+    background-color: var(--not-so-subtle-shadow);
     color: ghostwhite;
     position: absolute;
     left: 20px;
