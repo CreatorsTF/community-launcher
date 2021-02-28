@@ -1,5 +1,5 @@
 {
-    "version": 1.31,
+    "version": 1.32,
     "mods":
     [
         {
@@ -17,7 +17,7 @@
             "instagram": "https://creators.tf/instagram",
             "discord": "https://creators.tf/discord",
             "serverlist": "yes",
-            "serverlistproviders": [15, 1756],
+            "serverlistproviders": [1],
             "modid": "",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
@@ -43,7 +43,7 @@
             "twitter": "",
             "instagram": "",
             "discord": "https://creators.tf/discord",
-            "serverlistproviders": [11919],
+            "serverlistproviders": [1],
             "modid": "",
             "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
             "install": {
