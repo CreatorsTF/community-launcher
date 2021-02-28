@@ -1,11 +1,11 @@
 ## Version 0.2.1 - (ALPHA)
-
-## 28/12/2020
+### 28/12/2020 - 16:25 (GMT)
 - Added version display to settings page
 - Added "Open Log Folder" button to settings page to help with finding logs on linux.
 - Updated server mod list to be more flexable.
 - Server list for Creators.TF content now includes BalanceMod servers.
-- Events servers can now be seen on the server list when viewed from the "Creators.TF Events Servers" mod
+- Events servers can now be seen on the server list when viewed from the "Creators.TF Events Servers" mod.
+- Updated events content logo.
 - Fixed bug preventing mod installation using new mod list data.
 - Changed Events server content install location to /download/ (existing installations un affected).
 - Added cache work around to ensure launcher can get latest mod information sooner.

@@ -1,5 +1,5 @@
+const fsPromises = require('./fs_extensions');
 const process = global.process;
-const fs = global.fs;
 const os = global.os;
 const path = global.path;
 
@@ -9,21 +9,21 @@ module.exports = {
     config: null,
     
     //Save the config given.
-    SaveConfig (_config) {
-        let filepathfull = this.GetConfigFullPath();
+    async SaveConfig (_config) {
+        let filepathfull = await this.GetConfigFullPath();
 
-        fs.writeFileSync(filepathfull, JSON.stringify(_config), 'utf8');
+        await fsPromises.writeFile(filepathfull, JSON.stringify(_config), {encoding: "utf8"});
         global.log.log("Config file was saved.");
     },
 
     //Get the config from disk.
     GetConfig: async function GetConfig() {
         //If config is null, load it.
-        let filepathfull = this.GetConfigFullPath();
+        let filepathfull = await this.GetConfigFullPath();
 
         //If the config file exists, read and parse it.
-        if(fs.existsSync(filepathfull)){
-            this.config = JSON.parse(fs.readFileSync(filepathfull, 'utf8'));
+        if(await fsPromises.fileExists(filepathfull)){
+            this.config = JSON.parse(await fsPromises.readFile(filepathfull, 'utf8'));
             global.log.log("Loaded pre existing config");
             return this.config;
         } else {
@@ -36,7 +36,7 @@ module.exports = {
             }
 
             //Try to populate the default values of the steam directory and tf2 directory automatically.
-            this.config.steam_directory = GetSteamDirectory();
+            this.config.steam_directory = await GetSteamDirectory();
 
             global.log.log(`Auto locater for the users steam directory returned '${this.config.steam_directory}'`);
 
@@ -53,7 +53,7 @@ module.exports = {
             }
             //Return whether or not the TF2/Steam directory was found
             //User is told later anyway.
-            this.SaveConfig(this.config);
+            await this.SaveConfig(this.config);
             return this.config;
         }
     },
@@ -63,13 +63,13 @@ module.exports = {
         let tf2path = "steamapps/common/Team Fortress 2/";
 
         //Check if tf2 is installed in the steam installation steamapps.
-        if (fs.existsSync(path.join(steamdir, tf2path))) {
+        if (await fsPromises.pathExists(path.join(steamdir, tf2path))) {
             tf2path = path.join(steamdir, tf2path);
             return tf2path;
         } else {
             //Check the library folders file and check all those for the tf2 directory.
             let libraryfolders = `${steamdir}/steamapps/libraryfolders.vdf`;
-            if (fs.existsSync(libraryfolders)) {
+            if (await fsPromises.pathExists(libraryfolders)) {
                 //How this works:
                 //Read the lines of the libraryfolders
                 //If we find a match with the regular expression, we have a possible other library folder.
@@ -77,14 +77,14 @@ module.exports = {
                 //If yes, we use this!
                 //If no, we just fail.
 
-                let data = fs.readFileSync(libraryfolders, 'utf8');
+                let data = await fsPromises.readFile(libraryfolders, 'utf8');
                 let lines = data.split("\n");
                 for (let i = 0; i < lines.length; i++) {
                     let result = pathStringRegex.exec(lines[i]);
                     if (result) {
                         if (result[2]) {
                             let potentialPath = path.join(result[2], "/", tf2path);
-                            if(fs.existsSync(potentialPath)){
+                            if(await fsPromises.pathExists(potentialPath)){
                                 return potentialPath;
                             }
                         }
@@ -97,10 +97,10 @@ module.exports = {
         }
     },
 
-    GetConfigFullPath(){
+    async GetConfigFullPath(){
         let _path = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
         
-        if(!fs.existsSync(_path)) fs.mkdirSync(_path);
+        await fsPromises.ensureDirectoryExists(_path);
     
         let fullpath = path.join(_path, configname);
         return fullpath;
@@ -111,7 +111,7 @@ var configname = "config.json";
 
 //Attempts to locate the steam directory automatically.
 //This aids in finding the tf2 dir later.
-function GetSteamDirectory() {
+async function GetSteamDirectory() {
     var basedir = "";
     /**
      * Gets first existing path in an array of strings
@@ -119,10 +119,10 @@ function GetSteamDirectory() {
      * @param {string} pathPrefix A path to add before each path in steamPaths before checking
      * @returns First existing path in steamPaths or null if none of the paths exist, with prefix added
      */
-    var getExistingPath = function(steamPaths, pathPrefix="") {
+    var getExistingPath = async function(steamPaths, pathPrefix="") {
         for (let steamPath of steamPaths) {
             steamPath = path.join(pathPrefix, steamPath);
-            if(fs.existsSync(steamPath)) {
+            if(await fsPromises.pathExists(steamPath)) {
                 return steamPath;
             }
         }
@@ -135,7 +135,7 @@ function GetSteamDirectory() {
     //We check the most likely install paths.
     if (os.platform() == "win32") {
         var steamPaths = ["C:/Program Files (x86)/Steam", "C:/Program Files/Steam"];
-        basedir = getExistingPath(steamPaths);
+        basedir = await getExistingPath(steamPaths);
     } else if (os.platform() == "linux" || "freebsd" || "openbsd") {
         //Linux solution is untested
         var homedir = process.env.HOME;
@@ -151,7 +151,7 @@ function GetSteamDirectory() {
         ]
         
         for(const pathGroup of steamPaths) {
-            basedir = getExistingPath(pathGroup["paths"], pathGroup["prefix"])
+            basedir = await getExistingPath(pathGroup["paths"], pathGroup["prefix"])
             if(basedir != "") {
                 break;
             }
@@ -159,6 +159,5 @@ function GetSteamDirectory() {
     } else {
         basedir = "";
     }
-
     return basedir;
 }
