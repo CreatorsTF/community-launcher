@@ -344,12 +344,12 @@ body {
     color: var(--white);
 }
 
-.mod-info-box {
+#mod-info-box {
     display: flex;
     pointer-events: auto;
 }
 
-.mod-info-box button {
+#mod-info-box button {
     width: 50px;
     height: 50px;
     background-color: transparent;
@@ -359,7 +359,7 @@ body {
     transition: 0.2s;
 }
 
-.mod-info-box button:hover {
+#mod-info-box button:hover {
     transform: scale(0.9);
     background-color: var(--not-so-subtle-shadow);
     cursor: pointer;
