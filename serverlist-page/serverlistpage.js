@@ -158,6 +158,11 @@ var ServerListPage = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Combines the server data of these two objects together.
+     * @param oldData Main object to add to.
+     * @param newData Other obect to take the .servers property from.
+     */
     ServerListPage.CombineServerData = function (oldData, newData) {
         if (oldData.hasOwnProperty("servers")) {
             oldData.servers = oldData.servers.concat(newData.servers);

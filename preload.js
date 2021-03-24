@@ -20,7 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
 ipcRenderer.on("ShowMods", (event, moddata) => {
     document.getElementById("modlist-updating").style.display = "none";
 
-    sidebar = document.getElementById("sidebar");
+    sidebar = document.getElementById("sidebar-main");
 
     moddata.mods.forEach(modentry => {
         let div = document.createElement("div");
