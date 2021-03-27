@@ -1,312 +1,384 @@
-global.path = require("path");
-global.fs = require("fs");
-global.process = require("process");
-global.os = require("os");
-global.https = require("https");
-
-const isDev = require("electron-is-dev");
-global.isDev = isDev;
-
-const { app, BrowserWindow, ipcMain, shell, dialog, screen } = require("electron");
-const config = require("./modules/config");
-const settingsPage = require("./settings-page/settingspage");
-const patchnotesPage = require("./patchnotes-page/patchnotespage");
-const {ServerListPage} = require("./serverlist-page/serverlistpage");
-const mod_manager = require("./modules/mod_manager");
-const { autoUpdater } = require("electron-updater");
-const {Utilities} = require("./modules/utilities");
-const { ModListLoader, ModList } = require("./modules/mod_list_loader");
-
-// There are 6 levels of logging: error, warn, info, verbose, debug and silly
-const log = require("electron-log");
-log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-log.transports.file.fileName = "main.log";
-log.transports.file.maxSize = 10485760;
-log.transports.file.getFile();
-global.log = log;
-
-const path = global.path;
-const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
-
-var mainWindow;
-
-function createWindow() {
-    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    global.screenWidth = width;
-    global.screenHeight = height;
-    try {
-        mainWindow = new BrowserWindow({
-            minWidth: 960,
-            minHeight: 540,
-            width: screenWidth-200,
-            height: screenHeight-150,
-            webPreferences: {
-                preload: path.join(__dirname, "preload.js"),
-                nodeIntegration: false
-            },
-            center: true,
-            maximizable: true,
-            resizable: true,
-            autoHideMenuBar: true,
-            darkTheme: true,
-            backgroundColor: "#2B2826"
-        });
-        module.exports.mainWindow = mainWindow;
-        global.mainWindow = mainWindow;
-        global.app = app;
-        if (!isDev) mainWindow.removeMenu();
-
-        //Lets load the config file.
-        config.GetConfig().then((c) => {
-            //Make sure the config is loaded in.
-            global.config = c;
-            // and load the index.html of the app.
-            //Also setup the mod manager.
-            try {
-                mod_manager.Setup()
-                    .then(() => mainWindow.loadFile(path.resolve(__dirname, "index.html")))                ;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
             }
-            catch(e) {
-                log.error(e.toString());
-                dialog.showMessageBox({
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+//@ts-ignore
+var electron_1 = require("electron");
+var electron_is_dev_1 = __importDefault(require("electron-is-dev"));
+var settingspage_1 = __importDefault(require("./settings-page/settingspage"));
+var patchnotespage_1 = __importDefault(require("./patchnotes-page/patchnotespage"));
+var serverlistpage_1 = require("./serverlist-page/serverlistpage");
+var mod_manager_1 = __importDefault(require("./modules/mod_manager"));
+var electron_updater_1 = require("electron-updater");
+var utilities_1 = require("./modules/utilities");
+var mod_list_loader_1 = require("./modules/mod_list_loader");
+var path_1 = __importDefault(require("path"));
+var os_1 = __importDefault(require("os"));
+var _config = require("./modules/config");
+// There are 6 levels of logging: error, warn, info, verbose, debug and silly
+var electron_log_1 = __importDefault(require("electron-log"));
+electron_log_1.default.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
+electron_log_1.default.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
+electron_log_1.default.transports.file.fileName = "main.log";
+electron_log_1.default.transports.file.maxSize = 10485760;
+electron_log_1.default.transports.file.getFile();
+//@ts-ignore
+global.log = electron_log_1.default;
+var majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
+var Main = /** @class */ (function () {
+    function Main() {
+    }
+    Main.createWindow = function () {
+        var _this = this;
+        //@ts-ignore
+        var _a = electron_1.screen.getPrimaryDisplay().workAreaSize, width = _a.width, height = _a.height;
+        this.screenWidth = width;
+        this.screenHeight = height;
+        try {
+            Main.mainWindow = new electron_1.BrowserWindow({
+                minWidth: 960,
+                minHeight: 540,
+                width: this.screenWidth - 200,
+                height: this.screenHeight - 150,
+                webPreferences: {
+                    preload: path_1.default.join(__dirname, "preload.js"),
+                    nodeIntegration: false
+                },
+                center: true,
+                maximizable: true,
+                resizable: true,
+                autoHideMenuBar: true,
+                darkTheme: true,
+                backgroundColor: "#2B2826"
+            });
+            //@ts-ignore
+            global.mainWindow = Main.mainWindow;
+            Main.app = electron_1.app;
+            if (!electron_is_dev_1.default)
+                Main.mainWindow.removeMenu();
+            //Lets load the config file.
+            _config.GetConfig().then(function (c) {
+                //Make sure the config is loaded in.
+                // and load the index.html of the app.
+                //Also setup the mod manager.
+                _this.config = c;
+                try {
+                    mod_manager_1.default.Setup().then(function () { return Main.mainWindow.loadFile(path_1.default.resolve(__dirname, "index.html")); });
+                }
+                catch (e) {
+                    electron_log_1.default.error(e.toString());
+                    electron_1.dialog.showMessageBox({
+                        type: "error",
+                        title: "Startup Error - Main Window Load",
+                        message: e.toString() + majorErrorMessageEnd,
+                        buttons: ["OK"]
+                    }).then(function (button) {
+                        electron_1.app.quit();
+                    });
+                }
+            })
+                .catch(function (e) {
+                electron_log_1.default.error(e.toString());
+                electron_1.dialog.showMessageBox({
                     type: "error",
-                    title: "Startup Error - Main Window Load",
+                    title: "Startup Error - Config Load",
                     message: e.toString() + majorErrorMessageEnd,
                     buttons: ["OK"]
-                }).then((button) => {
-                    app.quit();
+                }).then(function (button) {
+                    electron_1.app.quit();
                 });
-            }
-        })
-        .catch((e) => {
-            log.error(e.toString());
-            dialog.showMessageBox({
-                type: "error",
-                title: "Startup Error - Config Load",
-                message: e.toString() + majorErrorMessageEnd,
-                buttons: ["OK"]
-            }).then((button) => {
-                app.quit();
             });
-        });
+        }
+        catch (majorE) {
+            electron_log_1.default.error(majorE.toString());
+            electron_1.dialog.showMessageBox({
+                type: "error",
+                title: "Startup Error - Major Initial Error",
+                message: majorE.toString() + majorErrorMessageEnd,
+                buttons: ["OK"]
+            }).then(function (button) {
+                electron_1.app.quit();
+            });
+        }
+    };
+    Main.logDeviceInfo = function () {
+        electron_log_1.default.log("Basic System Information: [platform: " + os_1.default.platform() + ", release: " + os_1.default.release() + ", arch: " + os_1.default.arch() + ", systemmem: " + (((os_1.default.totalmem() / 1024) / 1024) / 1024).toFixed(2) + " gb]");
+    };
+    Main.autoUpdateCheckAndSettings = function () {
+        electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
+        electron_updater_1.autoUpdater.logger = electron_log_1.default;
+        electron_updater_1.autoUpdater.autoDownload = false;
+        electron_log_1.default.info("Checking for updates.");
+    };
+    Main.getClientCurrentVersion = function () {
+        var lVer = utilities_1.Utilities.GetCurrentVersion();
+        if (lVer != null)
+            electron_log_1.default.info("Current launcher version: " + lVer);
+        else
+            electron_log_1.default.error("Failed to get launcher version");
+    };
+    return Main;
+}());
+exports.default = Main;
+electron_1.app.on("ready", function () {
+    try {
+        mod_list_loader_1.ModListLoader.LoadLocalModList();
+        Main.createWindow();
+        Main.getClientCurrentVersion();
+        Main.autoUpdateCheckAndSettings();
+        Main.logDeviceInfo();
+        electron_log_1.default.info("Launcher was opened/finished initialization.");
     }
-    catch(majorE) {
-        log.error(majorE.toString());
-        dialog.showMessageBox({
-            type: "error",
-            title: "Startup Error - Major Initial Error",
-            message: majorE.toString() + majorErrorMessageEnd,
-            buttons: ["OK"]
-        }).then((button) => {
-            app.quit();
-        });
-    }
-}
-
-function logDeviceInfo() {
-    log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2)} gb]`);
-}
-
-function autoUpdateCheckAndSettings() {
-    autoUpdater.checkForUpdatesAndNotify();
-    autoUpdater.logger = log;
-    autoUpdater.logger.transports.file.level = "info";
-    autoUpdater.autoDownload = false;
-    log.info("Checking for updates.");
-}
-
-function getClientCurrentVersion() {
-    var lVer = Utilities.GetCurrentVersion();
-    if (lVer != null) log.info("Current launcher version: " + lVer);
-    else log.error("Failed to get launcher version");
-}
-
-app.on("ready", () => {
-    try{
-        ModListLoader.LoadLocalModList();
-        createWindow();
-        getClientCurrentVersion();
-        autoUpdateCheckAndSettings();
-        logDeviceInfo();
-        log.info("Launcher was opened/finished initialization.");
-    }
-    catch(error) {
-        log.error(error.toString());
-        dialog.showMessageBox({
+    catch (error) {
+        electron_log_1.default.error(error.toString());
+        electron_1.dialog.showMessageBox({
             type: "error",
             title: "App Ready Error - Major Initial Error",
             message: error.toString() + majorErrorMessageEnd,
             buttons: ["OK"]
-        }).then((button) => {
-            app.quit();
+        }).then(function (button) {
+            electron_1.app.quit();
         });
     }
 });
-
-app.on("activate", function() {
+electron_1.app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
+    if (electron_1.BrowserWindow.getAllWindows().length === 0) {
+        Main.createWindow();
     }
 });
-
-app.on("window-all-closed", function() {
+electron_1.app.on("window-all-closed", function () {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
-        app.quit();
-        log.info("Launcher was closed.");
+        electron_1.app.quit();
+        electron_log_1.default.info("Launcher was closed.");
     }
 });
-
-autoUpdater.on("checking-for-update", () => {
-    log.info("Checking for updates");
+electron_updater_1.autoUpdater.on("checking-for-update", function () {
+    electron_log_1.default.info("Checking for updates");
 });
-
-autoUpdater.on("update-not-available", () => {
-    mainWindow.webContents.send("update_not_available");
-    log.info("No updates available");
+electron_updater_1.autoUpdater.on("update-not-available", function () {
+    Main.mainWindow.webContents.send("update_not_available");
+    electron_log_1.default.info("No updates available");
 });
-
-autoUpdater.on("update-available", () => {
-    mainWindow.webContents.send("update_available");
-    log.info("An update is available");
+electron_updater_1.autoUpdater.on("update-available", function () {
+    Main.mainWindow.webContents.send("update_available");
+    electron_log_1.default.info("An update is available");
 });
-
-ipcMain.on("download_update", () => {
-    autoUpdater.downloadUpdate();
-    mainWindow.webContents.send("update_downloading");
-    log.info("Downloading update");
+electron_1.ipcMain.on("download_update", function () {
+    electron_updater_1.autoUpdater.downloadUpdate();
+    Main.mainWindow.webContents.send("update_downloading");
+    electron_log_1.default.info("Downloading update");
 });
-
-autoUpdater.on("update-downloaded", () => {
-    mainWindow.webContents.send("update_downloaded");
-    log.info("Update downloaded");
+electron_updater_1.autoUpdater.on("update-downloaded", function () {
+    Main.mainWindow.webContents.send("update_downloaded");
+    electron_log_1.default.info("Update downloaded");
 });
-
-autoUpdater.on("error", (err) => {
-    log.error("Error in auto-updater: " + err);
+electron_updater_1.autoUpdater.on("error", function (err) {
+    electron_log_1.default.error("Error in auto-updater: " + err);
 });
-
-ipcMain.on("restart_app", () => {
-    autoUpdater.quitAndInstall();
-    log.info("Restarting program to install an update");
+electron_1.ipcMain.on("restart_app", function () {
+    electron_updater_1.autoUpdater.quitAndInstall();
+    electron_log_1.default.info("Restarting program to install an update");
 });
-
-ipcMain.on("SettingsWindow", async (event, arg) => {
-    settingsPage.OpenWindow();
-});
-ipcMain.on("PatchNotesWindow", async (event, arg) => {
-    patchnotesPage.OpenWindow();
-});
-ipcMain.on("ServerListWindow", async (event, arg) => {
-    //Get the mod list data so we can get the server providers for the current mod.
-
-    var modList = ModListLoader.GetModList();
-    //Make sacrificial object soo the local method exists. Thanks js on your half assed oo.
-    var realModList = new ModList();
-    Object.assign(realModList, modList);
-
-    var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
-    if(providers != null) ServerListPage.OpenWindow(mainWindow, global.screenWidth, global.screenHeight, providers);
-    else{
-        if (isDev){
-            Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
-        }
+electron_1.ipcMain.on("SettingsWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        settingspage_1.default.OpenWindow();
+        return [2 /*return*/];
+    });
+}); });
+electron_1.ipcMain.on("PatchNotesWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        patchnotespage_1.default.OpenWindow();
+        return [2 /*return*/];
+    });
+}); });
+electron_1.ipcMain.on("ServerListWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    var modList, realModList, providers;
+    return __generator(this, function (_a) {
+        modList = mod_list_loader_1.ModListLoader.GetModList();
+        realModList = new mod_list_loader_1.ModList();
+        Object.assign(realModList, modList);
+        providers = realModList.GetMod(mod_manager_1.default.currentModData.name).serverlistproviders;
+        if (providers != null)
+            serverlistpage_1.ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, providers);
         else {
-            log.error("There were no providers for the current mod! Did not open server list page.");
+            if (electron_is_dev_1.default) {
+                utilities_1.Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
+            }
+            else {
+                electron_log_1.default.error("There were no providers for the current mod! Did not open server list page.");
+            }
         }
-    }
-});
-
+        return [2 /*return*/];
+    });
+}); });
 // ipcMain.on("app_version", (event) => {
 //     event.sender.send("app_version", {
 //         version: app.getVersion()
 //     });
 // });
-
-ipcMain.on("GetConfig", async (event, arg) => {
-    event.reply("GetConfig-Reply", global.config);
-});
-
-ipcMain.on("SetCurrentMod", async (event, arg) => {    
-    try {
-        const result = await mod_manager.ChangeCurrentMod(arg);
-        event.reply("InstallButtonName-Reply", result);
-    } catch (error) {
-        event.reply("InstallButtonName-Reply", "Internal Error");
-            Utilities.ErrorDialog(isDev ? `Dev Error: ${error.toString()}` : `Failed to check if mod "${arg}" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.`, "Mod Update Check Error");
-    }
-});
-
-ipcMain.on("install-play-click", async (event, args) => {
-    await mod_manager.ModInstallPlayButtonClick();
-});
-
-ipcMain.on("Visit-Mod-Social", async(event, arg) => {
-    let socialLink = mod_manager.currentModData[arg];
-    if (socialLink != null && socialLink != "") {
-        shell.openExternal(socialLink);
-    }
-});
-
-ipcMain.on("GetCurrentModVersion", async(event, arg) => {
-    let version;
-    try {
-        version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
-        if (version == null) {
+electron_1.ipcMain.on("GetConfig", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        event.reply("GetConfig-Reply", Main.config);
+        return [2 /*return*/];
+    });
+}); });
+electron_1.ipcMain.on("SetCurrentMod", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, mod_manager_1.default.ChangeCurrentMod(arg)];
+            case 1:
+                result = _a.sent();
+                event.reply("InstallButtonName-Reply", result);
+                return [3 /*break*/, 3];
+            case 2:
+                error_1 = _a.sent();
+                event.reply("InstallButtonName-Reply", "Internal Error");
+                utilities_1.Utilities.ErrorDialog(electron_is_dev_1.default ? "Dev Error: " + error_1.toString() : "Failed to check if mod \"" + arg + "\" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.", "Mod Update Check Error");
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+electron_1.ipcMain.on("install-play-click", function (event, args) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, mod_manager_1.default.ModInstallPlayButtonClick()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); });
+electron_1.ipcMain.on("Visit-Mod-Social", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    var socialLink;
+    return __generator(this, function (_a) {
+        socialLink = mod_manager_1.default.currentModData[arg];
+        if (socialLink != null && socialLink != "") {
+            electron_1.shell.openExternal(socialLink);
+        }
+        return [2 /*return*/];
+    });
+}); });
+electron_1.ipcMain.on("GetCurrentModVersion", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    var version;
+    return __generator(this, function (_a) {
+        try {
+            version = mod_manager_1.default.GetCurrentModVersionFromConfig(mod_manager_1.default.currentModData.name);
+            if (version == null) {
+                version = "?";
+            }
+        }
+        catch (_b) {
             version = "?";
         }
-    }
-    catch {
-        version = "?";
-    }
-    event.reply("GetCurrentModVersion-Reply", version);
-});
-
-ipcMain.on("Remove-Mod", async(event, arg) => {
-    if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
-        dialog.showMessageBox(global.mainWindow, {
-            type: "warning",
-            title: "Remove Mod",
-            message: `Would you like to uninstall the mod ${mod_manager.currentModData.name}?`,
-            buttons: ["Yes", "Cancel"],
-            cancelId: 1
-        }).then(async (button) => {
-            if (button.response == 0) {
-                log.info("Will start the mod removal process. User said yes.");
-                await mod_manager.RemoveCurrentMod();
-            }
-        });
-    }
-});
-
-ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
-    if(steamdir != ""){
-        const tf2dir = await config.GetTF2Directory(steamdir);
-        if (tf2dir && tf2dir != "")
-            global.config.steam_directory = steamdir;
-            global.config.tf2_directory = tf2dir;
-    
-        event.reply("GetConfig-Reply", global.config);
-    }
-    else {
-        Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
-    }
-});
-
-ipcMain.on("GetModData", async (event, args) => {
-    ModListLoader.CheckForUpdates().then(() => {
-        ModListLoader.UpdateLocalModList();
-        log.verbose("Latest mod list was sent to renderer");
-        event.reply("ShowMods", ModListLoader.GetModList());
+        event.reply("GetCurrentModVersion-Reply", version);
+        return [2 /*return*/];
     });
-});
-
+}); });
+electron_1.ipcMain.on("Remove-Mod", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        if (mod_manager_1.default.currentModData != null && (mod_manager_1.default.currentModState == "INSTALLED" || mod_manager_1.default.currentModState == "UPDATE")) {
+            electron_1.dialog.showMessageBox(Main.mainWindow, {
+                type: "warning",
+                title: "Remove Mod",
+                message: "Would you like to uninstall the mod " + mod_manager_1.default.currentModData.name + "?",
+                buttons: ["Yes", "Cancel"],
+                cancelId: 1
+            }).then(function (button) { return __awaiter(void 0, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!(button.response == 0)) return [3 /*break*/, 2];
+                            electron_log_1.default.info("Will start the mod removal process. User said yes.");
+                            return [4 /*yield*/, mod_manager_1.default.RemoveCurrentMod()];
+                        case 1:
+                            _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/];
+                    }
+                });
+            }); });
+        }
+        return [2 /*return*/];
+    });
+}); });
+electron_1.ipcMain.on("config-reload-tf2directory", function (event, steamdir) { return __awaiter(void 0, void 0, void 0, function () {
+    var tf2dir;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!(steamdir != "")) return [3 /*break*/, 2];
+                return [4 /*yield*/, _config.GetTF2Directory(steamdir)];
+            case 1:
+                tf2dir = _a.sent();
+                if (tf2dir && tf2dir != "")
+                    Main.config.steam_directory = steamdir;
+                Main.config.tf2_directory = tf2dir;
+                event.reply("GetConfig-Reply", Main.config);
+                return [3 /*break*/, 3];
+            case 2:
+                utilities_1.Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
+                _a.label = 3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+electron_1.ipcMain.on("GetModData", function (event, args) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        mod_list_loader_1.ModListLoader.CheckForUpdates().then(function () {
+            mod_list_loader_1.ModListLoader.UpdateLocalModList();
+            electron_log_1.default.verbose("Latest mod list was sent to renderer");
+            event.reply("ShowMods", mod_list_loader_1.ModListLoader.GetModList());
+        });
+        return [2 /*return*/];
+    });
+}); });
 //Quickplay
 //ipcMain.on("")
-
 // Run games: steam://run/[ID]
 // Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]
+//# sourceMappingURL=main.js.map
