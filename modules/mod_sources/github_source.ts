@@ -6,7 +6,6 @@ import https from "https";
 const github_api_url = "https://api.github.com/";
 
 class GithubSource extends ModInstallSource {
-
     github_data = null;
     fileType = "FILE";
 
@@ -36,6 +35,12 @@ class GithubSource extends ModInstallSource {
                 resolve(date);
             }).catch(reject);
         });
+    }
+
+    async GetDisplayVersionNumber(): Promise<string> {
+        let versionNumber = await this.GetLatestVersionNumber();
+        let githubData = await this._GetGithubData();
+        return `${githubData[0].name} (${versionNumber})`;
     }
 
     async GetFileURL() : Promise<string>{

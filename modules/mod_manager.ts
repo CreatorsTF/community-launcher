@@ -159,9 +159,9 @@ class ModManager {
                 //Setup the message to include the version if we have the data.
                 //Really we should for this state to be active but best to be sure.
                 ElectronLog.log("Asking user if they want to update this mod.");
-                const version = await this.source_manager.GetLatestVersionNumber();            
-                let update_msg = `Would you like to update this mod to version "${version}"?`;
-
+                let version = await this.source_manager.GetLatestVersionNumber();
+                let displayVersion = await this.source_manager.GetDisplayVersionNumber();
+                let update_msg = `Would you like to update this mod to version "${displayVersion}"?`;
                 //Ask if the users wants to update or not
                 
                 const button = await dialog.showMessageBox(Main.mainWindow, {

@@ -6,6 +6,7 @@ abstract class ModInstallSource {
         this.data = install_data;
     }
     abstract GetLatestVersionNumber() : Promise<number>;
+    abstract GetDisplayVersionNumber(): Promise<string>;
     abstract GetFileURL() : Promise<string>;
 }
 export default ModInstallSource

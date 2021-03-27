@@ -154,7 +154,7 @@ var ModManager = /** @class */ (function () {
     //This is called when the Install / Update / Installed button is pressed in the UI.
     ModManager.ModInstallPlayButtonClick = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _url, e_2, version, update_msg, button;
+            var _a, _url, e_2, version, displayVersion, update_msg, button;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -171,7 +171,7 @@ var ModManager = /** @class */ (function () {
                             case "NOT_INSTALLED": return [3 /*break*/, 3];
                             case "UPDATE": return [3 /*break*/, 12];
                         }
-                        return [3 /*break*/, 17];
+                        return [3 /*break*/, 18];
                     case 3:
                         //We should try to install this mod!
                         //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
@@ -205,7 +205,7 @@ var ModManager = /** @class */ (function () {
                     case 10:
                         _b.sent();
                         return [3 /*break*/, 11];
-                    case 11: return [3 /*break*/, 18];
+                    case 11: return [3 /*break*/, 19];
                     case 12:
                         //We should try to update this mod!
                         //Setup the message to include the version if we have the data.
@@ -214,7 +214,10 @@ var ModManager = /** @class */ (function () {
                         return [4 /*yield*/, this.source_manager.GetLatestVersionNumber()];
                     case 13:
                         version = _b.sent();
-                        update_msg = "Would you like to update this mod to version \"" + version + "\"?";
+                        return [4 /*yield*/, this.source_manager.GetDisplayVersionNumber()];
+                    case 14:
+                        displayVersion = _b.sent();
+                        update_msg = "Would you like to update this mod to version \"" + displayVersion + "\"?";
                         return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "question",
                                 title: "Update",
@@ -222,20 +225,20 @@ var ModManager = /** @class */ (function () {
                                 buttons: ["Yes", "Cancel"],
                                 cancelId: 1
                             })];
-                    case 14:
+                    case 15:
                         button = _b.sent();
-                        if (!(button.response == 0)) return [3 /*break*/, 16];
+                        if (!(button.response == 0)) return [3 /*break*/, 17];
                         //Do the update!
                         electron_log_2.default.log("Starting update process...");
                         return [4 /*yield*/, this.UpdateCurrentMod()];
-                    case 15:
+                    case 16:
                         _b.sent();
-                        _b.label = 16;
-                    case 16: return [3 /*break*/, 18];
-                    case 17:
+                        _b.label = 17;
+                    case 17: return [3 /*break*/, 19];
+                    case 18:
                         electron_log_2.default.error("Somehow the install button was clicked when the mod is in the installed state.");
-                        return [3 /*break*/, 18];
-                    case 18: return [2 /*return*/];
+                        return [3 /*break*/, 19];
+                    case 19: return [2 /*return*/];
                 }
             });
         });

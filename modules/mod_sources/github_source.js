@@ -96,6 +96,22 @@ var GithubSource = /** @class */ (function (_super) {
             });
         });
     };
+    GithubSource.prototype.GetDisplayVersionNumber = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var versionNumber, githubData;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.GetLatestVersionNumber()];
+                    case 1:
+                        versionNumber = _a.sent();
+                        return [4 /*yield*/, this._GetGithubData()];
+                    case 2:
+                        githubData = _a.sent();
+                        return [2 /*return*/, githubData[0].name + " (" + versionNumber + ")"];
+                }
+            });
+        });
+    };
     GithubSource.prototype.GetFileURL = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
