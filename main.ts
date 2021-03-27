@@ -7,7 +7,7 @@ import { ServerListPage } from "./serverlist-page/serverlistpage";
 import mod_manager from "./modules/mod_manager";
 import { autoUpdater } from "electron-updater";
 import { Utilities } from "./modules/utilities";
-import { ModListLoader, ModList } from "./modules/mod_list_loader";
+import { ModListLoader, ModList } from "./modules/remote_file_loader/mod_list_loader";
 import path from "path";
 import os from "os";
 const _config = require("./modules/config");
@@ -128,7 +128,7 @@ export default Main;
 
 app.on("ready", () => {
     try{
-        ModListLoader.LoadLocalModList();
+        ModListLoader.instance.LoadLocalFile();
         Main.createWindow();
         Main.getClientCurrentVersion();
         Main.autoUpdateCheckAndSettings();
@@ -208,7 +208,7 @@ ipcMain.on("PatchNotesWindow", async (event, arg) => {
 ipcMain.on("ServerListWindow", async (event, arg) => {
     //Get the mod list data so we can get the server providers for the current mod.
 
-    var modList = ModListLoader.GetModList();
+    var modList = ModListLoader.instance.GetFile();
     //Make sacrificial object soo the local method exists. Thanks js on your half assed oo.
     var realModList = new ModList();
     Object.assign(realModList, modList);
@@ -302,10 +302,10 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
 });
 
 ipcMain.on("GetModData", async (event, args) => {
-    ModListLoader.CheckForUpdates().then(() => {
-        ModListLoader.UpdateLocalModList();
+    ModListLoader.instance.CheckForUpdates().then(() => {
+        ModListLoader.instance.UpdateLocalFile();
         log.verbose("Latest mod list was sent to renderer");
-        event.reply("ShowMods", ModListLoader.GetModList());
+        event.reply("ShowMods", ModListLoader.instance.GetFile());
     });
 });
 

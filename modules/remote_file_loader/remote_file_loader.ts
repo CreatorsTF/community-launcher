@@ -3,12 +3,10 @@ import fs from "fs";
 import { Utilities } from "modules/utilities";
 import path from "path";
 import ElectronLog from "electron-log";
-import { ModListLoader } from "modules/mod_list_loader";
+import { ModListLoader } from "modules/remote_file_loader/mod_list_loader";
 
 abstract class RemoteLoader <T extends RemoteFile>
 {
-    public static modListLoader = new ModListLoader();
-
     private lastDownloaded : T;
     private localFile : T;
     abstract localFileName = "";

@@ -1,23 +1,16 @@
 import fs from "fs";
 import path from "path";
 import https from "https";
-import {Utilities} from "./utilities";
+import {Utilities} from "../utilities";
 import ElectronLog from "electron-log";
-import RemoteLoader, { RemoteFile } from "./remote_file_loader/remote_file_loader";
-
-//URLs to try to get mod lists from.
-//More than one allows fallbacks.
-const modListURLs = [
-    "https://fastdl.creators.tf/launcher/mods.json",
-    "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json"
-];
-
-const localModListName = "mods.json";
+import RemoteLoader, { RemoteFile } from "./remote_file_loader";
 
 /**
  * Responsible for providing the latest mod list avaliable.
  */
 class ModListLoader extends RemoteLoader<ModList>{
+
+    static instance = new ModListLoader();
 
     remoteUrls = [
         "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json",

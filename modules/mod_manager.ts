@@ -13,7 +13,7 @@ import errors from './errors';
 import filemanager from "./file_manager";
 import GithubSource from "./mod_sources/github_source.js";
 import JsonListSource from "./mod_sources/jsonlist_source.js";
-import { ModList, ModListEntry, ModListLoader } from "./mod_list_loader";
+import { ModList, ModListEntry, ModListLoader } from "./remote_file_loader/mod_list_loader";
 import Main from "../main";
 import ModInstallSource from "./mod_sources/mod_source_base";
 import ElectronLog from "electron-log";
@@ -55,7 +55,7 @@ class ModManager {
 
     //Sets up the module.
     static async Setup(){
-        this.all_mods_data = ModListLoader.GetModList();
+        this.all_mods_data = ModListLoader.instance.GetFile();
 
         return await filemanager.Init();
     }

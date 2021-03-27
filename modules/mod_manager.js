@@ -54,7 +54,7 @@ var errors_1 = __importDefault(require("./errors"));
 var file_manager_1 = __importDefault(require("./file_manager"));
 var github_source_js_1 = __importDefault(require("./mod_sources/github_source.js"));
 var jsonlist_source_js_1 = __importDefault(require("./mod_sources/jsonlist_source.js"));
-var mod_list_loader_1 = require("./mod_list_loader");
+var mod_list_loader_1 = require("./remote_file_loader/mod_list_loader");
 var main_1 = __importDefault(require("../main"));
 var electron_log_2 = __importDefault(require("electron-log"));
 var functionMap = new Map();
@@ -80,7 +80,7 @@ var ModManager = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.all_mods_data = mod_list_loader_1.ModListLoader.GetModList();
+                        this.all_mods_data = mod_list_loader_1.ModListLoader.instance.GetFile();
                         return [4 /*yield*/, file_manager_1.default.Init()];
                     case 1: return [2 /*return*/, _a.sent()];
                 }

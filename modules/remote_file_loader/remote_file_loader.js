@@ -39,37 +39,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModListEntry = exports.ModList = exports.ModListLoader = void 0;
+exports.RemoteFile = void 0;
+var axios_1 = __importDefault(require("axios"));
 var fs_1 = __importDefault(require("fs"));
+var utilities_1 = require("modules/utilities");
 var path_1 = __importDefault(require("path"));
-var https_1 = __importDefault(require("https"));
-var utilities_1 = require("./utilities");
 var electron_log_1 = __importDefault(require("electron-log"));
-//URLs to try to get mod lists from.
-//More than one allows fallbacks.
-var modListURLs = [
-    "https://fastdl.creators.tf/launcher/mods.json",
-    "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json"
-];
-var localModListName = "mods.json";
-/**
- * Responsible for providing the latest mod list avaliable.
- */
-var ModListLoader = /** @class */ (function () {
-    function ModListLoader() {
+var RemoteLoader = /** @class */ (function () {
+    function RemoteLoader() {
+        this.localFileName = "";
+        this.remoteUrls = [
+            ""
+        ];
     }
-    ModListLoader.LoadLocalModList = function () {
-        this.localModList = this.GetLocalModList();
+    RemoteLoader.prototype.LoadLocalFile = function () {
+        this.localFile = this.GetLocalFile();
     };
-    ModListLoader.GetModList = function () {
-        return this.localModList;
+    /**
+     * Load the most current version of this file type
+     */
+    RemoteLoader.prototype.GetFile = function () {
+        return this.localFile;
     };
     /**
      * Update the local mod list file on disk to contain the latest data we found.
      */
-    ModListLoader.UpdateLocalModList = function () {
-        if (this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version) {
-            var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), localModListName);
+    RemoteLoader.prototype.UpdateLocalFile = function () {
+        if (this.lastDownloaded != null && this.localFile.version < this.lastDownloaded.version) {
+            var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), this.localFileName);
             fs_1.default.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
             return true;
         }
@@ -78,13 +75,13 @@ var ModListLoader = /** @class */ (function () {
     /**Check if there is a newer mod list online.
      * Also checks if the internal version is newer than the local, written version.
      */
-    ModListLoader.CheckForUpdates = function () {
+    RemoteLoader.prototype.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, i, url, remoteModList, _a, error_1;
+            var data, i, url, remoteFile, _a, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        electron_log_1.default.log("Checking for modlist updates");
+                        electron_log_1.default.log("Checking for remote file updates for : " + this.localFileName);
                         data = new Array();
                         _b.label = 1;
                     case 1:
@@ -92,22 +89,22 @@ var ModListLoader = /** @class */ (function () {
                         i = 0;
                         _b.label = 2;
                     case 2:
-                        if (!(i < modListURLs.length)) return [3 /*break*/, 8];
-                        url = modListURLs[i];
+                        if (!(i < this.remoteUrls.length)) return [3 /*break*/, 8];
+                        url = this.remoteUrls[i];
                         _b.label = 3;
                     case 3:
                         _b.trys.push([3, 5, , 6]);
-                        return [4 /*yield*/, this.TryGetModList(url)];
+                        return [4 /*yield*/, this.TryGetRemoteFile(url)];
                     case 4:
-                        remoteModList = _b.sent();
+                        remoteFile = _b.sent();
                         return [3 /*break*/, 6];
                     case 5:
                         _a = _b.sent();
                         return [3 /*break*/, 7];
                     case 6:
                         //Break if we have a valid mod list. If we have null, try again.
-                        if (remoteModList != null && remoteModList != undefined) {
-                            this.lastDownloaded = remoteModList;
+                        if (remoteFile != null && remoteFile != undefined) {
+                            this.lastDownloaded = remoteFile;
                             return [3 /*break*/, 8];
                         }
                         _b.label = 7;
@@ -115,9 +112,9 @@ var ModListLoader = /** @class */ (function () {
                         i++;
                         return [3 /*break*/, 2];
                     case 8:
-                        if (this.lastDownloaded != null && this.lastDownloaded.hasOwnProperty("version")) {
-                            electron_log_1.default.log("Local mod list version: " + this.localModList.version + ", Remote mod list version: " + this.lastDownloaded.version + ".");
-                            return [2 /*return*/, this.localModList.version < this.lastDownloaded.version];
+                        if (this.lastDownloaded != null && this.lastDownloaded.version != null) {
+                            electron_log_1.default.log("Local mod list version: " + this.localFile.version + ", Remote mod list version: " + this.lastDownloaded.version + ".");
+                            return [2 /*return*/, this.localFile.version < this.lastDownloaded.version];
                         }
                         return [3 /*break*/, 10];
                     case 9:
@@ -131,88 +128,62 @@ var ModListLoader = /** @class */ (function () {
             });
         });
     };
-    ModListLoader.TryGetModList = function (url) {
+    RemoteLoader.prototype.TryGetRemoteFile = function (url) {
         return __awaiter(this, void 0, void 0, function () {
+            var resp, parsed, error_2;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        electron_log_1.default.log("Trying to get mod list from: " + url);
-                        var data = new Array();
-                        var req = https_1.default.get(url, function (res) {
-                            console.log("statusCode: " + res.statusCode);
-                            res.on('data', function (d) {
-                                if (res.statusCode != 200) {
-                                    resolve(null);
-                                }
-                                data.push(d);
-                            });
-                            res.on("end", function () {
-                                try {
-                                    var buf = Buffer.concat(data);
-                                    var parsed = JSON.parse(buf.toString());
-                                    resolve(parsed);
-                                }
-                                catch (error) {
-                                    //Json parsing failed soo reject.
-                                    electron_log_1.default.error("Failed to parse json in TryGetModList request for " + url + ", error: " + error.toString());
-                                    resolve(null);
-                                }
-                            });
-                        });
-                        req.on('error', function (error) {
-                            electron_log_1.default.error("General request error in a TryGetModList request, error: " + error.toString());
-                            resolve(null);
-                        });
-                        req.end();
-                    })];
+                switch (_a.label) {
+                    case 0:
+                        electron_log_1.default.log("Trying to get file from: " + url);
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, axios_1.default.get(url)];
+                    case 2:
+                        resp = _a.sent();
+                        parsed = JSON.parse(resp.data);
+                        return [2 /*return*/, parsed];
+                    case 3:
+                        error_2 = _a.sent();
+                        //Json parsing failed soo reject.
+                        electron_log_1.default.error("Failed to get remote file at " + url + ", error: " + error_2.toString());
+                        throw error_2;
+                    case 4: return [2 /*return*/];
+                }
             });
         });
     };
-    ModListLoader.GetLocalModList = function () {
+    RemoteLoader.prototype.GetLocalFile = function () {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
-        var internalModListJSON = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "..", "internal", "mods.json"), { encoding: "utf-8" });
-        var internalModList = JSON.parse(internalModListJSON);
-        var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), localModListName);
+        var internalFileJSON = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "..", "internal", this.localFileName), { encoding: "utf-8" });
+        var internalFile = JSON.parse(internalFileJSON);
+        var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), this.localFileName);
         if (fs_1.default.existsSync(configPath)) {
-            var localConfig = JSON.parse(fs_1.default.readFileSync(configPath, { encoding: "utf-8" }));
-            if (localConfig.version > internalModList.version) {
-                return localConfig;
+            var localWrittenFile = JSON.parse(fs_1.default.readFileSync(configPath, { encoding: "utf-8" }));
+            if (localWrittenFile.version > internalFile.version) {
+                return localWrittenFile;
             }
         }
         //Write the internal mod list then return that too.
         //We also want to re write the internal mod list if its a higher version.
-        fs_1.default.writeFileSync(configPath, internalModListJSON);
-        return JSON.parse(internalModListJSON);
+        fs_1.default.writeFileSync(configPath, internalFileJSON);
+        return JSON.parse(internalFileJSON);
     };
-    ModListLoader.DeleteLocalModList = function () {
-        var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), localModListName);
+    RemoteLoader.prototype.DeleteLocalFile = function () {
+        var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), this.localFileName);
         if (fs_1.default.existsSync(configPath)) {
             fs_1.default.unlinkSync(configPath);
             return true;
         }
         return false;
     };
-    return ModListLoader;
+    return RemoteLoader;
 }());
-exports.ModListLoader = ModListLoader;
-var ModList = /** @class */ (function () {
-    function ModList() {
+var RemoteFile = /** @class */ (function () {
+    function RemoteFile() {
     }
-    ModList.prototype.GetMod = function (name) {
-        for (var _i = 0, _a = this.mods; _i < _a.length; _i++) {
-            var entry = _a[_i];
-            if (entry.name == name) {
-                return entry;
-            }
-        }
-        return null;
-    };
-    return ModList;
+    return RemoteFile;
 }());
-exports.ModList = ModList;
-var ModListEntry = /** @class */ (function () {
-    function ModListEntry() {
-    }
-    return ModListEntry;
-}());
-exports.ModListEntry = ModListEntry;
-//# sourceMappingURL=mod_list_loader.js.map
+exports.RemoteFile = RemoteFile;
+exports.default = RemoteLoader;
+//# sourceMappingURL=remote_file_loader.js.map

@@ -48,7 +48,7 @@ var serverlistpage_1 = require("./serverlist-page/serverlistpage");
 var mod_manager_1 = __importDefault(require("./modules/mod_manager"));
 var electron_updater_1 = require("electron-updater");
 var utilities_1 = require("./modules/utilities");
-var mod_list_loader_1 = require("./modules/mod_list_loader");
+var mod_list_loader_1 = require("./modules/remote_file_loader/mod_list_loader");
 var path_1 = __importDefault(require("path"));
 var os_1 = __importDefault(require("os"));
 var _config = require("./modules/config");
@@ -159,7 +159,7 @@ var Main = /** @class */ (function () {
 exports.default = Main;
 electron_1.app.on("ready", function () {
     try {
-        mod_list_loader_1.ModListLoader.LoadLocalModList();
+        mod_list_loader_1.ModListLoader.instance.LoadLocalFile();
         Main.createWindow();
         Main.getClientCurrentVersion();
         Main.autoUpdateCheckAndSettings();
@@ -235,7 +235,7 @@ electron_1.ipcMain.on("PatchNotesWindow", function (event, arg) { return __await
 electron_1.ipcMain.on("ServerListWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
     var modList, realModList, providers;
     return __generator(this, function (_a) {
-        modList = mod_list_loader_1.ModListLoader.GetModList();
+        modList = mod_list_loader_1.ModListLoader.instance.GetFile();
         realModList = new mod_list_loader_1.ModList();
         Object.assign(realModList, modList);
         providers = realModList.GetMod(mod_manager_1.default.currentModData.name).serverlistproviders;
@@ -369,10 +369,10 @@ electron_1.ipcMain.on("config-reload-tf2directory", function (event, steamdir) {
 }); });
 electron_1.ipcMain.on("GetModData", function (event, args) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        mod_list_loader_1.ModListLoader.CheckForUpdates().then(function () {
-            mod_list_loader_1.ModListLoader.UpdateLocalModList();
+        mod_list_loader_1.ModListLoader.instance.CheckForUpdates().then(function () {
+            mod_list_loader_1.ModListLoader.instance.UpdateLocalFile();
             electron_log_1.default.verbose("Latest mod list was sent to renderer");
-            event.reply("ShowMods", mod_list_loader_1.ModListLoader.GetModList());
+            event.reply("ShowMods", mod_list_loader_1.ModListLoader.instance.GetFile());
         });
         return [2 /*return*/];
     });
