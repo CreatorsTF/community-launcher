@@ -4,7 +4,7 @@ abstract class CreatorsAPICommand<Response>
     public endpoint: string;
     public hasArguments: boolean;
     public OnResponse: (Response) => void;
-    public OnFailure: string;
+    public OnFailure: (any) => void;
 
     abstract GetCommandParameters() : Map<string, string>;
     abstract GetCommandBody(): string | undefined;

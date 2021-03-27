@@ -10,13 +10,16 @@ const MM_QUERY_STATUS_FINISHED = 5;         // Matchmaking query succesfully fou
 
 class Quickplay {
 
-    CreateNewMatch(params: CreateMatchCommandParams){
-        let matchCmd = new CreateMatchCommand(params);
-        matchCmd.OnResponse = (response: MatchmaingStatusQueryResponse) => {
-            
-        };
-        CreatorsAPIDispatcher.instance.ExecuteCommand(matchCmd);
+    async CreateNewMatch(params: CreateMatchCommandParams) : Promise<MatchmaingStatusQueryResponse>{
+        return new Promise((resp, rej) => {
+            let matchCmd = new CreateMatchCommand(params);
+            matchCmd.OnResponse = (response: MatchmaingStatusQueryResponse) => {
+                resp(response);
+            };
+            CreatorsAPIDispatcher.instance.ExecuteCommand(matchCmd);
+        });
     }
+    
 }
 
 class MatchmaingStatusQueryResponse

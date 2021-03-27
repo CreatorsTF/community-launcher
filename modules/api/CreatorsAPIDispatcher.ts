@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { Method } from "axios";
 import path from "path";
 import { CreatorsAPICommand, HTTPRequestType } from "./CreatorsAPICommand";
 
@@ -10,22 +10,16 @@ class CreatorsAPIDispatcher
 
     async ExecuteCommand(command: CreatorsAPICommand<any>){
         try{
-            switch(command.requestType){
-                case HTTPRequestType.GET:
-                    let response = await axios.get(this.CreateRequestUrl(command));
-                    let jsonObject = JSON.parse(response.data.toString());
-                    command.OnResponse(jsonObject);
-                    break;
-                case HTTPRequestType.POST:
-
-                    break;
-                case HTTPRequestType.DELETE:
-
-                    break;
-            }
+            let resp = await axios.request(
+                {
+                    method: <Method><unknown>command.requestType.toString(),
+                    url: this.CreateRequestUrl(command)
+                });
+            let jsonObject = JSON.parse(resp.data.toString());
+            command.OnResponse(jsonObject);
         }
-        catch {
-            
+        catch (e) {
+            command.OnFailure(e);
         }
     }
 

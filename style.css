@@ -7,13 +7,29 @@ body {
     user-select: none;
 }
 
-#sidebar {
+#sidebar{
     min-width: 300px;
     width: 390px;
     background-color: #111;
-    padding: 20px;
+    padding: 0px;
     z-index: 1;
+    flex-direction: column;
+    display: flex;
     overflow-x: hidden; /* How */
+    flex: auto;
+}
+
+#sidebar-main {
+    flex: auto;
+    padding: 20px;
+}
+
+#quickplay
+{
+    flex: initial;
+    height: 100px;
+    background-color: lightslategrey;
+    width: 100%;
 }
 
 #modlist-updating
@@ -38,7 +54,6 @@ body {
     align-items: center;
     cursor: pointer;
     transition: 0.2s;
-    z-index: -1;
 }
 
 .entrySelected {

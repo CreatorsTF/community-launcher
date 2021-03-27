@@ -305,5 +305,8 @@ ipcMain.on("GetModData", async (event, args) => {
     });
 });
 
+//Quickplay
+//ipcMain.on("")
+
 // Run games: steam://run/[ID]
 // Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]
