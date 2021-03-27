@@ -45,11 +45,16 @@ var path_1 = __importDefault(require("path"));
 var https_1 = __importDefault(require("https"));
 var utilities_1 = require("./utilities");
 var electron_log_1 = __importDefault(require("electron-log"));
+//URLs to try to get mod lists from.
+//More than one allows fallbacks.
 var modListURLs = [
     "https://fastdl.creators.tf/launcher/mods.json",
     "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json"
 ];
 var localModListName = "mods.json";
+/**
+ * Responsible for providing the latest mod list avaliable.
+ */
 var ModListLoader = /** @class */ (function () {
     function ModListLoader() {
     }
@@ -59,6 +64,9 @@ var ModListLoader = /** @class */ (function () {
     ModListLoader.GetModList = function () {
         return this.localModList;
     };
+    /**
+     * Update the local mod list file on disk to contain the latest data we found.
+     */
     ModListLoader.UpdateLocalModList = function () {
         if (this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version) {
             var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), localModListName);
@@ -67,6 +75,9 @@ var ModListLoader = /** @class */ (function () {
         }
         return false;
     };
+    /**Check if there is a newer mod list online.
+     * Also checks if the internal version is newer than the local, written version.
+     */
     ModListLoader.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
             var data, i, url, remoteModList, _a, error_1;
