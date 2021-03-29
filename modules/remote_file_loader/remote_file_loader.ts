@@ -93,7 +93,7 @@ abstract class RemoteLoader <T extends RemoteFile>
 
     public GetLocalFile() : T {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
-        var internalFileJSON = fs.readFileSync(path.resolve(__dirname, "..", "internal", this.localFileName), {encoding:"utf-8"});
+        var internalFileJSON = fs.readFileSync(path.resolve(__dirname, "..", "..", "internal", this.localFileName), {encoding:"utf-8"});
         var internalFile = <T>JSON.parse(internalFileJSON);
         let configPath = path.join(Utilities.GetDataFolder(), this.localFileName);
 

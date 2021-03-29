@@ -1,5 +1,6 @@
 import CreatorsAPIDispatcher from "./CreatorsAPIDispatcher";
 import {CreateMatchCommand, CreateMatchCommandParams, CreateMatchmakingQueryResponse} from "./quickplay/CreateMatchCommand";
+import QuickPlayConfigLoader, {QuickPlayConfig} from "../remote_file_loader/quickplay_config_loader";
 
 const MM_QUERY_STATUS_INITITATED = 0;       // Default state of the MM query. All queries take this value when they're created.
 const MM_QUERY_STATUS_FINDING_SERVERS = 1;  // Matchmaking system is currently searching through servers.
@@ -9,6 +10,18 @@ const MM_QUERY_STATUS_CANCELLED = 4;        // User has cancelled the query.
 const MM_QUERY_STATUS_FINISHED = 5;         // Matchmaking query succesfully found some servers.
 
 class Quickplay {
+
+    config: QuickPlayConfig;
+
+    constructor(){
+
+    }
+
+    async LoadConfig(): Promise<QuickPlayConfig> {
+        await QuickPlayConfigLoader.instance.CheckForUpdates();
+        this.config = QuickPlayConfigLoader.instance.GetFile();
+        return this.config;
+    }
 
     async CreateNewMatch(params: CreateMatchCommandParams) : Promise<MatchmaingStatusQueryResponse>{
         return new Promise((resp, rej) => {

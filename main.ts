@@ -14,6 +14,7 @@ const _config = require("./modules/config");
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 import log from "electron-log";
+import QuickPlayConfigLoader from "modules/remote_file_loader/quickplay_config_loader";
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "main.log";
@@ -129,6 +130,7 @@ export default Main;
 app.on("ready", () => {
     try{
         ModListLoader.instance.LoadLocalFile();
+        QuickPlayConfigLoader.instance.LoadLocalFile();
         Main.createWindow();
         Main.getClientCurrentVersion();
         Main.autoUpdateCheckAndSettings();

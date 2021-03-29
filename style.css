@@ -30,6 +30,26 @@ body {
     height: 100px;
     background-color: lightslategrey;
     width: 100%;
+    padding: 0px;
+}
+
+#quickplay h2
+{
+    flex: initial;
+}
+
+#quickplay-controls
+{
+    flex: auto;
+    padding: 0px;
+    display: flex;
+    flex-direction: row;
+}
+
+#quickplay-row
+{
+    flex: auto;
+    padding: 3px;
 }
 
 #modlist-updating

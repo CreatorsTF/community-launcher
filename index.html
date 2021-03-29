@@ -26,10 +26,16 @@
             </div>
             <div id="quickplay">
                 <h2>Quickplay</h2>
-                <select id="quickplay-type"></select> 
-                <select id="quickplay-region"></select>
-                <select id="quickplay-mission"></select>
-                <select id="quickplay-maps"></select>
+                <div id="quickplay-controls">
+                    <div id="quickplay-row">
+                        <select id="quickplay-type"></select> 
+                        <select id="quickplay-region"></select>
+                    </div>
+                    <div id="quickplay-row">
+                        <select id="quickplay-mission"></select>
+                        <select id="quickplay-maps"></select>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="contentdummy" class="defaultbg"></div>
@@ -65,6 +71,7 @@
             <!--<div id="fadebehindbutton"></div>-->
         </div>
         <script src="renderer.js"></script>
+        <script src="quickplay-renderer.js"></script>
         <script src="consolewarning.js"></script>
     </body>
 </html>
