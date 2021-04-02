@@ -1,9 +1,9 @@
 var content = document.getElementById("content");
-var contentDummy = document.getElementById("contentdummy");
+var contentDummy = document.getElementById("content-dummy");
 var titleImage = document.getElementById("title-image");
 var text = document.getElementById("content-text");
-var version = document.getElementById("version");
-var versionText = document.getElementById("version-text");
+var modVersion = document.getElementById("mod-version");
+var modVersionText = document.getElementById("mod-version-text");
 
 var installButton = document.getElementById("install-play-button");
 var removeButton = document.getElementById("remove-mod");
@@ -18,7 +18,7 @@ var github = document.getElementById("socialMediaGithub");
 var twitter = document.getElementById("socialMediaTwitter");
 var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
-var serverlist = document.getElementById("serverlist");
+var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
@@ -35,7 +35,7 @@ const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 
 function OnClick_Mod(data) {
     window.log.info("Mod entry clicked: " + data.name);
-
+    
     var bgImg;
     if (data.backgroundimage != "") {
         bgImg = data.backgroundimage;
@@ -131,7 +131,7 @@ document.getElementById("settings-button").addEventListener("click", (a,b) => {
 document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-document.getElementById("serverlist").addEventListener("click", (a,b) => {
+document.getElementById("server-list").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
@@ -144,10 +144,10 @@ installButton.addEventListener("click", (e) => {
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
     if (arg == "?") {
-        version.style.display = "none";
+        modVersion.style.display = "none";
     } else {
-        version.style.display = "block";
-        versionText.innerText = "Mod version: " + arg;
+        modVersion.style.display = "block";
+        modVersionText.innerText = "Mod version: " + arg;
     }
 });
 

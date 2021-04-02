@@ -17,15 +17,6 @@ body {
     animation-duration: 0.2s;
 }
 
-#modname {
-    margin: 25px auto;
-    font-family: Roboto Bold, Arial, sans-serif;
-    font-size: 60px;
-    text-align: center;
-    text-shadow: 0px 0px 20px #000;
-    color: #EEE;
-}
-
 #wrapper {
     margin: 0px auto;
     width: 75%;
@@ -33,19 +24,27 @@ body {
 }
 
 #patchnotes {
-    margin: 20px auto;
     background-color: rgba(0,0,0,0.7);
-    padding: 25px 25px 10px 25px;
-    border-radius: 5px;
+    padding: 3vh;
+    border-radius: 1vh;
     font-family: Roboto Thin, Arial, sans-serif;
+}
+
+h1 {
+    margin: 5vh auto;
+    font-family: Roboto Bold, Arial, sans-serif;
+    font-size: 8vh;
+    text-align: center;
+    text-shadow: 0px 0px 2vh #000;
+    color: #EEE;
 }
 
 h2 {
     margin: 0;
-    padding-top: 25px;
-    font-size: 39px;
+    padding-top: 3vh;
+    font-size: 5vh;
     font-family: Roboto Medium, Arial, sans-serif;
-    border-top: 1px solid rgba(255,255,255,0.5);
+    border-top: 0.1vh solid rgba(255,255,255,0.5);
 }
 
 h2:first-of-type {
@@ -55,7 +54,7 @@ h2:first-of-type {
 
 h3 {
     margin: 0;
-    font-size: 15px;
+    font-size: 2.1vh;
     font-family: Roboto Thin, Arial, sans-serif;
 }
 
@@ -65,14 +64,15 @@ p {
 
 ul {
     list-style-image: url(../images/thatarrowfromthetfblog.svg);
-    font-size: 20px;
+    font-size: 2.7vh;
     font-family: Roboto Thin, Arial, sans-serif;
+    padding: 0vh 5vh;
 }
 
 code {
     background-color: rgba(25,25,25,0.75);
-    padding: 3px 5px;
-    border-radius: 5px;
+    padding: 0.3vh 1vh;
+    border-radius: 1vh;
     font-family: Roboto Thin, Arial, sans-serif;
-    font-size: 19px;
+    font-size: 2.5vh;
 }

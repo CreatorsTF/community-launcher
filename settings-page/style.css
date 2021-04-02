@@ -22,21 +22,22 @@ body {
 
 #coglabel {
     background-color: #000;
-    width: 200px;
-    height: 200px;
+    width: 35vh;
+    height: 35vh;
     position: absolute;
-    top: -100px;
-    left: -100px;
+    top: -22vh;
+    left: -22vh;
     transform: rotate(45deg);
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 3vh;
 }
 
 #coglabel i {
-    color: #FAFAFA;
-    position: absolute;
-    top: 70px;
-    left: 125px;
-    font-size: 60px;
+    color: (--white-2);
+    font-size: 10vh;
     transform: rotate(-45deg);
 
 }

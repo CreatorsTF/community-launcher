@@ -1,4 +1,25 @@
 /* So I don't have to write these everytime for every page. */
+:root {
+    --branding-orange: #CA712D;
+    --branding-black: #2C3436;
+    --white: #FFF;
+    --white-2: #EEE;
+    --black: #000;
+    --black-2: #111;
+    --gray: #252525;
+    --default-bg-color: #2B2826;
+    --dark-orange: #B35215;
+    --subtle-shadow: rgba(0,0,0,0.35);
+    --not-so-subtle-shadow: rgba(0,0,0,0.7);
+    --button-update-download-color: #EBBD34;
+    --button-update-downloading-color: #F5F238;
+    --button-update-update-color: #388DF5;
+    --button-update-updated-color: #47B82E;
+    --button-update-alert-secondary-color: #2963A9;
+    --button-server-list: #FF8E37;
+    --button-remove-mod: #B74848;
+}
+
 html, body {
     margin: 0;
     padding: 0;

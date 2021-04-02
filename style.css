@@ -1,23 +1,3 @@
-:root {
-    --branding-orange: #CA712D;
-    --branding-black: #2C3436;
-    --white: #FFF;
-    --white-2: #EEE;
-    --black: #000;
-    --black-2: #111;
-    --gray: #252525;
-    --default-bg-color: #2B2826;
-    --subtle-shadow: rgba(0,0,0,0.35);
-    --not-so-subtle-shadow: rgba(0,0,0,0.7);
-    --button-update-download-color: #EBBD34;
-    --button-update-downloading-color: #F5F238;
-    --button-update-update-color: #388DF5;
-    --button-update-updated-color: #47B82E;
-    --button-update-alert-secondary-color: #2963A9;
-    --button-server-list: #FF8E37;
-    --button-remove-mod: #B74848;
-}
-
 html, body { height: 100%; }
 
 body {
@@ -25,20 +5,26 @@ body {
     display: flex;
     background: linear-gradient(0deg, var(--black) 0%, var(--gray) 100%);
     user-select: none;
+    overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, p, a, span {
+    line-height: 110%
 }
 
 #sidebar {
     min-width: 300px;
-    width: 30%;
+    width: 27%;
+    max-width: 30%;
     background-color: var(--black-2);
-    padding: 20px;
+    padding: 3vh;
     z-index: 1;
     overflow-x: hidden;
 }
 
 #modlist-updating {
     width: 300px;
-    color: #CCC;
+    color: var(--white-2);
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 30px;
     text-shadow: 1px 1px 1px var(--black);
@@ -47,10 +33,10 @@ body {
 }
 
 .entry {
-    margin-bottom: 10px;
-    height: 70px;
-    border-radius: 50px;
-    color: lightgrey;
+    margin-bottom: 1.5vh;
+    height: 10vh;
+    border-radius: 11vh;
+    color: var(--white-2);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -60,7 +46,7 @@ body {
 }
 
 .entrySelected {
-    background-color: #B35215;
+    background-color: var(--dark-orange);
     color: var(--white);
     transition: 0s;
 }
@@ -77,19 +63,25 @@ body {
     color: var(--white);
 }
 
+.entry img {
+    width: 10vh;
+    border-radius: 10vh;
+    pointer-events: none;
+}
+
 .entry:hover img {
     box-shadow: 0px 0px 20px var(--subtle-shadow);
 }
 
 .entry::before {
     content: "";
-    background: #B35215;
+    background: var(--dark-orange);
     position: absolute;
     width: 0%;
     top: 0;
     right: 0;
     bottom: 0;
-    left: -100px;
+    left: -50px;
     transition: 0.25s;
     z-index: -1;
     transform: skewX(-25deg);
@@ -100,28 +92,22 @@ body {
     z-index: -1;
 }
 
-.modInfoSidebar {
-    margin-left: 7px;
+.mod-info-sidebar {
+    margin-left: 1.35vh;
 }
 
-.entry h2, .entry p {
+.mod-info-sidebar h2, .mod-info-sidebar p {
     margin: 0;
     line-height: 100%;
     font-family: Roboto Light, Arial, sans-serif;
 }
 
-.entry h2 {
-    font-size: 23px;
+.mod-info-sidebar h2 {
+    font-size: 3.35vh;
 }
 
-.entry p {
-    font-size: 15px;
-}
-
-.entry img {
-    width: 70px;
-    border-radius: 50px;
-    pointer-events: none;
+.mod-info-sidebar p {
+    font-size: 2.1vh;
 }
 
 .updatealertnotification {
@@ -138,17 +124,17 @@ body {
 #box-of-buttons {
     width: 100%;
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 3vh;
 }
 
 #box-of-buttons button {
     width: 100%;
-    font-size: 25px;
-    font-family: Roboto Light, Arial, sans-serif;
-    padding: 5px;
+    font-size: 3.35vh;
+    padding: 0.75vh;
     transition: 0.2s;
-    border-radius: 5px;
-    margin-left: 10px;
+    border-radius: 1vh;
+    margin-left: 1.5vh;
+    border: 1px solid #1110;
 }
 
 #box-of-buttons button:first-child {
@@ -156,11 +142,13 @@ body {
 }
 
 #box-of-buttons button:hover {
-    filter: brightness(1.25);
+    background-color: #333;
+    color: var(--white-2);
+    border: 1px solid var(--gray);
 }
 
 #box-of-buttons button:active {
-    color: var(--white-2);
+    background-color: var(--gray);
 }
 
 .mdi-loading::before {
@@ -204,12 +192,12 @@ body {
 }
 
 #update-button-updated:active {
-    color: var(--white-2) !important;
+    color: var(--black-2) !important;
 }
 
-#launcherversion {
+#launcher-version {
     width: 300px;
-    color: #CCC;
+    color: var(--white-2);
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 15px;
     text-shadow: 1px 1px 1px var(--black);
@@ -219,11 +207,11 @@ body {
     bottom: 0;
 }
 
-#contentdummy {
+#content-dummy {
     width: 75%;
 }
 
-.defaultbg {
+.default-bg {
     background-image: url(images/logos/tf2logo_dark_fade.svg);
     background-repeat: no-repeat;
     background-position: center;
@@ -232,8 +220,8 @@ body {
 }
 
 #content {
-    min-width: 700px;
-    width: 70%;
+    min-width: 630px;
+    width: 73%;
     height: 100%;
     background-color: var(--default-bg-color);
     background-size: cover;
@@ -281,7 +269,7 @@ body {
     right: 0;
 }
 
-#serverlist {
+#server-list {
     background-color: var(--button-server-list);
 }
 
@@ -291,19 +279,19 @@ body {
 
 #box-of-mod-buttons button {
     display: block;
-    margin-left: 10px;
-    padding: 10px;
-    text-shadow: 1px 1px 20px var(--black);
-    font-size: 1.5em;
+    margin-left: 1.5vh;
+    padding: 1.5vh;
+    text-shadow: 0px 0px 2vh var(--black);
+    font-size: 3.5vh;
     color: var(--white-2);
-    border-radius: 50px;
+    border-radius: 10vh;
     transition: 0.2s;
     z-index: 1;
 }
 
 #box-of-mod-buttons button:hover {
     filter: brightness(0.9);
-    transform: scale(0.95);
+    transform: scale(0.9);
 }
 
 #box-of-mod-buttons button:first-child {
@@ -312,11 +300,12 @@ body {
 
 #box-of-mod-buttons button:active {
     background-color: var(--gray);
-    transform: scale(0.9);
+    transform: scale(0.85);
 }
 
 #title-image-holder {
-    max-width: 65%;
+    width: 67vh;
+    max-width: 72vh;
 }
 
 #title-image {
@@ -327,7 +316,7 @@ body {
 #title-header {
     font-size: 55px;
     font-family: Roboto Light, Arial, sans-serif;
-    color: #CCC;
+    color: var(--white-2);
     line-height: 55px;
     text-align: center;
     font-weight: bold;
@@ -335,12 +324,11 @@ body {
 
 #content-text {
     margin: 0;
-    font-size: 18px;
+    font-size: 2.5vh;
     font-family: Roboto Thin, Arial, sans-serif;
     text-align: center;
-    text-shadow: 0px 0px 5px var(--black);
-    padding: 10px;
-    transition: 0.2s;
+    text-shadow: 0px 0px 2vh var(--black);
+    padding: 2vh;
     color: var(--white);
 }
 
@@ -350,12 +338,12 @@ body {
 }
 
 #mod-info-box button {
-    width: 50px;
-    height: 50px;
+    width: 7vh;
+    height: 7vh;
+    border-radius: 7vh;
     background-color: transparent;
     background-repeat: no-repeat;
     background-position: center;
-    border-radius: 50px;
     transition: 0.2s;
 }
 
@@ -385,40 +373,47 @@ body {
     width: -webkit-fill-available;
     position: absolute;
     bottom: 0;
-    margin: 20px;
-    padding: 20px;
-    font-size: 45px;
-    letter-spacing: 2.5px;
+    margin: 3vh;
+    padding: 2vh;
+    font-size: 7vh;
+    letter-spacing: 0.35vh;
     text-transform: uppercase;
     font-family: Roboto Medium, Arial, sans-serif;
     display: block;
     border: none;
-    text-shadow: 1px 1px 25px var(--black);
+    text-shadow: 0px 0px 3.5vh var(--black);
     z-index: 1;
 }
 
 #install-play-button:hover {
-    filter: brightness(0.85);
+    filter: brightness(0.9);
 }
 
-#version {
+#mod-version {
     background-color: var(--not-so-subtle-shadow);
-    color: ghostwhite;
+    color: var(--white-2);
     position: absolute;
-    left: 20px;
-    top: 20px;
-    padding: 5px;
-    font-size: 16px;
-    font-family: Roboto Thin, Arial, sans-serif;
-    border-radius: 5px;
+    left: 2vh;
+    top: 2vh;
+    padding: 1vh 1.35vh;
+    border-radius: 1vh;
     display: flex;
     align-items: center;
+    font-size: 2.35vh;
 }
 
-#version i {
-    margin-right: 5px;
+#mod-version i {
+    margin-right: 1vh;
+}
+
+#mod-version-text {
+    font-family: Roboto Thin, Arial, sans-serif;
 }
 
 .hidden {
     display: none;
+}
+
+.invisible {
+    visibility: hidden;
 }

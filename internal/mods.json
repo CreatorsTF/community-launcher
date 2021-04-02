@@ -1,5 +1,5 @@
 {
-    "version": 1.31,
+    "version": 1.33,
     "mods":
     [
         {
@@ -32,10 +32,10 @@
         {
             "name": "Creators.TF Events Servers",
             "blurb": "Content for the Events & Silly Servers",
-            "icon": "images/logos/modcirclelogos/CTFEvents.svg",
+            "icon": "images/logos/modcirclelogos/CTFEvents.png",
             "titleimage": "images/logos/modlogos/eventsbanner.png",
             "backgroundimage": "images/backgrounds/events.png",
-            "bordercolor": "#2ecc71",
+            "bordercolor": "#2ECC71",
             "backgroundposX": "right",
             "backgroundposY": "top",
             "website": "https://creators.tf/post/blog/83",
@@ -84,10 +84,10 @@
         {
             "name": "Ultimate TF2 Visual Fix Pack",
             "blurb": "Community Visual Fix Pack",
-            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.svg",
+            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.png",
             "titleimage": "images/logos/modlogos/ultimate_tf2_visual_fixes_largelogo.png",
             "backgroundimage": "",
-            "bordercolor": "#3e3c3f",
+            "bordercolor": "#3E3C3F",
             "backgroundposX": "left",
             "backgroundposY": "top",
             "website": "",

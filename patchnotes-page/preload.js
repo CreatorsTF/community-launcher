@@ -6,7 +6,7 @@ marked.setOptions({
     headerIds: false,
     baseUrl: "https://creators.tf/",
     smartypants: true,
-    sanitize: false,
+    sanitize: false
 });
 
 window.addEventListener("DOMContentLoaded", () => {
