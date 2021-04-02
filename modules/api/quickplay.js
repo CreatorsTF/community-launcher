@@ -41,19 +41,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var CreatorsAPIDispatcher_1 = __importDefault(require("./CreatorsAPIDispatcher"));
 var CreateMatchCommand_1 = require("./quickplay/CreateMatchCommand");
-var MM_QUERY_STATUS_INITITATED = 0; // Default state of the MM query. All queries take this value when they're created.
-var MM_QUERY_STATUS_FINDING_SERVERS = 1; // Matchmaking system is currently searching through servers.
-var MM_QUERY_STATUS_CHANGING_MAPS = 2; // Initial server check failed, trying to change maps on empty servers.
-var MM_QUERY_STATUS_FAILED = 3; // We coulnd't find any servers that match our criteria.
-var MM_QUERY_STATUS_CANCELLED = 4; // User has cancelled the query.
-var MM_QUERY_STATUS_FINISHED = 5; // Matchmaking query succesfully found some servers.
-var Quickplay = /** @class */ (function () {
+var MM_QUERY_STATUS_INITITATED = 0;
+var MM_QUERY_STATUS_FINDING_SERVERS = 1;
+var MM_QUERY_STATUS_CHANGING_MAPS = 2;
+var MM_QUERY_STATUS_FAILED = 3;
+var MM_QUERY_STATUS_CANCELLED = 4;
+var MM_QUERY_STATUS_FINISHED = 5;
+var Quickplay = (function () {
     function Quickplay() {
     }
     Quickplay.prototype.CreateNewMatch = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resp, rej) {
+                return [2, new Promise(function (resp, rej) {
                         var matchCmd = new CreateMatchCommand_1.CreateMatchCommand(params);
                         matchCmd.OnResponse = function (response) {
                             resp(response);
@@ -65,12 +65,12 @@ var Quickplay = /** @class */ (function () {
     };
     return Quickplay;
 }());
-var MatchmaingStatusQueryResponse = /** @class */ (function () {
+var MatchmaingStatusQueryResponse = (function () {
     function MatchmaingStatusQueryResponse() {
     }
     return MatchmaingStatusQueryResponse;
 }());
-var MatchmakingStatusServer = /** @class */ (function () {
+var MatchmakingStatusServer = (function () {
     function MatchmakingStatusServer() {
     }
     return MatchmakingStatusServer;

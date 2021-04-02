@@ -11,16 +11,8 @@ const MM_QUERY_STATUS_FINISHED = 5;         // Matchmaking query succesfully fou
 
 class Quickplay {
 
-    config: QuickPlayConfig;
-
     constructor(){
-
-    }
-
-    async LoadConfig(): Promise<QuickPlayConfig> {
-        await QuickPlayConfigLoader.instance.CheckForUpdates();
-        this.config = QuickPlayConfigLoader.instance.GetFile();
-        return this.config;
+        
     }
 
     async CreateNewMatch(params: CreateMatchCommandParams) : Promise<MatchmaingStatusQueryResponse>{

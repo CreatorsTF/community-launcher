@@ -34,10 +34,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModListEntry = exports.ModList = exports.ModListLoader = void 0;
 var remote_file_loader_1 = __importStar(require("./remote_file_loader"));
-/**
- * Responsible for providing the latest mod list avaliable.
- */
-var ModListLoader = /** @class */ (function (_super) {
+var ModListLoader = (function (_super) {
     __extends(ModListLoader, _super);
     function ModListLoader() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -52,7 +49,7 @@ var ModListLoader = /** @class */ (function (_super) {
     return ModListLoader;
 }(remote_file_loader_1.default));
 exports.ModListLoader = ModListLoader;
-var ModList = /** @class */ (function (_super) {
+var ModList = (function (_super) {
     __extends(ModList, _super);
     function ModList() {
         return _super !== null && _super.apply(this, arguments) || this;
@@ -69,7 +66,7 @@ var ModList = /** @class */ (function (_super) {
     return ModList;
 }(remote_file_loader_1.RemoteFile));
 exports.ModList = ModList;
-var ModListEntry = /** @class */ (function () {
+var ModListEntry = (function () {
     function ModListEntry() {
     }
     return ModListEntry;

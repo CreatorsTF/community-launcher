@@ -39,7 +39,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//Manages main functions mod installation, downloading and removal.
 var path_1 = __importDefault(require("path"));
 var os_1 = __importDefault(require("os"));
 var electron_1 = require("electron");
@@ -58,49 +57,43 @@ var mod_list_loader_1 = require("./remote_file_loader/mod_list_loader");
 var main_1 = __importDefault(require("../main"));
 var electron_log_2 = __importDefault(require("electron-log"));
 var functionMap = new Map();
-//Shared by all loading bar uis to set text colour.
 var loadingTextStyle = {
     color: "ghostwhite"
 };
-var DownloadedFile = /** @class */ (function () {
+var DownloadedFile = (function () {
     function DownloadedFile(buffer, name) {
         this.buffer = buffer;
         this.name = name;
-        //Store the file extension now.
         this.extension = path_1.default.extname(this.name);
     }
     return DownloadedFile;
 }());
-var ModManager = /** @class */ (function () {
+var ModManager = (function () {
     function ModManager() {
     }
-    //Sets up the module.
     ModManager.Setup = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         this.all_mods_data = mod_list_loader_1.ModListLoader.instance.GetFile();
-                        return [4 /*yield*/, file_manager_1.default.Init()];
-                    case 1: return [2 /*return*/, _a.sent()];
+                        return [4, file_manager_1.default.Init()];
+                    case 1: return [2, _a.sent()];
                 }
             });
         });
     };
-    //Change the currently selected mod, return its installation button text.
     ModManager.ChangeCurrentMod = function (name) {
         return __awaiter(this, void 0, void 0, function () {
             var version, e_1, version;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        //Get this mods data and store it for use.
                         this.currentModData = this.GetModDataByName(name);
                         this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
                         this.currentModState = "NOT_INSTALLED";
                         this.currentModVersionRemote = 0;
                         electron_log_2.default.log("Set current mod to: " + this.currentModData.name);
-                        //Setup the source manager object depending on the type of the mod.
                         switch (this.currentModData.install.type) {
                             case "jsonlist":
                                 this.source_manager = new jsonlist_source_js_1.default(this.currentModData.install);
@@ -112,46 +105,42 @@ var ModManager = /** @class */ (function () {
                                 this.source_manager = null;
                                 throw new Error("Mod install type was not recognised: " + this.currentModData.install.type);
                         }
-                        if (!(this.currentModVersion == null || this.currentModVersion == 0)) return [3 /*break*/, 5];
+                        if (!(this.currentModVersion == null || this.currentModVersion == 0)) return [3, 5];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, this.source_manager.GetLatestVersionNumber()];
+                        return [4, this.source_manager.GetLatestVersionNumber()];
                     case 2:
                         version = _a.sent();
                         this.currentModState = "NOT_INSTALLED";
                         this.currentModVersionRemote = version;
-                        return [2 /*return*/, "Install"];
+                        return [2, "Install"];
                     case 3:
                         e_1 = _a.sent();
                         throw new errors_1.default.InnerError("Failed to get mod version: " + e_1.toString(), e_1);
-                    case 4: return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, this.source_manager.GetLatestVersionNumber()];
+                    case 4: return [3, 7];
+                    case 5: return [4, this.source_manager.GetLatestVersionNumber()];
                     case 6:
                         version = _a.sent();
-                        //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
                         this.currentModVersionRemote = version;
                         if (version > this.currentModVersion)
                             this.currentModState = "UPDATE";
                         else
                             this.currentModState = "INSTALLED";
-                        //Time to resolve with the text to show on the button
                         switch (this.currentModState) {
                             case "INSTALLED":
-                                return [2 /*return*/, "Installed"];
+                                return [2, "Installed"];
                             case "UPDATE":
-                                return [2 /*return*/, "Update"];
+                                return [2, "Update"];
                             default:
-                                return [2 /*return*/, "Install"];
+                                return [2, "Install"];
                         }
                         _a.label = 7;
-                    case 7: return [2 /*return*/];
+                    case 7: return [2];
                 }
             });
         });
     };
-    //Trigger the correct response to the current mod depending on its state.
-    //This is called when the Install / Update / Installed button is pressed in the UI.
     ModManager.ModInstallPlayButtonClick = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _a, _url, e_2, version, displayVersion, update_msg, button;
@@ -159,66 +148,61 @@ var ModManager = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         electron_log_2.default.log("Install button was clicked! Reacting based on state: " + this.currentModState);
-                        if (!(this.currentModData == null)) return [3 /*break*/, 2];
+                        if (!(this.currentModData == null)) return [3, 2];
                         this.FakeClickMod();
-                        return [4 /*yield*/, ErrorDialog("Mod data was not able to be read.\nPlease report this error.", "Mod Install Start Error")];
+                        return [4, ErrorDialog("Mod data was not able to be read.\nPlease report this error.", "Mod Install Start Error")];
                     case 1:
                         _b.sent();
-                        return [2 /*return*/];
+                        return [2];
                     case 2:
                         _a = this.currentModState;
                         switch (_a) {
-                            case "NOT_INSTALLED": return [3 /*break*/, 3];
-                            case "UPDATE": return [3 /*break*/, 12];
+                            case "NOT_INSTALLED": return [3, 3];
+                            case "UPDATE": return [3, 12];
                         }
-                        return [3 /*break*/, 18];
+                        return [3, 18];
                     case 3:
-                        //We should try to install this mod!
-                        //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
                         electron_log_2.default.log("Will validate TF2 path before starting download...");
-                        return [4 /*yield*/, ValidateTF2Dir()];
+                        return [4, ValidateTF2Dir()];
                     case 4:
                         if (!(_b.sent())) {
                             this.FakeClickMod();
                             electron_log_2.default.error("Ending Install attempt now as validation failed!");
-                            return [2 /*return*/];
+                            return [2];
                         }
                         electron_log_2.default.log("TF2 Path was validated.");
                         _b.label = 5;
                     case 5:
                         _b.trys.push([5, 9, , 11]);
-                        return [4 /*yield*/, this.source_manager.GetFileURL()];
+                        return [4, this.source_manager.GetFileURL()];
                     case 6:
                         _url = _b.sent();
                         electron_log_2.default.log("Successfuly got mod install file urls. Will proceed to try to download them.");
-                        return [4 /*yield*/, this.ModInstall(_url)];
+                        return [4, this.ModInstall(_url)];
                     case 7:
                         _b.sent();
-                        return [4 /*yield*/, this.SetupNewModAsInstalled()];
+                        return [4, this.SetupNewModAsInstalled()];
                     case 8:
                         _b.sent();
-                        return [3 /*break*/, 11];
+                        return [3, 11];
                     case 9:
                         e_2 = _b.sent();
                         this.FakeClickMod();
-                        return [4 /*yield*/, ErrorDialog(e_2, "Mod Begin Install Error")];
+                        return [4, ErrorDialog(e_2, "Mod Begin Install Error")];
                     case 10:
                         _b.sent();
-                        return [3 /*break*/, 11];
-                    case 11: return [3 /*break*/, 19];
+                        return [3, 11];
+                    case 11: return [3, 19];
                     case 12:
-                        //We should try to update this mod!
-                        //Setup the message to include the version if we have the data.
-                        //Really we should for this state to be active but best to be sure.
                         electron_log_2.default.log("Asking user if they want to update this mod.");
-                        return [4 /*yield*/, this.source_manager.GetLatestVersionNumber()];
+                        return [4, this.source_manager.GetLatestVersionNumber()];
                     case 13:
                         version = _b.sent();
-                        return [4 /*yield*/, this.source_manager.GetDisplayVersionNumber()];
+                        return [4, this.source_manager.GetDisplayVersionNumber()];
                     case 14:
                         displayVersion = _b.sent();
                         update_msg = "Would you like to update this mod to version \"" + displayVersion + "\"?";
-                        return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "question",
                                 title: "Update",
                                 message: update_msg,
@@ -227,46 +211,43 @@ var ModManager = /** @class */ (function () {
                             })];
                     case 15:
                         button = _b.sent();
-                        if (!(button.response == 0)) return [3 /*break*/, 17];
-                        //Do the update!
+                        if (!(button.response == 0)) return [3, 17];
                         electron_log_2.default.log("Starting update process...");
-                        return [4 /*yield*/, this.UpdateCurrentMod()];
+                        return [4, this.UpdateCurrentMod()];
                     case 16:
                         _b.sent();
                         _b.label = 17;
-                    case 17: return [3 /*break*/, 19];
+                    case 17: return [3, 19];
                     case 18:
                         electron_log_2.default.error("Somehow the install button was clicked when the mod is in the installed state.");
-                        return [3 /*break*/, 19];
-                    case 19: return [2 /*return*/];
+                        return [3, 19];
+                    case 19: return [2];
                 }
             });
         });
     };
-    //Attempt an update. If possible then we do it. Will try to do it incrementally or a full re download.
     ModManager.UpdateCurrentMod = function () {
         return __awaiter(this, void 0, void 0, function () {
             var version, jsonSourceManager, data, urls, patchObjects, patchURLS_1, i, _url, _url, e_3;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, ValidateTF2Dir()];
+                    case 0: return [4, ValidateTF2Dir()];
                     case 1:
-                        //Validate tf2 dir, then make sure we have the current data for the mod.
                         if (!(_a.sent())) {
                             this.FakeClickMod();
-                            return [2 /*return*/];
+                            return [2];
                         }
-                        return [4 /*yield*/, this.source_manager.GetLatestVersionNumber()];
+                        return [4, this.source_manager.GetLatestVersionNumber()];
                     case 2:
                         version = _a.sent();
                         _a.label = 3;
                     case 3:
                         _a.trys.push([3, 22, , 24]);
-                        if (!(version > this.currentModVersion)) return [3 /*break*/, 21];
-                        if (!(this.currentModData.install.type == "jsonlist")) return [3 /*break*/, 14];
+                        if (!(version > this.currentModVersion)) return [3, 21];
+                        if (!(this.currentModData.install.type == "jsonlist")) return [3, 14];
                         jsonSourceManager = this.source_manager;
-                        return [4 /*yield*/, jsonSourceManager.GetJsonData()];
+                        return [4, jsonSourceManager.GetJsonData()];
                     case 4:
                         data = _a.sent();
                         urls = [];
@@ -277,35 +258,28 @@ var ModManager = /** @class */ (function () {
                                 if (patch.Version > _this.currentModVersion)
                                     patchURLS_1.push(patch);
                             });
-                            //Sort the urls soo we apply updates from the oldest update to the newest.
                             patchURLS_1.sort(function (a, b) {
-                                //We want to sort smaller version numbers FIRST
-                                //Soo they get applied first later.
                                 if (a.Version > b.Version)
                                     return 1;
                                 if (a.Version < b.Version)
                                     return -1;
                                 return 0;
                             });
-                            //Get out the urls for easier use later.
                             for (i = 0; i < patchURLS_1.length; i++) {
                                 urls.push(patchURLS_1[i].DownloadURL);
                             }
                         }
-                        if (!(urls.length > 0)) return [3 /*break*/, 8];
+                        if (!(urls.length > 0)) return [3, 8];
                         electron_log_2.default.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
-                        return [4 /*yield*/, this.ModInstall(urls)];
+                        return [4, this.ModInstall(urls)];
                     case 5:
                         _a.sent();
-                        //Update the version for the mod.
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                        //Save the config changes.
-                        return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
+                        return [4, config_1.default.SaveConfig(main_1.default.config)];
                     case 6:
-                        //Save the config changes.
                         _a.sent();
                         this.FakeClickMod();
-                        return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "info",
                                 title: "Mod Update",
                                 message: "Mod update for " + this.currentModData.name + " was completed successfully.",
@@ -313,24 +287,21 @@ var ModManager = /** @class */ (function () {
                             })];
                     case 7:
                         _a.sent();
-                        return [3 /*break*/, 13];
+                        return [3, 13];
                     case 8:
-                        //We need to update using the main zip. Not ideal but works.
                         electron_log_2.default.warn("Update source does not have patch data! Will have to download again fully.");
-                        return [4 /*yield*/, this.source_manager.GetFileURL()];
+                        return [4, this.source_manager.GetFileURL()];
                     case 9:
                         _url = _a.sent();
-                        return [4 /*yield*/, this.ModInstall(_url)];
+                        return [4, this.ModInstall(_url)];
                     case 10:
                         _a.sent();
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                        //Save the config changes.
-                        return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
+                        return [4, config_1.default.SaveConfig(main_1.default.config)];
                     case 11:
-                        //Save the config changes.
                         _a.sent();
                         this.FakeClickMod();
-                        return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "info",
                                 title: "Mod Update",
                                 message: "Mod update for " + this.currentModData.name + " was completed successfully.",
@@ -339,24 +310,22 @@ var ModManager = /** @class */ (function () {
                     case 12:
                         _a.sent();
                         _a.label = 13;
-                    case 13: return [3 /*break*/, 21];
+                    case 13: return [3, 21];
                     case 14:
-                        if (!(this.currentModData.install.type == "github")) return [3 /*break*/, 19];
-                        return [4 /*yield*/, this.source_manager.GetFileURL()];
+                        if (!(this.currentModData.install.type == "github")) return [3, 19];
+                        return [4, this.source_manager.GetFileURL()];
                     case 15:
                         _url = _a.sent();
                         electron_log_2.default.log("Mod is type GitHub, will update using the most recent release url: " + _url);
-                        return [4 /*yield*/, this.ModInstall(_url)];
+                        return [4, this.ModInstall(_url)];
                     case 16:
                         _a.sent();
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                        //Save the config changes.
-                        return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
+                        return [4, config_1.default.SaveConfig(main_1.default.config)];
                     case 17:
-                        //Save the config changes.
                         _a.sent();
                         this.FakeClickMod();
-                        return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "info",
                                 title: "Mod Update",
                                 message: "Mod update for " + this.currentModData.name + " was completed successfully.",
@@ -364,21 +333,21 @@ var ModManager = /** @class */ (function () {
                             })];
                     case 18:
                         _a.sent();
-                        return [3 /*break*/, 21];
+                        return [3, 21];
                     case 19:
                         electron_log_2.default.error("Unknown mod type found during update attempt.");
-                        return [4 /*yield*/, ErrorDialog("Unknown mod type found during update attempt.", "Error")];
+                        return [4, ErrorDialog("Unknown mod type found during update attempt.", "Error")];
                     case 20:
                         _a.sent();
                         _a.label = 21;
-                    case 21: return [3 /*break*/, 24];
+                    case 21: return [3, 24];
                     case 22:
                         e_3 = _a.sent();
-                        return [4 /*yield*/, ErrorDialog(e_3, "Mod Update Error")];
+                        return [4, ErrorDialog(e_3, "Mod Update Error")];
                     case 23:
                         _a.sent();
-                        return [3 /*break*/, 24];
-                    case 24: return [2 /*return*/];
+                        return [3, 24];
+                    case 24: return [2];
                 }
             });
         });
@@ -398,37 +367,36 @@ var ModManager = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 8, , 10]);
-                        return [4 /*yield*/, DownloadFiles_UI(urlArray)];
+                        return [4, DownloadFiles_UI(urlArray)];
                     case 2:
                         files = _a.sent();
                         _a.label = 3;
                     case 3:
                         _a.trys.push([3, 5, , 7]);
-                        return [4 /*yield*/, this.InstallFiles(files)];
+                        return [4, this.InstallFiles(files)];
                     case 4:
                         _a.sent();
-                        return [3 /*break*/, 7];
+                        return [3, 7];
                     case 5:
                         e_4 = _a.sent();
-                        return [4 /*yield*/, ErrorDialog(e_4, "Mod Install Error")];
+                        return [4, ErrorDialog(e_4, "Mod Install Error")];
                     case 6:
                         _a.sent();
                         this.FakeClickMod();
-                        return [3 /*break*/, 7];
-                    case 7: return [3 /*break*/, 10];
+                        return [3, 7];
+                    case 7: return [3, 10];
                     case 8:
                         e_5 = _a.sent();
-                        return [4 /*yield*/, ErrorDialog(e_5, "Mod Files Download Error")];
+                        return [4, ErrorDialog(e_5, "Mod Files Download Error")];
                     case 9:
                         _a.sent();
                         this.FakeClickMod();
-                        return [3 /*break*/, 10];
-                    case 10: return [2 /*return*/];
+                        return [3, 10];
+                    case 10: return [2];
                 }
             });
         });
     };
-    //Set up the config information to actually define this mod as installed. MUST BE DONE.
     ModManager.SetupNewModAsInstalled = function () {
         return __awaiter(this, void 0, void 0, function () {
             var versionUpdated;
@@ -436,17 +404,14 @@ var ModManager = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                        //If we didnt update the version of an exstisting object. Add it.
                         if (!versionUpdated)
                             main_1.default.config.current_mod_versions.push({ name: this.currentModData.name, version: this.currentModVersionRemote });
-                        //Save the config changes.
-                        return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
+                        return [4, config_1.default.SaveConfig(main_1.default.config)];
                     case 1:
-                        //Save the config changes.
                         _a.sent();
                         this.currentModState = "INSTALLED";
                         this.FakeClickMod();
-                        return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "info",
                                 title: "Mod Install",
                                 message: "Mod files installation for " + this.currentModData.name + " was completed successfully.",
@@ -454,7 +419,7 @@ var ModManager = /** @class */ (function () {
                             })];
                     case 2:
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
@@ -466,17 +431,16 @@ var ModManager = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        //Do nothing if this mod is not installed or if there is no mod data.
                         if (this.currentModData == null || this.currentModState == "NOT_INSTALLED")
-                            return [2 /*return*/];
+                            return [2];
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 19, , 21]);
-                        return [4 /*yield*/, file_manager_1.default.GetFileList(this.currentModData.name)];
+                        return [4, file_manager_1.default.GetFileList(this.currentModData.name)];
                     case 2:
                         files_object = _a.sent();
                         running = true;
-                        if (!(files_object.files != null && files_object.files.length > 0)) return [3 /*break*/, 16];
+                        if (!(files_object.files != null && files_object.files.length > 0)) return [3, 16];
                         progressBar = new electron_progressbar_1.default({
                             indeterminate: false,
                             text: "Removing Mod Files",
@@ -501,7 +465,6 @@ var ModManager = /** @class */ (function () {
                                 value: loadingTextStyle
                             }
                         }, main_1.default.app);
-                        //Setup events to display data.
                         progressBar
                             .on('completed', function () {
                             progressBar.detail = 'Removal Done.';
@@ -517,14 +480,14 @@ var ModManager = /** @class */ (function () {
                         i = 0;
                         _a.label = 3;
                     case 3:
-                        if (!(i < files_object.files.length)) return [3 /*break*/, 8];
+                        if (!(i < files_object.files.length)) return [3, 8];
                         if (!running)
-                            return [2 /*return*/];
+                            return [2];
                         electron_log_2.default.log("Deleting file: " + files_object.files[i]);
-                        return [4 /*yield*/, fs_extensions_1.default.fileExists(files_object.files[i])];
+                        return [4, fs_extensions_1.default.fileExists(files_object.files[i])];
                     case 4:
-                        if (!_a.sent()) return [3 /*break*/, 6];
-                        return [4 /*yield*/, fs_extensions_1.default.unlink(files_object.files[i])];
+                        if (!_a.sent()) return [3, 6];
+                        return [4, fs_extensions_1.default.unlink(files_object.files[i])];
                     case 5:
                         _a.sent();
                         _a.label = 6;
@@ -533,38 +496,34 @@ var ModManager = /** @class */ (function () {
                         _a.label = 7;
                     case 7:
                         i++;
-                        return [3 /*break*/, 3];
-                    case 8: return [4 /*yield*/, Delay(300)];
+                        return [3, 3];
+                    case 8: return [4, Delay(300)];
                     case 9:
                         _a.sent();
                         running = false;
                         progressBar.setCompleted();
                         progressBar.close();
-                        return [4 /*yield*/, fs_extensions_1.default.fileExists(files_object.files[0])];
+                        return [4, fs_extensions_1.default.fileExists(files_object.files[0])];
                     case 10:
-                        if (!_a.sent()) return [3 /*break*/, 12];
-                        return [4 /*yield*/, ErrorDialog("Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.", "Removal Error")];
+                        if (!_a.sent()) return [3, 12];
+                        return [4, ErrorDialog("Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.", "Removal Error")];
                     case 11:
                         _a.sent();
                         this.FakeClickMod();
-                        return [2 /*return*/];
-                    case 12: 
-                    //Remove mod file list.
-                    return [4 /*yield*/, file_manager_1.default.RemoveFileList(this.currentModData.name)];
+                        return [2];
+                    case 12: return [4, file_manager_1.default.RemoveFileList(this.currentModData.name)];
                     case 13:
-                        //Remove mod file list.
                         _a.sent();
-                        //Remove mod from current config
                         for (i_1 = 0; i_1 < main_1.default.config.current_mod_versions.length; i_1++) {
                             element = main_1.default.config.current_mod_versions[i_1];
                             if (element.name && element.name == this.currentModData.name) {
                                 main_1.default.config.current_mod_versions.splice(i_1, 1);
                             }
                         }
-                        return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
+                        return [4, config_1.default.SaveConfig(main_1.default.config)];
                     case 14:
                         _a.sent();
-                        return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                                 type: "info",
                                 title: "Mod Removal Complete",
                                 message: "The mod \"" + this.currentModData.name + "\" has been removed successfully.\n" + files_object.files.length + " files were removed.",
@@ -573,8 +532,8 @@ var ModManager = /** @class */ (function () {
                     case 15:
                         _a.sent();
                         this.FakeClickMod();
-                        return [3 /*break*/, 18];
-                    case 16: return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                        return [3, 18];
+                    case 16: return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                             type: "error",
                             title: "Mod Removal Error",
                             message: "Mod cannot be removed. Please try to remove them manually.",
@@ -583,7 +542,7 @@ var ModManager = /** @class */ (function () {
                     case 17:
                         _a.sent();
                         _a.label = 18;
-                    case 18: return [3 /*break*/, 21];
+                    case 18: return [3, 21];
                     case 19:
                         e_6 = _a.sent();
                         progressBar.setCompleted();
@@ -594,17 +553,16 @@ var ModManager = /** @class */ (function () {
                         else {
                             errorString = e_6.toString();
                         }
-                        return [4 /*yield*/, ErrorDialog("Mod Removal Failed.\n" + errorString, "Mod Removal Error")];
+                        return [4, ErrorDialog("Mod Removal Failed.\n" + errorString, "Mod Removal Error")];
                     case 20:
                         _a.sent();
                         this.FakeClickMod();
-                        return [3 /*break*/, 21];
-                    case 21: return [2 /*return*/];
+                        return [3, 21];
+                    case 21: return [2];
                 }
             });
         });
     };
-    //Get the mod data object by the given name.
     ModManager.GetModDataByName = function (name) {
         if (this.all_mods_data) {
             for (var i = 0; i < this.all_mods_data.mods.length; i++) {
@@ -616,7 +574,6 @@ var ModManager = /** @class */ (function () {
         }
         return null;
     };
-    //Find the current version of the mod given by name that we have in our config. No version means it is not installed.
     ModManager.GetCurrentModVersionFromConfig = function (name) {
         var toReturn = null;
         for (var i = 0; i < main_1.default.config.current_mod_versions.length; i++) {
@@ -626,7 +583,6 @@ var ModManager = /** @class */ (function () {
                 break;
             }
         }
-        //Return the version if it was there.
         if (toReturn != null) {
             return toReturn.version;
         }
@@ -636,7 +592,6 @@ var ModManager = /** @class */ (function () {
     };
     ModManager.GetRealInstallPath = function () {
         var realPath = this.currentModData.install.targetdirectory;
-        //To ensure the path is correct when resolved. Good one Zonical.
         if (!realPath.endsWith("/") && !realPath.endsWith("\\")) {
             realPath += "/";
         }
@@ -655,7 +610,6 @@ var ModManager = /** @class */ (function () {
                             f = files[i];
                             handleF = GetFileWriteFunction(f.extension);
                             if (!sortedFiles.has(handleF)) {
-                                //Add the map value for this handle function and set its value as an empty array.
                                 sortedFiles.set(handleF, []);
                             }
                             sortedFiles.get(handleF).push(f);
@@ -670,33 +624,29 @@ var ModManager = /** @class */ (function () {
                                         if (entry != null) {
                                             func = entry.value[0];
                                         }
-                                        return [4 /*yield*/, func(this.GetRealInstallPath(), entry.value[1], this.currentModData)];
+                                        return [4, func(this.GetRealInstallPath(), entry.value[1], this.currentModData)];
                                     case 1:
                                         _a.sent();
                                         entryIndex++;
-                                        if (!(entryIndex < sortedFiles.size)) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, entryProcess()];
+                                        if (!(entryIndex < sortedFiles.size)) return [3, 3];
+                                        return [4, entryProcess()];
                                     case 2:
                                         _a.sent();
                                         _a.label = 3;
-                                    case 3: return [2 /*return*/];
+                                    case 3: return [2];
                                 }
                             });
                         }); };
-                        //Call to process the first entry
-                        return [4 /*yield*/, entryProcess()];
+                        return [4, entryProcess()];
                     case 1:
-                        //Call to process the first entry
                         _a.sent();
-                        return [2 /*return*/];
+                        return [2];
                 }
             });
         });
     };
     ModManager.FakeClickMod = function () {
         var _this = this;
-        //Send to trigger a reload of the mod in the UI. We can just trigger the mod change again in the ui now to update everything.
-        //This sends an event to the render thread that we subscribe to.
         setTimeout(function () {
             main_1.default.mainWindow.webContents.send("FakeClickMod", _this.currentModData);
         }, 50);
@@ -710,7 +660,7 @@ exports.default = ModManager;
 function Delay(ms) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, ms); })];
+            return [2, new Promise(function (resolve) { return setTimeout(resolve, ms); })];
         });
     });
 }
@@ -757,10 +707,8 @@ function DownloadFiles_UI(urls) {
                     value: loadingTextStyle
                 }
             }, main_1.default.app);
-            //Setup events to display data.
             progressBar
                 .on('completed', function () {
-                //progressBar.detail = 'Download Finished!';
             })
                 .on('aborted', function (value) {
                 shouldStop.value = true;
@@ -776,7 +724,6 @@ function DownloadFiles_UI(urls) {
             });
             maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;
         };
-        //Setup download sequence for all files
         var downloadFunc = function () {
             electron_log_2.default.log("Starting Download for file at: " + urls[currentIndex]);
             DownloadFile(urls[currentIndex], progressFunction, headersFunction, shouldStop).then(function (file) {
@@ -798,12 +745,9 @@ function DownloadFiles_UI(urls) {
                 reject(error);
             });
         };
-        //Call the local function to download the first zip.
         downloadFunc();
     });
 }
-//Get all the files that exist in this zip file object and create them in the target directory.
-//Also supports multiple zips to install at once.
 function WriteZIPsToDirectory(targetPath, zips, currentModData) {
     return __awaiter(this, void 0, void 0, function () {
         var inProgress, written, currentZip, currentIndex, multipleZips, active, files_object, progressBar, zipConvertsInProgress, i, index, jszip, Write, HandleFile, HandleZips, DoExtract, CheckZipCreateDone;
@@ -816,7 +760,7 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                     currentIndex = 0;
                     multipleZips = false;
                     active = true;
-                    return [4 /*yield*/, file_manager_1.default.GetFileList(currentModData.name)];
+                    return [4, file_manager_1.default.GetFileList(currentModData.name)];
                 case 1:
                     files_object = _a.sent();
                     progressBar = new electron_progressbar_1.default({
@@ -842,10 +786,10 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                     i = 0;
                     _a.label = 2;
                 case 2:
-                    if (!(i < zips.length)) return [3 /*break*/, 5];
+                    if (!(i < zips.length)) return [3, 5];
                     zipConvertsInProgress++;
                     index = i;
-                    return [4 /*yield*/, jszip_1.default.loadAsync(zips[index].buffer)];
+                    return [4, jszip_1.default.loadAsync(zips[index].buffer)];
                 case 3:
                     jszip = _a.sent();
                     zips[index] = jszip;
@@ -853,8 +797,8 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                     _a.label = 4;
                 case 4:
                     i++;
-                    return [3 /*break*/, 2];
-                case 5: return [4 /*yield*/, fs_extensions_1.default.ensureDirectoryExists(targetPath)];
+                    return [3, 2];
+                case 5: return [4, fs_extensions_1.default.ensureDirectoryExists(targetPath)];
                 case 6:
                     _a.sent();
                     Write = function (name, d) { return __awaiter(_this, void 0, void 0, function () {
@@ -863,17 +807,16 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                             switch (_a.label) {
                                 case 0:
                                     fullFilePath = path_1.default.join(targetPath, name);
-                                    return [4 /*yield*/, fs_extensions_1.default.writeFile(fullFilePath, d)];
+                                    return [4, fs_extensions_1.default.writeFile(fullFilePath, d)];
                                 case 1:
                                     _a.sent();
                                     written++;
                                     progressBar.detail = "Wrote " + name + ". Total Files Written: " + written + ".";
-                                    //Add file that we wrote to the file list
                                     if (!files_object.files.includes(fullFilePath))
                                         files_object.files.push(fullFilePath);
                                     electron_log_2.default.log("ZIP extract for \"" + name + "\" was successful.");
                                     inProgress--;
-                                    return [2 /*return*/];
+                                    return [2];
                             }
                         });
                     }); };
@@ -883,30 +826,30 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                             switch (_a.label) {
                                 case 0:
                                     if (!active) {
-                                        return [2 /*return*/];
+                                        return [2];
                                     }
                                     inProgress++;
-                                    if (!file.dir) return [3 /*break*/, 2];
+                                    if (!file.dir) return [3, 2];
                                     directory = path_1.default.join(targetPath, file.name);
-                                    return [4 /*yield*/, fs_extensions_1.default.ensureDirectoryExists(directory)];
+                                    return [4, fs_extensions_1.default.ensureDirectoryExists(directory)];
                                 case 1:
                                     _a.sent();
                                     inProgress--;
-                                    return [3 /*break*/, 6];
+                                    return [3, 6];
                                 case 2:
                                     _a.trys.push([2, 5, , 6]);
-                                    return [4 /*yield*/, currentZip.file(file.name).async("uint8array")];
+                                    return [4, currentZip.file(file.name).async("uint8array")];
                                 case 3:
                                     d = _a.sent();
-                                    return [4 /*yield*/, Write(file.name, d)];
+                                    return [4, Write(file.name, d)];
                                 case 4:
                                     _a.sent();
-                                    return [3 /*break*/, 6];
+                                    return [3, 6];
                                 case 5:
                                     err_1 = _a.sent();
                                     electron_log_1.default.error(err_1);
                                     throw err_1;
-                                case 6: return [2 /*return*/];
+                                case 6: return [2];
                             }
                         });
                     }); };
@@ -926,7 +869,7 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                                 var promise = HandleFile(rf, f);
                                 promises.push(promise);
                             });
-                            return [2 /*return*/, Promise.all(promises)];
+                            return [2, Promise.all(promises)];
                         });
                     }); };
                     DoExtract = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -936,67 +879,63 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                             switch (_a.label) {
                                 case 0:
                                     electron_log_2.default.log("Waiting for ZIP exraction to complete...");
-                                    return [4 /*yield*/, HandleZips(currentZip)];
+                                    return [4, HandleZips(currentZip)];
                                 case 1:
                                     _a.sent();
                                     checkFunc = function () { return __awaiter(_this, void 0, void 0, function () {
                                         return __generator(this, function (_a) {
                                             switch (_a.label) {
                                                 case 0:
-                                                    if (!(inProgress <= 0)) return [3 /*break*/, 10];
+                                                    if (!(inProgress <= 0)) return [3, 10];
                                                     inProgress = 0;
-                                                    if (!multipleZips) return [3 /*break*/, 7];
+                                                    if (!multipleZips) return [3, 7];
                                                     currentIndex++;
-                                                    if (!(currentIndex < zips.length)) return [3 /*break*/, 4];
-                                                    //Assign the new zip and repeat the processess to handle and write the files.
+                                                    if (!(currentIndex < zips.length)) return [3, 4];
                                                     currentZip = zips[currentIndex];
-                                                    return [4 /*yield*/, HandleZips(currentZip)];
+                                                    return [4, HandleZips(currentZip)];
                                                 case 1:
                                                     _a.sent();
-                                                    //Make sure we set a timeout for the checking function again!!
-                                                    return [4 /*yield*/, Delay(200)];
+                                                    return [4, Delay(200)];
                                                 case 2:
-                                                    //Make sure we set a timeout for the checking function again!!
                                                     _a.sent();
-                                                    return [4 /*yield*/, checkFunc()];
+                                                    return [4, checkFunc()];
                                                 case 3:
                                                     _a.sent();
-                                                    return [3 /*break*/, 6];
+                                                    return [3, 6];
                                                 case 4:
                                                     progressBar.setCompleted();
-                                                    return [4 /*yield*/, file_manager_1.default.SaveFileList(files_object, currentModData.name)];
+                                                    return [4, file_manager_1.default.SaveFileList(files_object, currentModData.name)];
                                                 case 5:
                                                     _a.sent();
-                                                    return [2 /*return*/];
-                                                case 6: return [3 /*break*/, 9];
+                                                    return [2];
+                                                case 6: return [3, 9];
                                                 case 7:
-                                                    //Resolve now as we only had one zip to install.
                                                     progressBar.setCompleted();
-                                                    return [4 /*yield*/, file_manager_1.default.SaveFileList(files_object, currentModData.name)];
+                                                    return [4, file_manager_1.default.SaveFileList(files_object, currentModData.name)];
                                                 case 8:
                                                     _a.sent();
-                                                    return [2 /*return*/];
-                                                case 9: return [3 /*break*/, 13];
-                                                case 10: return [4 /*yield*/, Delay(200)];
+                                                    return [2];
+                                                case 9: return [3, 13];
+                                                case 10: return [4, Delay(200)];
                                                 case 11:
                                                     _a.sent();
-                                                    return [4 /*yield*/, checkFunc()];
+                                                    return [4, checkFunc()];
                                                 case 12:
                                                     _a.sent();
-                                                    return [2 /*return*/];
+                                                    return [2];
                                                 case 13:
                                                     ;
-                                                    return [2 /*return*/];
+                                                    return [2];
                                             }
                                         });
                                     }); };
-                                    return [4 /*yield*/, Delay(1000)];
+                                    return [4, Delay(1000)];
                                 case 2:
                                     _a.sent();
-                                    return [4 /*yield*/, checkFunc()];
+                                    return [4, checkFunc()];
                                 case 3:
                                     _a.sent();
-                                    return [2 /*return*/];
+                                    return [2];
                             }
                         });
                     }); };
@@ -1004,8 +943,7 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
-                                    if (!(zipConvertsInProgress <= 0)) return [3 /*break*/, 2];
-                                    //Get the target zip.
+                                    if (!(zipConvertsInProgress <= 0)) return [3, 2];
                                     if (!Array.isArray(zips)) {
                                         currentZip = zips;
                                         multipleZips = false;
@@ -1014,33 +952,32 @@ function WriteZIPsToDirectory(targetPath, zips, currentModData) {
                                         currentZip = zips[0];
                                         multipleZips = true;
                                     }
-                                    return [4 /*yield*/, DoExtract()];
+                                    return [4, DoExtract()];
                                 case 1:
                                     _a.sent();
-                                    return [3 /*break*/, 5];
-                                case 2: return [4 /*yield*/, Delay(50)];
+                                    return [3, 5];
+                                case 2: return [4, Delay(50)];
                                 case 3:
                                     _a.sent();
-                                    return [4 /*yield*/, CheckZipCreateDone()];
+                                    return [4, CheckZipCreateDone()];
                                 case 4:
                                     _a.sent();
                                     _a.label = 5;
-                                case 5: return [2 /*return*/];
+                                case 5: return [2];
                             }
                         });
                     }); };
-                    return [4 /*yield*/, Delay(50)];
+                    return [4, Delay(50)];
                 case 7:
                     _a.sent();
-                    return [4 /*yield*/, CheckZipCreateDone()];
+                    return [4, CheckZipCreateDone()];
                 case 8:
                     _a.sent();
-                    return [2 /*return*/];
+                    return [2];
             }
         });
     });
 }
-//Writes files to disk that are not in a zip but are just a buffer.
 function WriteFilesToDirectory(targetPath, files, currentModData) {
     return __awaiter(this, void 0, void 0, function () {
         var written, files_object, active, progressBar, index, file, fullFilePath;
@@ -1048,11 +985,11 @@ function WriteFilesToDirectory(targetPath, files, currentModData) {
             switch (_a.label) {
                 case 0:
                     written = 0;
-                    return [4 /*yield*/, file_manager_1.default.GetFileList(currentModData.name)];
+                    return [4, file_manager_1.default.GetFileList(currentModData.name)];
                 case 1:
                     files_object = _a.sent();
                     active = true;
-                    return [4 /*yield*/, fs_extensions_1.default.ensureDirectoryExists(targetPath)];
+                    return [4, fs_extensions_1.default.ensureDirectoryExists(targetPath)];
                 case 2:
                     _a.sent();
                     progressBar = new electron_progressbar_1.default({
@@ -1087,97 +1024,92 @@ function WriteFilesToDirectory(targetPath, files, currentModData) {
                     index = 0;
                     _a.label = 3;
                 case 3:
-                    if (!(index < files.length)) return [3 /*break*/, 6];
+                    if (!(index < files.length)) return [3, 6];
                     if (!active) {
-                        return [3 /*break*/, 5];
+                        return [3, 5];
                     }
                     file = files[index];
                     progressBar.detail = "Writing " + file.name + ". Total Files Written: " + written + ".";
                     fullFilePath = path_1.default.join(targetPath, file.name);
-                    return [4 /*yield*/, fs_extensions_1.default.writeFile(fullFilePath, file.buffer)];
+                    return [4, fs_extensions_1.default.writeFile(fullFilePath, file.buffer)];
                 case 4:
                     _a.sent();
                     written++;
-                    //Add file that we wrote to the file list
                     if (!files_object.files.includes(fullFilePath))
                         files_object.files.push(fullFilePath);
                     electron_log_2.default.log("File write for '" + file.name + "' was successful.");
                     _a.label = 5;
                 case 5:
                     index++;
-                    return [3 /*break*/, 3];
+                    return [3, 3];
                 case 6:
                     progressBar.setCompleted();
-                    return [4 /*yield*/, file_manager_1.default.SaveFileList(files_object, currentModData.name)];
+                    return [4, file_manager_1.default.SaveFileList(files_object, currentModData.name)];
                 case 7:
                     _a.sent();
-                    return [2 /*return*/];
+                    return [2];
             }
         });
     });
 }
-//Validates the tf2 directory. Can trigger dialogues depending on the outcome.
 function ValidateTF2Dir() {
     return __awaiter(this, void 0, void 0, function () {
         var plat, appid_path, content, appid;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!main_1.default.config) return [3 /*break*/, 2];
-                    return [4 /*yield*/, ErrorDialog("The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!", "Internal Error")];
+                    if (!!main_1.default.config) return [3, 2];
+                    return [4, ErrorDialog("The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!", "Internal Error")];
                 case 1:
                     _a.sent();
-                    return [2 /*return*/, false];
+                    return [2, false];
                 case 2:
-                    if (!(main_1.default.config.tf2_directory == "")) return [3 /*break*/, 4];
-                    return [4 /*yield*/, ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error")];
+                    if (!(main_1.default.config.tf2_directory == "")) return [3, 4];
+                    return [4, ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error")];
                 case 3:
                     _a.sent();
-                    return [2 /*return*/, false];
-                case 4: return [4 /*yield*/, fs_extensions_1.default.pathExists(main_1.default.config.tf2_directory)];
+                    return [2, false];
+                case 4: return [4, fs_extensions_1.default.pathExists(main_1.default.config.tf2_directory)];
                 case 5:
-                    if (!!(_a.sent())) return [3 /*break*/, 7];
-                    return [4 /*yield*/, ErrorDialog("The current TF2 directory specified does not exist. Please check your settings.", "TF2 Path Error")];
+                    if (!!(_a.sent())) return [3, 7];
+                    return [4, ErrorDialog("The current TF2 directory specified does not exist. Please check your settings.", "TF2 Path Error")];
                 case 6:
                     _a.sent();
-                    return [2 /*return*/, false];
+                    return [2, false];
                 case 7:
                     plat = os_1.default.platform();
-                    if (!(plat == "win32")) return [3 /*break*/, 9];
-                    return [4 /*yield*/, fs_extensions_1.default.fileExists(path_1.default.join(main_1.default.config.tf2_directory, "hl2.exe"))];
+                    if (!(plat == "win32")) return [3, 9];
+                    return [4, fs_extensions_1.default.fileExists(path_1.default.join(main_1.default.config.tf2_directory, "hl2.exe"))];
                 case 8:
                     if (_a.sent()) {
-                        return [2 /*return*/, true];
+                        return [2, true];
                     }
-                    return [3 /*break*/, 11];
+                    return [3, 11];
                 case 9:
-                    if (!(plat == "linux" || plat == "freebsd" || plat == "openbsd")) return [3 /*break*/, 11];
-                    return [4 /*yield*/, fs_extensions_1.default.pathExists(path_1.default.join(main_1.default.config.tf2_directory, "hl2_linux"))];
+                    if (!(plat == "linux" || plat == "freebsd" || plat == "openbsd")) return [3, 11];
+                    return [4, fs_extensions_1.default.pathExists(path_1.default.join(main_1.default.config.tf2_directory, "hl2_linux"))];
                 case 10:
                     if (_a.sent()) {
-                        return [2 /*return*/, true];
+                        return [2, true];
                     }
                     _a.label = 11;
                 case 11:
                     appid_path = path_1.default.join(main_1.default.config.tf2_directory, "steam_appid.txt");
-                    return [4 /*yield*/, fs_extensions_1.default.fileExists(appid_path)];
+                    return [4, fs_extensions_1.default.fileExists(appid_path)];
                 case 12:
-                    if (!_a.sent()) return [3 /*break*/, 14];
-                    return [4 /*yield*/, fs_extensions_1.default.readFile(appid_path, { encoding: "utf8" })];
+                    if (!_a.sent()) return [3, 14];
+                    return [4, fs_extensions_1.default.readFile(appid_path, { encoding: "utf8" })];
                 case 13:
                     content = _a.sent();
                     appid = content.split("\n")[0];
                     if (appid != null && appid == "440") {
-                        return [2 /*return*/, true];
+                        return [2, true];
                     }
                     _a.label = 14;
-                case 14: 
-                //All the tests failed, show dialogue for that.
-                return [4 /*yield*/, ErrorDialog("The current TF2 directory specified does exist, but it did not pass validation.\nCheck it links only to the 'Team Fortress 2' folder and not to the sub 'tf' folder.\nPlease check your settings.", "TF2 Validation Error")];
+                case 14: return [4, ErrorDialog("The current TF2 directory specified does exist, but it did not pass validation.\nCheck it links only to the 'Team Fortress 2' folder and not to the sub 'tf' folder.\nPlease check your settings.", "TF2 Validation Error")];
                 case 15:
-                    //All the tests failed, show dialogue for that.
                     _a.sent();
-                    return [2 /*return*/, false];
+                    return [2, false];
             }
         });
     });
@@ -1213,12 +1145,9 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop) {
                     reject(error);
                 }
                 else {
-                    //Execute the callback for doing processing with the headers.
                     if (responseHeadersFunc != null)
                         responseHeadersFunc(res.headers);
                     var data = [], dataLen = 0;
-                    // don't set the encoding, it will break everything !
-                    // or, if you must, set it to null. In that case the chunk will be a string.
                     res.on("data", function (chunk) {
                         if (shouldStop.value) {
                             res.destroy();
@@ -1236,8 +1165,6 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop) {
                             progressFunc = null;
                             responseHeadersFunc = null;
                             electron_log_2.default.log("File download finished. Returning raw data.");
-                            //This approach to get the file name only works for direct file urls.
-                            //A better solution for later would be via the content-disposition header if this is missing.
                             var filename;
                             var contentDispositionHeader = res.headers["content-disposition"];
                             if (contentDispositionHeader != undefined) {
@@ -1263,7 +1190,6 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop) {
                 reject(err);
             });
         };
-        //Do initial request.
         DoRequest(_url, 5);
     });
 }
@@ -1272,7 +1198,6 @@ function GetFileName(_url) {
     return path_1.default.basename(parsed.pathname);
 }
 function SetNewModVersion(version, currentModName) {
-    //Try to update the version of the mod if its already in the array.
     for (var i = 0; i < main_1.default.config.current_mod_versions.length; i++) {
         var modVersionObject = main_1.default.config.current_mod_versions[i];
         if (modVersionObject.name == currentModName) {
@@ -1289,7 +1214,7 @@ function ErrorDialog(error, title) {
             switch (_a.label) {
                 case 0:
                     electron_log_2.default.error("Error Dialog shown: " + title + " : " + error.toString() + ".\nError Stack:" + error.stack);
-                    return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                    return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                             type: "error",
                             title: title,
                             message: error.toString(),
@@ -1297,7 +1222,7 @@ function ErrorDialog(error, title) {
                         })];
                 case 1:
                     _a.sent();
-                    return [2 /*return*/];
+                    return [2];
             }
         });
     });
@@ -1306,7 +1231,7 @@ function FatalError(errorMessage) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
+                case 0: return [4, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
                         type: "error",
                         title: "Fatal Error",
                         message: errorMessage.toString(),
@@ -1316,13 +1241,12 @@ function FatalError(errorMessage) {
                     _a.sent();
                     electron_log_2.default.error("A fatal error was encountered! Program quit. Reason: " + errorMessage);
                     main_1.default.app.quit();
-                    return [2 /*return*/];
+                    return [2];
             }
         });
     });
 }
 function GetFileWriteFunction(extension) {
-    //Format to be what we expect.
     extension = extension.toLowerCase().replace(".", "");
     if (functionMap.has(extension)) {
         return functionMap.get(extension);
@@ -1332,29 +1256,28 @@ function GetFileWriteFunction(extension) {
 }
 functionMap.set("zip", WriteZIPsToDirectory);
 functionMap.set("vpk", WriteFilesToDirectory);
-//Some extras to check just incase the downloads are not something we can handle or a windows exe.
 functionMap.set("rar", function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     switch (_a.label) {
-        case 0: return [4 /*yield*/, FatalError("Cannot handle .rar files currently. This should not happen. Exiting...")];
+        case 0: return [4, FatalError("Cannot handle .rar files currently. This should not happen. Exiting...")];
         case 1:
             _a.sent();
-            return [2 /*return*/];
+            return [2];
     }
 }); }); });
 functionMap.set("7z", function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     switch (_a.label) {
-        case 0: return [4 /*yield*/, FatalError("Cannot handle .7z files currently. This should not happen. Exiting...")];
+        case 0: return [4, FatalError("Cannot handle .7z files currently. This should not happen. Exiting...")];
         case 1:
             _a.sent();
-            return [2 /*return*/];
+            return [2];
     }
 }); }); });
 functionMap.set("exe", function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     switch (_a.label) {
-        case 0: return [4 /*yield*/, FatalError("Downloaded file was windows executable. This should not happen, exiting. File was not written.")];
+        case 0: return [4, FatalError("Downloaded file was windows executable. This should not happen, exiting. File was not written.")];
         case 1:
             _a.sent();
-            return [2 /*return*/];
+            return [2];
     }
 }); }); });
 //# sourceMappingURL=mod_manager.js.map

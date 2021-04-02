@@ -13,11 +13,32 @@ class QuickPlayConfigLoader extends RemoteLoader<QuickPlayConfig>
 
 class QuickPlayConfig extends RemoteFile
 {
+    quickplayTypes: QuickPlayGameType[];
+}
+
+class QuickPlayGameType {
+    type: string;
     regions: string[];
     region_names: any;
+    map_categories: QuickPlayMapCategory[];
+    missions: QuickPlayMissionCategory[];
+}
+
+class QuickPlayMapCategory {
+    name: string;
+    map_icon: string;
     maps: string[];
-    missions: string[];
+}
+
+class QuickPlayMissionCategory {
+    campaign: string;
+    missions: QuickPlayMission[];
+}
+
+class QuickPlayMission {
+    map: string;
+    name: string;
 }
 
 export default QuickPlayConfigLoader;
-export {QuickPlayConfig};
+export {QuickPlayConfig, QuickPlayGameType, QuickPlayMapCategory, QuickPlayMissionCategory, QuickPlayMission};

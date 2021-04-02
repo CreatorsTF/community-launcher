@@ -1,9 +1,8 @@
 import axios from "axios";
 import fs from "fs";
-import { Utilities } from "modules/utilities";
+import { Utilities } from "../utilities";
 import path from "path";
 import ElectronLog from "electron-log";
-import { ModListLoader } from "modules/remote_file_loader/mod_list_loader";
 
 abstract class RemoteLoader <T extends RemoteFile>
 {
@@ -81,6 +80,9 @@ abstract class RemoteLoader <T extends RemoteFile>
         ElectronLog.log("Trying to get file from: " + url);
         try{
             let resp = await axios.get(url);
+            if(resp.data.hasOwnProperty("version")){
+                return <T>resp.data;
+            }
             let parsed = JSON.parse(resp.data);
             return <T>parsed;
         }

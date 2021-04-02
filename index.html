@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://api.github.com/; script-src 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://api.github.com/ https://creators.tf/; script-src 'self'">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
         <title>Creators.TF Launcher - Alpha Version</title>
         <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.min.css">
@@ -24,16 +24,30 @@
                 <div id="modlist-updating">Getting lastest mod data...</div>
                 <div id="launcherversion">Checking for updates...</div>
             </div>
-            <div id="quickplay">
-                <h2>Quickplay</h2>
-                <div id="quickplay-controls">
-                    <div id="quickplay-row">
+            <div id="quickplay" class="quickplay-toggle">
+                <div class="trigger">
+                    <h2>Quickplay</h2>
+                </div>
+                <div class="content">
+                    <div class="quickplay-row">
                         <select id="quickplay-type"></select> 
                         <select id="quickplay-region"></select>
                     </div>
-                    <div id="quickplay-row">
-                        <select id="quickplay-mission"></select>
-                        <select id="quickplay-maps"></select>
+                    <div id="maps" class="quickplay-toggle">
+                        <div class="trigger">
+                            <h2>Maps</h2>
+                        </div>
+                        <div class="content">
+                            
+                        </div>
+                    </div>
+                    <div id="missions" class="quickplay-toggle">
+                        <div class="trigger">
+                            <h2>Missions</h2>
+                        </div>
+                        <div class="content">
+                            
+                        </div>
                     </div>
                 </div>
             </div>
@@ -70,8 +84,8 @@
             <button id="install-play-button">Loading...</button>
             <!--<div id="fadebehindbutton"></div>-->
         </div>
+        <script type="module" src="browser/quickplay-renderer.js"></script>
         <script src="renderer.js"></script>
-        <script src="quickplay-renderer.js"></script>
         <script src="consolewarning.js"></script>
     </body>
 </html>

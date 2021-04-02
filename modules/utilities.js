@@ -14,18 +14,11 @@ var electron_log_1 = __importDefault(require("electron-log"));
 var loadingTextStyle = {
     color: "ghostwhite"
 };
-var Utilities = /** @class */ (function () {
+var Utilities = (function () {
     function Utilities() {
     }
-    /**
-     * Create an error dialog and print the error to the log files.
-     * @param error The error object/message.
-     * @param title Title for the error dialog.
-     */
     Utilities.ErrorDialog = function (error, title) {
-        //@ts-ignore
         global.log.error("Error Dialog shown: " + title + " : " + error.toString());
-        //@ts-ignore
         electron_1.dialog.showMessageBox(global.mainWindow, {
             type: "error",
             title: title,
@@ -33,9 +26,6 @@ var Utilities = /** @class */ (function () {
             buttons: ["OK"]
         });
     };
-    /**
-     * Get the data folder dynamically based on the platform.
-     */
     Utilities.GetDataFolder = function () {
         var _path = (process_1.default.env.APPDATA || (process_1.default.platform == 'darwin' ? process_1.default.env.HOME + '/Library/Preferences' : process_1.default.env.HOME + "/.local/share")) + "/creators-tf-launcher";
         if (!fs_1.default.existsSync(_path))

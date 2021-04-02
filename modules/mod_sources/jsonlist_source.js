@@ -56,7 +56,7 @@ var https_1 = __importDefault(require("https"));
 var mod_source_base_1 = __importDefault(require("./mod_source_base"));
 var electron_log_1 = __importDefault(require("electron-log"));
 var cloudFlareMessage = "\nFailed to get this mods latest data due to Cloudflare rate limiting. \nPlease wait till normal web service resumes or report on our Discord.";
-var JsonListSource = /** @class */ (function (_super) {
+var JsonListSource = (function (_super) {
     __extends(JsonListSource, _super);
     function JsonListSource(install_data) {
         var _this = _super.call(this, install_data) || this;
@@ -64,7 +64,6 @@ var JsonListSource = /** @class */ (function (_super) {
         _this.fileType = "ARCHIVE";
         _this.jsonlist_data = null;
         _this.url = install_data.get_url;
-        //If this property is present, lets add a random query on the end of the URL to get an un cached version of this file.
         if (install_data.cloudflarebypass != null) {
             _this.url += "?" + Math.floor(Math.random() * 1000000000);
         }
@@ -92,8 +91,8 @@ var JsonListSource = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.GetLatestVersionNumber().toString()];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 0: return [4, this.GetLatestVersionNumber().toString()];
+                    case 1: return [2, _a.sent()];
                 }
             });
         });
@@ -142,7 +141,6 @@ var JsonListSource = /** @class */ (function (_super) {
                         }
                     }
                     catch (error) {
-                        //Json parsing failed soo reject.
                         electron_log_1.default.error("Json parse failed. Endpoint is probably not returning valid JSON. Site may be down!");
                         reject(error.toString());
                     }

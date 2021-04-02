@@ -1,7 +1,7 @@
 const { BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("../modules/config");
 const path = global.path;
-const {ModListLoader} = require("../modules/mod_list_loader");
+const {ModListLoader} = require("../modules/remote_file_loader/mod_list_loader");
 const {Utilities} = require("../modules/utilities");
 
 var settingsWindow;
@@ -71,11 +71,11 @@ function OpenWindow() {
         });
 
         ipcMain.on("ClearModList", (event, arg) => {
-            if(ModListLoader.DeleteLocalModList()){
+            if(ModListLoader.DeleteLocalFile()){
                 dialog.showMessageBox({
                     type: "info",
                     title: "Settings",
-                    message: "Local mod list cache was cleared.",
+                    message: "Local mod list cache was cleared. Restart the launcher to take effect.",
                     buttons: ["OK"]
                 })
             }

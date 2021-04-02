@@ -11,10 +11,11 @@ import { ModListLoader, ModList } from "./modules/remote_file_loader/mod_list_lo
 import path from "path";
 import os from "os";
 const _config = require("./modules/config");
+import log from "electron-log";
+import QuickPlayConfigLoader from "./modules/remote_file_loader/quickplay_config_loader";
+import Quickplay from "./modules/api/quickplay";
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
-import log from "electron-log";
-import QuickPlayConfigLoader from "modules/remote_file_loader/quickplay_config_loader";
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "main.log";
@@ -31,6 +32,7 @@ class Main {
     static config: any;
     static screenWidth: number;
     static screenHeight: number;
+    static quickPlay: Quickplay;
 
     public static createWindow() {
         //@ts-ignore
@@ -131,6 +133,7 @@ app.on("ready", () => {
     try{
         ModListLoader.instance.LoadLocalFile();
         QuickPlayConfigLoader.instance.LoadLocalFile();
+        Main.quickPlay = new Quickplay();
         Main.createWindow();
         Main.getClientCurrentVersion();
         Main.autoUpdateCheckAndSettings();
@@ -309,6 +312,11 @@ ipcMain.on("GetModData", async (event, args) => {
         log.verbose("Latest mod list was sent to renderer");
         event.reply("ShowMods", ModListLoader.instance.GetFile());
     });
+});
+
+ipcMain.on("InitQuickplay", async (event, args) => {
+    log.verbose("Sending Quickplay config to renderer");
+    event.reply("quickplay-setup", QuickPlayConfigLoader.instance.GetFile());
 });
 
 //Quickplay

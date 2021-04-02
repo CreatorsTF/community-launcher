@@ -54,9 +54,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var mod_source_base_js_1 = __importDefault(require("./mod_source_base.js"));
 var https_1 = __importDefault(require("https"));
-// Reference: https://developer.github.com/v3/repos/releases/#list-releases
 var github_api_url = "https://api.github.com/";
-var GithubSource = /** @class */ (function (_super) {
+var GithubSource = (function (_super) {
     __extends(GithubSource, _super);
     function GithubSource(install_data) {
         var _this = _super.call(this, install_data) || this;
@@ -64,12 +63,11 @@ var GithubSource = /** @class */ (function (_super) {
         _this.fileType = "FILE";
         return _this;
     }
-    //Function to get the latest github data from memory or request.
     GithubSource.prototype._GetGithubData = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         if (_this.github_data != null)
                             resolve(_this.github_data);
                         else {
@@ -83,7 +81,7 @@ var GithubSource = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
+                return [2, new Promise(function (resolve, reject) {
                         _this._GetGithubData().then(function (data) {
                             if (data.length == null || data.length == 0)
                                 reject("No releases avaliable to download");
@@ -101,13 +99,13 @@ var GithubSource = /** @class */ (function (_super) {
             var versionNumber, githubData;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.GetLatestVersionNumber()];
+                    case 0: return [4, this.GetLatestVersionNumber()];
                     case 1:
                         versionNumber = _a.sent();
-                        return [4 /*yield*/, this._GetGithubData()];
+                        return [4, this._GetGithubData()];
                     case 2:
                         githubData = _a.sent();
-                        return [2 /*return*/, githubData[0].name + " (" + versionNumber + ")"];
+                        return [2, githubData[0].name + " (" + versionNumber + ")"];
                 }
             });
         });
@@ -116,8 +114,7 @@ var GithubSource = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        //Try to get the download url for the release asset.
+                return [2, new Promise(function (resolve, reject) {
                         _this._GetGithubData().then(function (data) {
                             var releaseAssets = data[0].assets;
                             if (releaseAssets != null && releaseAssets != []) {
@@ -141,7 +138,6 @@ var GithubSource = /** @class */ (function (_super) {
     GithubSource.prototype._GetGitHubReleaseData = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            //Construct initial request url to github api
             var url = github_api_url + ("repos/" + _this.data.owner + "/" + _this.data.name + "/releases");
             var options = {
                 headers: {

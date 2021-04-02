@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateMatchmakingQueryResponse = exports.CreateMatchCommandParams = exports.CreateMatchCommand = void 0;
 var CreatorsAPICommand_1 = require("../CreatorsAPICommand");
-var CreateMatchCommand = /** @class */ (function (_super) {
+var CreateMatchCommand = (function (_super) {
     __extends(CreateMatchCommand, _super);
     function CreateMatchCommand(args) {
         var _this = _super.call(this) || this;
@@ -36,13 +36,13 @@ var CreateMatchCommand = /** @class */ (function (_super) {
     return CreateMatchCommand;
 }(CreatorsAPICommand_1.CreatorsAPICommand));
 exports.CreateMatchCommand = CreateMatchCommand;
-var CreateMatchCommandParams = /** @class */ (function () {
+var CreateMatchCommandParams = (function () {
     function CreateMatchCommandParams() {
     }
     return CreateMatchCommandParams;
 }());
 exports.CreateMatchCommandParams = CreateMatchCommandParams;
-var CreateMatchmakingQueryResponse = /** @class */ (function () {
+var CreateMatchmakingQueryResponse = (function () {
     function CreateMatchmakingQueryResponse() {
     }
     return CreateMatchmakingQueryResponse;

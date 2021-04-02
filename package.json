@@ -5,12 +5,12 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "compileAndStart": "npx tsc && electron .",
+    "compileAndStart": "npm run compile && electron .",
     "buildwindows": "electron-builder build --win --x64 --ia32 --publish never && node buildfix.js",
     "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
     "deploy": "electron-builder build --win --x64 --ia32 --publish always",
     "buildfix": "node buildfix.js",
-    "compile": "npx tsc"
+    "compile": "npx tsc --project browser/tsconfig-browser.json && npx tsc --project tsconfig.json"
   },
   "keywords": [
     "TF2",

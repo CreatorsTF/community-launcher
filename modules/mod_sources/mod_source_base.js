@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var ModInstallSource = /** @class */ (function () {
+var ModInstallSource = (function () {
     function ModInstallSource(install_data) {
         this.fileType = "UNKNOWN";
         this.data = install_data;

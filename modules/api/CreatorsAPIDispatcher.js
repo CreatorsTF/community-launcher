@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = __importDefault(require("axios"));
 var path_1 = __importDefault(require("path"));
 var apiEndpoint = "https://creators.tf/api";
-var CreatorsAPIDispatcher = /** @class */ (function () {
+var CreatorsAPIDispatcher = (function () {
     function CreatorsAPIDispatcher() {
     }
     CreatorsAPIDispatcher.prototype.ExecuteCommand = function (command) {
@@ -52,7 +52,7 @@ var CreatorsAPIDispatcher = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, axios_1.default.request({
+                        return [4, axios_1.default.request({
                                 method: command.requestType.toString(),
                                 url: this.CreateRequestUrl(command)
                             })];
@@ -60,12 +60,12 @@ var CreatorsAPIDispatcher = /** @class */ (function () {
                         resp = _a.sent();
                         jsonObject = JSON.parse(resp.data.toString());
                         command.OnResponse(jsonObject);
-                        return [3 /*break*/, 3];
+                        return [3, 3];
                     case 2:
                         e_1 = _a.sent();
                         command.OnFailure(e_1);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                        return [3, 3];
+                    case 3: return [2];
                 }
             });
         });

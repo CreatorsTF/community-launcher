@@ -42,10 +42,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RemoteFile = void 0;
 var axios_1 = __importDefault(require("axios"));
 var fs_1 = __importDefault(require("fs"));
-var utilities_1 = require("modules/utilities");
+var utilities_1 = require("../utilities");
 var path_1 = __importDefault(require("path"));
 var electron_log_1 = __importDefault(require("electron-log"));
-var RemoteLoader = /** @class */ (function () {
+var RemoteLoader = (function () {
     function RemoteLoader() {
         this.localFileName = "";
         this.remoteUrls = [
@@ -55,15 +55,9 @@ var RemoteLoader = /** @class */ (function () {
     RemoteLoader.prototype.LoadLocalFile = function () {
         this.localFile = this.GetLocalFile();
     };
-    /**
-     * Load the most current version of this file type
-     */
     RemoteLoader.prototype.GetFile = function () {
         return this.localFile;
     };
-    /**
-     * Update the local mod list file on disk to contain the latest data we found.
-     */
     RemoteLoader.prototype.UpdateLocalFile = function () {
         if (this.lastDownloaded != null && this.localFile.version < this.lastDownloaded.version) {
             var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), this.localFileName);
@@ -72,9 +66,6 @@ var RemoteLoader = /** @class */ (function () {
         }
         return false;
     };
-    /**Check if there is a newer mod list online.
-     * Also checks if the internal version is newer than the local, written version.
-     */
     RemoteLoader.prototype.CheckForUpdates = function () {
         return __awaiter(this, void 0, void 0, function () {
             var data, i, url, remoteFile, _a, error_1;
@@ -89,41 +80,40 @@ var RemoteLoader = /** @class */ (function () {
                         i = 0;
                         _b.label = 2;
                     case 2:
-                        if (!(i < this.remoteUrls.length)) return [3 /*break*/, 8];
+                        if (!(i < this.remoteUrls.length)) return [3, 8];
                         url = this.remoteUrls[i];
                         _b.label = 3;
                     case 3:
                         _b.trys.push([3, 5, , 6]);
-                        return [4 /*yield*/, this.TryGetRemoteFile(url)];
+                        return [4, this.TryGetRemoteFile(url)];
                     case 4:
                         remoteFile = _b.sent();
-                        return [3 /*break*/, 6];
+                        return [3, 6];
                     case 5:
                         _a = _b.sent();
-                        return [3 /*break*/, 7];
+                        return [3, 7];
                     case 6:
-                        //Break if we have a valid mod list. If we have null, try again.
                         if (remoteFile != null && remoteFile != undefined) {
                             this.lastDownloaded = remoteFile;
-                            return [3 /*break*/, 8];
+                            return [3, 8];
                         }
                         _b.label = 7;
                     case 7:
                         i++;
-                        return [3 /*break*/, 2];
+                        return [3, 2];
                     case 8:
                         if (this.lastDownloaded != null && this.lastDownloaded.version != null) {
                             electron_log_1.default.log("Local mod list version: " + this.localFile.version + ", Remote mod list version: " + this.lastDownloaded.version + ".");
-                            return [2 /*return*/, this.localFile.version < this.lastDownloaded.version];
+                            return [2, this.localFile.version < this.lastDownloaded.version];
                         }
-                        return [3 /*break*/, 10];
+                        return [3, 10];
                     case 9:
                         error_1 = _b.sent();
                         console.error("Failed to check for updates. " + error_1.toString());
-                        return [2 /*return*/, false];
+                        return [2, false];
                     case 10:
                         electron_log_1.default.log("No mod list updates found.");
-                        return [2 /*return*/, false];
+                        return [2, false];
                 }
             });
         });
@@ -138,24 +128,25 @@ var RemoteLoader = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, axios_1.default.get(url)];
+                        return [4, axios_1.default.get(url)];
                     case 2:
                         resp = _a.sent();
+                        if (resp.data.hasOwnProperty("version")) {
+                            return [2, resp.data];
+                        }
                         parsed = JSON.parse(resp.data);
-                        return [2 /*return*/, parsed];
+                        return [2, parsed];
                     case 3:
                         error_2 = _a.sent();
-                        //Json parsing failed soo reject.
                         electron_log_1.default.error("Failed to get remote file at " + url + ", error: " + error_2.toString());
                         throw error_2;
-                    case 4: return [2 /*return*/];
+                    case 4: return [2];
                 }
             });
         });
     };
     RemoteLoader.prototype.GetLocalFile = function () {
-        //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
-        var internalFileJSON = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "..", "internal", this.localFileName), { encoding: "utf-8" });
+        var internalFileJSON = fs_1.default.readFileSync(path_1.default.resolve(__dirname, "..", "..", "internal", this.localFileName), { encoding: "utf-8" });
         var internalFile = JSON.parse(internalFileJSON);
         var configPath = path_1.default.join(utilities_1.Utilities.GetDataFolder(), this.localFileName);
         if (fs_1.default.existsSync(configPath)) {
@@ -164,8 +155,6 @@ var RemoteLoader = /** @class */ (function () {
                 return localWrittenFile;
             }
         }
-        //Write the internal mod list then return that too.
-        //We also want to re write the internal mod list if its a higher version.
         fs_1.default.writeFileSync(configPath, internalFileJSON);
         return JSON.parse(internalFileJSON);
     };
@@ -179,7 +168,7 @@ var RemoteLoader = /** @class */ (function () {
     };
     return RemoteLoader;
 }());
-var RemoteFile = /** @class */ (function () {
+var RemoteFile = (function () {
     function RemoteFile() {
     }
     return RemoteFile;

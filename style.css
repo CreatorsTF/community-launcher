@@ -26,30 +26,95 @@ body {
 
 #quickplay
 {
-    flex: initial;
-    height: 100px;
-    background-color: lightslategrey;
+    flex: auto;
+    height: auto;
+    background-color: rgb(48, 48, 48);
     width: 100%;
     padding: 0px;
-}
-
-#quickplay h2
-{
-    flex: initial;
-}
-
-#quickplay-controls
-{
-    flex: auto;
-    padding: 0px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
-#quickplay-row
+#quickplay h2 {
+    margin: 0px;
+    margin-top: 10px;
+    color: whitesmoke;
+    text-align: center;
+}
+
+#quickplay h3 {
+    margin: 0px;
+    margin-top: 10px;
+    color: whitesmoke;
+    stroke: #000;
+    text-align: center;
+}
+
+.quickplay-row
 {
     flex: auto;
     padding: 3px;
+    height: auto;
+}
+
+.quickplay-row select
+{
+    display: block;
+}
+
+.quickplay-toggle
+{
+    flex: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.quickplay-toggle > .trigger
+{
+    flex: initial;
+    height: 50px;
+    text-align: center;
+}
+
+.quickplay-toggle > .content
+{
+    flex: auto;
+    transition: height 0.2s;
+    height: auto;
+    overflow: hidden;
+    padding: 0px 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.maps .content
+{
+    height: 240px;
+}
+
+.maps .content[aria-hidden="false"]
+{
+    overflow-y: scroll !important;
+}
+
+.content .map
+{
+    height: 70px;
+    flex: initial;
+    background-position-y: center;
+}
+
+.map input
+{
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+.content[aria-hidden="true"] {
+    height: 0 !important;
 }
 
 #modlist-updating

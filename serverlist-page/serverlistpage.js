@@ -47,7 +47,7 @@ var electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 var https_1 = __importDefault(require("https"));
 var electron_log_1 = __importDefault(require("electron-log"));
 var apiEndpoint = "https://creators.tf/api/IServers/GServerList?provider={0}";
-var ServerListPage = /** @class */ (function () {
+var ServerListPage = (function () {
     function ServerListPage() {
     }
     ServerListPage.OpenWindow = function (mainWindow, screenWidth, screenHeight, providers) {
@@ -97,8 +97,7 @@ var ServerListPage = /** @class */ (function () {
                         };
                         getProviderServerList = function (providerId) { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
-                                //Use a promise to ensure the inner request callback can return its value and ensure we await properly.
-                                return [2 /*return*/, new Promise(function (resolve, reject) {
+                                return [2, new Promise(function (resolve, reject) {
                                         var data = [];
                                         var url = string_format_1.default(apiEndpoint, providerId);
                                         var req = https_1.default.get(url, options, function (res) {
@@ -132,9 +131,9 @@ var ServerListPage = /** @class */ (function () {
                         _i = 0, _a = this.latestProviders;
                         _b.label = 1;
                     case 1:
-                        if (!(_i < _a.length)) return [3 /*break*/, 4];
+                        if (!(_i < _a.length)) return [3, 4];
                         provider = _a[_i];
-                        return [4 /*yield*/, getProviderServerList(provider.toString())];
+                        return [4, getProviderServerList(provider.toString())];
                     case 2:
                         response = _b.sent();
                         if (response != null && response.result != null && response.result == "SUCCESS") {
@@ -148,21 +147,16 @@ var ServerListPage = /** @class */ (function () {
                         _b.label = 3;
                     case 3:
                         _i++;
-                        return [3 /*break*/, 1];
+                        return [3, 1];
                     case 4:
                         if (serverData == null) {
                             throw new Error("Unable to get any server list data.");
                         }
-                        return [2 /*return*/, serverData];
+                        return [2, serverData];
                 }
             });
         });
     };
-    /**
-     * Combines the server data of these two objects together.
-     * @param oldData Main object to add to.
-     * @param newData Other obect to take the .servers property from.
-     */
     ServerListPage.CombineServerData = function (oldData, newData) {
         if (oldData.hasOwnProperty("servers")) {
             oldData.servers = oldData.servers.concat(newData.servers);
@@ -181,16 +175,16 @@ electron_1.ipcMain.on("GetServerList", function (event, arg) { return __awaiter(
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, ServerListPage.GetServerList()];
+                return [4, ServerListPage.GetServerList()];
             case 1:
                 serverList = _a.sent();
                 event.reply("GetServerList-Reply", serverList);
-                return [3 /*break*/, 3];
+                return [3, 3];
             case 2:
                 error_1 = _a.sent();
                 event.reply("GetServerList-Reply", error_1.toString());
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3, 3];
+            case 3: return [2];
         }
     });
 }); });

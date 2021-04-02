@@ -39,7 +39,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//@ts-ignore
 var electron_1 = require("electron");
 var electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 var settingspage_1 = __importDefault(require("./settings-page/settingspage"));
@@ -52,22 +51,21 @@ var mod_list_loader_1 = require("./modules/remote_file_loader/mod_list_loader");
 var path_1 = __importDefault(require("path"));
 var os_1 = __importDefault(require("os"));
 var _config = require("./modules/config");
-// There are 6 levels of logging: error, warn, info, verbose, debug and silly
 var electron_log_1 = __importDefault(require("electron-log"));
+var quickplay_config_loader_1 = __importDefault(require("./modules/remote_file_loader/quickplay_config_loader"));
+var quickplay_1 = __importDefault(require("./modules/api/quickplay"));
 electron_log_1.default.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 electron_log_1.default.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 electron_log_1.default.transports.file.fileName = "main.log";
 electron_log_1.default.transports.file.maxSize = 10485760;
 electron_log_1.default.transports.file.getFile();
-//@ts-ignore
 global.log = electron_log_1.default;
 var majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
-var Main = /** @class */ (function () {
+var Main = (function () {
     function Main() {
     }
     Main.createWindow = function () {
         var _this = this;
-        //@ts-ignore
         var _a = electron_1.screen.getPrimaryDisplay().workAreaSize, width = _a.width, height = _a.height;
         this.screenWidth = width;
         this.screenHeight = height;
@@ -88,16 +86,11 @@ var Main = /** @class */ (function () {
                 darkTheme: true,
                 backgroundColor: "#2B2826"
             });
-            //@ts-ignore
             global.mainWindow = Main.mainWindow;
             Main.app = electron_1.app;
             if (!electron_is_dev_1.default)
                 Main.mainWindow.removeMenu();
-            //Lets load the config file.
             _config.GetConfig().then(function (c) {
-                //Make sure the config is loaded in.
-                // and load the index.html of the app.
-                //Also setup the mod manager.
                 _this.config = c;
                 try {
                     mod_manager_1.default.Setup().then(function () { return Main.mainWindow.loadFile(path_1.default.resolve(__dirname, "index.html")); });
@@ -160,6 +153,8 @@ exports.default = Main;
 electron_1.app.on("ready", function () {
     try {
         mod_list_loader_1.ModListLoader.instance.LoadLocalFile();
+        quickplay_config_loader_1.default.instance.LoadLocalFile();
+        Main.quickPlay = new quickplay_1.default();
         Main.createWindow();
         Main.getClientCurrentVersion();
         Main.autoUpdateCheckAndSettings();
@@ -179,15 +174,11 @@ electron_1.app.on("ready", function () {
     }
 });
 electron_1.app.on("activate", function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (electron_1.BrowserWindow.getAllWindows().length === 0) {
         Main.createWindow();
     }
 });
 electron_1.app.on("window-all-closed", function () {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
         electron_1.app.quit();
         electron_log_1.default.info("Launcher was closed.");
@@ -223,13 +214,13 @@ electron_1.ipcMain.on("restart_app", function () {
 electron_1.ipcMain.on("SettingsWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         settingspage_1.default.OpenWindow();
-        return [2 /*return*/];
+        return [2];
     });
 }); });
 electron_1.ipcMain.on("PatchNotesWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         patchnotespage_1.default.OpenWindow();
-        return [2 /*return*/];
+        return [2];
     });
 }); });
 electron_1.ipcMain.on("ServerListWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
@@ -249,18 +240,13 @@ electron_1.ipcMain.on("ServerListWindow", function (event, arg) { return __await
                 electron_log_1.default.error("There were no providers for the current mod! Did not open server list page.");
             }
         }
-        return [2 /*return*/];
+        return [2];
     });
 }); });
-// ipcMain.on("app_version", (event) => {
-//     event.sender.send("app_version", {
-//         version: app.getVersion()
-//     });
-// });
 electron_1.ipcMain.on("GetConfig", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         event.reply("GetConfig-Reply", Main.config);
-        return [2 /*return*/];
+        return [2];
     });
 }); });
 electron_1.ipcMain.on("SetCurrentMod", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
@@ -269,27 +255,27 @@ electron_1.ipcMain.on("SetCurrentMod", function (event, arg) { return __awaiter(
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, mod_manager_1.default.ChangeCurrentMod(arg)];
+                return [4, mod_manager_1.default.ChangeCurrentMod(arg)];
             case 1:
                 result = _a.sent();
                 event.reply("InstallButtonName-Reply", result);
-                return [3 /*break*/, 3];
+                return [3, 3];
             case 2:
                 error_1 = _a.sent();
                 event.reply("InstallButtonName-Reply", "Internal Error");
                 utilities_1.Utilities.ErrorDialog(electron_is_dev_1.default ? "Dev Error: " + error_1.toString() : "Failed to check if mod \"" + arg + "\" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.", "Mod Update Check Error");
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3, 3];
+            case 3: return [2];
         }
     });
 }); });
 electron_1.ipcMain.on("install-play-click", function (event, args) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, mod_manager_1.default.ModInstallPlayButtonClick()];
+            case 0: return [4, mod_manager_1.default.ModInstallPlayButtonClick()];
             case 1:
                 _a.sent();
-                return [2 /*return*/];
+                return [2];
         }
     });
 }); });
@@ -300,7 +286,7 @@ electron_1.ipcMain.on("Visit-Mod-Social", function (event, arg) { return __await
         if (socialLink != null && socialLink != "") {
             electron_1.shell.openExternal(socialLink);
         }
-        return [2 /*return*/];
+        return [2];
     });
 }); });
 electron_1.ipcMain.on("GetCurrentModVersion", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
@@ -316,7 +302,7 @@ electron_1.ipcMain.on("GetCurrentModVersion", function (event, arg) { return __a
             version = "?";
         }
         event.reply("GetCurrentModVersion-Reply", version);
-        return [2 /*return*/];
+        return [2];
     });
 }); });
 electron_1.ipcMain.on("Remove-Mod", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
@@ -332,18 +318,18 @@ electron_1.ipcMain.on("Remove-Mod", function (event, arg) { return __awaiter(voi
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if (!(button.response == 0)) return [3 /*break*/, 2];
+                            if (!(button.response == 0)) return [3, 2];
                             electron_log_1.default.info("Will start the mod removal process. User said yes.");
-                            return [4 /*yield*/, mod_manager_1.default.RemoveCurrentMod()];
+                            return [4, mod_manager_1.default.RemoveCurrentMod()];
                         case 1:
                             _a.sent();
                             _a.label = 2;
-                        case 2: return [2 /*return*/];
+                        case 2: return [2];
                     }
                 });
             }); });
         }
-        return [2 /*return*/];
+        return [2];
     });
 }); });
 electron_1.ipcMain.on("config-reload-tf2directory", function (event, steamdir) { return __awaiter(void 0, void 0, void 0, function () {
@@ -351,19 +337,19 @@ electron_1.ipcMain.on("config-reload-tf2directory", function (event, steamdir) {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(steamdir != "")) return [3 /*break*/, 2];
-                return [4 /*yield*/, _config.GetTF2Directory(steamdir)];
+                if (!(steamdir != "")) return [3, 2];
+                return [4, _config.GetTF2Directory(steamdir)];
             case 1:
                 tf2dir = _a.sent();
                 if (tf2dir && tf2dir != "")
                     Main.config.steam_directory = steamdir;
                 Main.config.tf2_directory = tf2dir;
                 event.reply("GetConfig-Reply", Main.config);
-                return [3 /*break*/, 3];
+                return [3, 3];
             case 2:
                 utilities_1.Utilities.ErrorDialog("A Steam installation directory is required! Please populate your Steam installation path to auto locate TF2.\ne.g. 'C:/Program Files (x86)/Steam'", "TF2 Locate Error");
                 _a.label = 3;
-            case 3: return [2 /*return*/];
+            case 3: return [2];
         }
     });
 }); });
@@ -374,11 +360,14 @@ electron_1.ipcMain.on("GetModData", function (event, args) { return __awaiter(vo
             electron_log_1.default.verbose("Latest mod list was sent to renderer");
             event.reply("ShowMods", mod_list_loader_1.ModListLoader.instance.GetFile());
         });
-        return [2 /*return*/];
+        return [2];
     });
 }); });
-//Quickplay
-//ipcMain.on("")
-// Run games: steam://run/[ID]
-// Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]
+electron_1.ipcMain.on("InitQuickplay", function (event, args) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        electron_log_1.default.verbose("Sending Quickplay config to renderer");
+        event.reply("quickplay-setup", quickplay_config_loader_1.default.instance.GetFile());
+        return [2];
+    });
+}); });
 //# sourceMappingURL=main.js.map

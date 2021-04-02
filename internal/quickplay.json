@@ -1,59 +1,80 @@
 {
     "version": 0.1,
-    "regions":[
-        "eu", "us", "br", "sg", "ru", "au"
-    ],
-    "region_names":{
-        "eu": "Europe", 
-        "us": "North America", 
-        "br": "BR",
-        "sg": "SG",
-        "ru": "Russia",
-        "au": "Australlia"
-    },
-    "maps": [
-        "cp_fulgur_rc2a",
-        "cp_glassworks_rc6a",
-        "cp_gorge",
-        "cp_gravelpit",
-        "cp_gullywash_f1a",
-        "cp_kalinka_rc6a",
-        "cp_mountainlab",
-        "cp_process_f7",
-        "cp_rumble_rc6",
-        "cp_snakewater_final1",
-        "cp_sunshine",
-        "cp_yukon_final",
-        "koth_ashville_rc2c",
-        "koth_bagel_rc3",
-        "koth_clearcut_b15c",
-        "koth_daenam_b10",
-        "koth_databank_rc2",
-        "koth_gibson_rc4",
-        "koth_harter_rc1",
-        "koth_harvestalpine_v3b",
-        "koth_king",
-        "koth_lakeside_final",
-        "koth_product_rcx",
-        "koth_ramjam_rc1",
-        "koth_slaughter_b2a",
-        "koth_spillway_rc3a",
-        "koth_synthetic_rc6a",
-        "pl_badwater_pro_v12",
-        "pl_barnblitz_pro6",
-        "pl_borneo",
-        "pl_fifthcurve_rc1",
-        "pl_pier",
-        "pl_sludgepit_final4",
-        "pl_stranded_rc5",
-        "pl_summercoast_rc8e",
-        "pl_swiftwater_final1",
-        "pl_thundermountain",
-        "pl_upward",
-        "pl_vigil_rc7",
-        "plr_bananabay"
-    ],
-    "missions": [
-
+    "quickplayTypes":[
+        {
+            "type": "casual",
+            "regions":[
+                "eu", "us", "br", "sg", "ru", "au"
+            ],
+            "region_names":{
+                "eu": "Europe", 
+                "us": "North America", 
+                "br": "BR",
+                "sg": "SG",
+                "ru": "Russia",
+                "au": "Australlia"
+            },
+            "map_categories": [
+                {
+                    "name": "Payload",
+                    "map_icon": "pl_upward",
+                    "maps":[
+                        "pl_badwater_pro_v12",
+                        "pl_barnblitz_pro6",
+                        "pl_borneo",
+                        "pl_fifthcurve_rc1",
+                        "pl_pier",
+                        "pl_sludgepit_final4",
+                        "pl_stranded_rc5",
+                        "pl_summercoast_rc8e",
+                        "pl_swiftwater_final1",
+                        "pl_thundermountain",
+                        "pl_upward",
+                        "pl_vigil_rc7",
+                        "plr_bananabay"
+                    ]
+                },
+                {
+                    "name": "Control Point",
+                    "map_icon": "cp_gorge",
+                    "maps": [
+                        "cp_fulgur_rc2a",
+                        "cp_glassworks_rc6a",
+                        "cp_gorge",
+                        "cp_gravelpit",
+                        "cp_gullywash_f1a",
+                        "cp_kalinka_rc6a",
+                        "cp_mountainlab",
+                        "cp_process_f7",
+                        "cp_rumble_rc6",
+                        "cp_snakewater_final1",
+                        "cp_sunshine",
+                        "cp_yukon_final"
+                    ]
+                },
+                {
+                    "name": "King of the Hill",
+                    "map_icon": "koth_harvestalpine_v3b",
+                    "maps": [
+                        "koth_ashville_rc2c",
+                        "koth_bagel_rc3",
+                        "koth_clearcut_b15c",
+                        "koth_daenam_b10",
+                        "koth_databank_rc2",
+                        "koth_gibson_rc4",
+                        "koth_harter_rc1",
+                        "koth_harvestalpine_v3b",
+                        "koth_king",
+                        "koth_lakeside_final",
+                        "koth_product_rcx",
+                        "koth_ramjam_rc1",
+                        "koth_slaughter_b2a",
+                        "koth_spillway_rc3a",
+                        "koth_synthetic_rc6a"
+                    ]
+                }
+            ],
+            "missions": null
+        }
     ]
 }

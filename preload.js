@@ -14,7 +14,8 @@ window.log.transports.file.getFile();
 window.log.info("Main Window Preload Began.");
 
 window.addEventListener("DOMContentLoaded", () => {
-    ipcRenderer.send("GetModData", "");
+    ipcRenderer.send("GetModData", null);
+    ipcRenderer.send("InitQuickplay", null);
 });
 
 ipcRenderer.on("ShowMods", (event, moddata) => {
