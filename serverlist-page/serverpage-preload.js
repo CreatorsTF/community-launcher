@@ -96,14 +96,14 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
 
                 serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
                 serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
-                serverDOMData.map.innerHTML = `<p>${server.map.toString().escape()}</p>`;
+                serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
 
                 let mapPic = document.createElement("div");
                 serverDOMData.map.appendChild(mapPic);
                 mapPic.className = "mapCover";
                 mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
 
-                serverDOMData.players.innerHTML = `<p>${server.online}/${server.maxplayers}</p>`;
+                serverDOMData.players.innerHTML = server.passworded ? "<p>??/??</p>" : `<p>${server.online}/${server.maxplayers}</p>`;
                 serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
 
                 if (server.is_down === false) {

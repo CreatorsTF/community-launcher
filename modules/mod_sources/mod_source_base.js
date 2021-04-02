@@ -1,10 +1,11 @@
-module.exports.ModInstallSource = class ModInstallSource {
-    data = {};
-    fileType = "UNKNOWN";
-
-    constructor(install_data){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ModInstallSource = /** @class */ (function () {
+    function ModInstallSource(install_data) {
+        this.fileType = "UNKNOWN";
         this.data = install_data;
     }
-    GetLatestVersionNumber(){};
-    GetFileURL(){};
-}
+    return ModInstallSource;
+}());
+exports.default = ModInstallSource;
+//# sourceMappingURL=mod_source_base.js.map
