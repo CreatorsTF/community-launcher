@@ -1,8 +1,9 @@
 import axios, { Method } from "axios";
-import path from "path";
-import { CreatorsAPICommand, HTTPRequestType } from "./CreatorsAPICommand";
+import { CreatorsAPICommand} from "./CreatorsAPICommand";
+import electronIsDev from "electron-is-dev";
+import ElectronLog from "electron-log";
 
-const apiEndpoint = "https://creators.tf/api";
+const apiEndpoint = "https://creators.tf/api/";
 
 class CreatorsAPIDispatcher
 {
@@ -10,25 +11,36 @@ class CreatorsAPIDispatcher
 
     async ExecuteCommand(command: CreatorsAPICommand<any>){
         try{
-            let resp = await axios.request(
-                {
-                    method: <Method><unknown>command.requestType.toString(),
-                    url: this.CreateRequestUrl(command)
-                });
-            let jsonObject = JSON.parse(resp.data.toString());
-            command.OnResponse(jsonObject);
+            let resp = await axios.request({
+                method: <Method>command.requestType,
+                url: this.CreateRequestUrl(command),
+                data: JSON.stringify(command.GetCommandParameters()),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            command.OnResponse(resp.data);
         }
         catch (e) {
-            command.OnFailure(e);
+            if(command.OnFailure != null && command.OnFailure != undefined){
+                if(electronIsDev){
+                    let error = <Error>e;
+                    ElectronLog.error(error.stack);
+                }
+                command.OnFailure(e);
+            }
+            else{
+                throw e;
+            }
         }
     }
 
     private CreateRequestUrl(command: CreatorsAPICommand<any>) : string{
-        let baseUri = path.join(apiEndpoint, command.endpoint);
+        let baseUri = apiEndpoint + command.endpoint;
 
-        if(command.hasArguments){
-            baseUri += this.MapToQueryString(command.GetCommandParameters());
-        }
+        //if(command.hasArguments){
+        //    baseUri += this.MapToQueryString(command.GetCommandParameters());
+        //}
 
         return baseUri;
     }
@@ -36,7 +48,9 @@ class CreatorsAPIDispatcher
     private MapToQueryString(map: Map<string, string>) : string{
         let queryStr = "?";
         for (const [key, value] of Object.entries(map)) {
-            queryStr += `${key}=${value}&`;
+            if(value != "" && value != undefined && value != null){
+                queryStr += `${key}=${value}&`;
+            }
         }
 
         return queryStr;

@@ -40,30 +40,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = __importDefault(require("axios"));
-var path_1 = __importDefault(require("path"));
-var apiEndpoint = "https://creators.tf/api";
+var electron_is_dev_1 = __importDefault(require("electron-is-dev"));
+var electron_log_1 = __importDefault(require("electron-log"));
+var apiEndpoint = "https://creators.tf/api/";
 var CreatorsAPIDispatcher = (function () {
     function CreatorsAPIDispatcher() {
     }
     CreatorsAPIDispatcher.prototype.ExecuteCommand = function (command) {
         return __awaiter(this, void 0, void 0, function () {
-            var resp, jsonObject, e_1;
+            var resp, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
                         return [4, axios_1.default.request({
-                                method: command.requestType.toString(),
-                                url: this.CreateRequestUrl(command)
+                                method: command.requestType,
+                                url: this.CreateRequestUrl(command),
+                                data: JSON.stringify(command.GetCommandParameters()),
+                                headers: {
+                                    "Content-Type": "application/json"
+                                }
                             })];
                     case 1:
                         resp = _a.sent();
-                        jsonObject = JSON.parse(resp.data.toString());
-                        command.OnResponse(jsonObject);
+                        command.OnResponse(resp.data);
                         return [3, 3];
                     case 2:
                         e_1 = _a.sent();
-                        command.OnFailure(e_1);
+                        if (command.OnFailure != null && command.OnFailure != undefined) {
+                            if (electron_is_dev_1.default) {
+                                electron_log_1.default.error(e_1.message);
+                            }
+                            command.OnFailure(e_1);
+                        }
+                        else {
+                            throw e_1;
+                        }
                         return [3, 3];
                     case 3: return [2];
                 }
@@ -71,17 +83,16 @@ var CreatorsAPIDispatcher = (function () {
         });
     };
     CreatorsAPIDispatcher.prototype.CreateRequestUrl = function (command) {
-        var baseUri = path_1.default.join(apiEndpoint, command.endpoint);
-        if (command.hasArguments) {
-            baseUri += this.MapToQueryString(command.GetCommandParameters());
-        }
+        var baseUri = apiEndpoint + command.endpoint;
         return baseUri;
     };
     CreatorsAPIDispatcher.prototype.MapToQueryString = function (map) {
         var queryStr = "?";
         for (var _i = 0, _a = Object.entries(map); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], value = _b[1];
-            queryStr += key + "=" + value + "&";
+            if (value != "" && value != undefined && value != null) {
+                queryStr += key + "=" + value + "&";
+            }
         }
         return queryStr;
     };

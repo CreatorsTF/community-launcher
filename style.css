@@ -36,6 +36,7 @@ body {
 }
 
 #quickplay h2 {
+    font-size: 18px;
     margin: 0px;
     margin-top: 10px;
     color: whitesmoke;
@@ -44,6 +45,7 @@ body {
 
 #quickplay h3 {
     margin: 0px;
+    font-size: 16px;
     margin-top: 10px;
     color: whitesmoke;
     stroke: #000;
@@ -81,7 +83,6 @@ body {
 .quickplay-toggle > .content
 {
     flex: auto;
-    transition: height 0.2s;
     height: auto;
     overflow: hidden;
     padding: 0px 5px;
@@ -89,12 +90,17 @@ body {
     flex-direction: column;
 }
 
-.maps .content
+.content
+{
+    transition: max-height 0.2s;
+}
+
+#maps .content
 {
     height: 240px;
 }
 
-.maps .content[aria-hidden="false"]
+#maps > .content[aria-hidden="false"]
 {
     overflow-y: scroll !important;
 }
@@ -114,7 +120,8 @@ body {
 }
 
 .content[aria-hidden="true"] {
-    height: 0 !important;
+    max-height: 0 !important;
+    flex: none;
 }
 
 #modlist-updating

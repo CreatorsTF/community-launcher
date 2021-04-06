@@ -1,15 +1,12 @@
 abstract class CreatorsAPICommand<Response>
 {
-    public requestType: HTTPRequestType;
+    public requestType: string;
     public endpoint: string;
     public hasArguments: boolean;
-    public OnResponse: (Response) => void;
+    public OnResponse: (response : Response) => void;
     public OnFailure: (any) => void;
 
-    abstract GetCommandParameters() : Map<string, string>;
-    abstract GetCommandBody(): string | undefined;
+    abstract GetCommandParameters() : any;
 }
 
-enum HTTPRequestType{ GET, POST, DELETE}
-
-export {CreatorsAPICommand, HTTPRequestType}
+export {CreatorsAPICommand}

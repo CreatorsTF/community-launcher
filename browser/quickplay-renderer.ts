@@ -1,6 +1,7 @@
 import type { IpcRenderer } from "electron";
-import type { ElectronLog } from "electron-log";
+import { create, ElectronLog } from "electron-log";
 import type { QuickPlayConfig, QuickPlayGameType } from "../modules/remote_file_loader/quickplay_config_loader";
+import type { CreateMatchCommandParams } from "../modules/api/quickplay/CreateMatchCommand";
 
 var ipcRenderer: IpcRenderer;
 var log: ElectronLog;
@@ -18,7 +19,7 @@ const missions = document.getElementById("missions");
 const missionsContent = missions.querySelector(".content");
 const types = <HTMLSelectElement>document.getElementById("quickplay-type");
 const region = <HTMLSelectElement>document.getElementById("quickplay-region");
-
+const searchButton = <HTMLButtonElement>document.getElementById("quickplay-search");
 var quickplayConfig: QuickPlayConfig;
 var quickplayTypes: Map<string, QuickPlayGameType>;
 var selectedMaps = new Array<string>();
@@ -41,13 +42,31 @@ ipcRenderer.on("quickplay-setup", (event : any, sentConfig : any) => {
 
     //Setup initally with the first element
     ShowOptionsForType(quickplayConfig.quickplayTypes[0]);
+    searchButton.addEventListener("click", Search);
 });
+
+ipcRenderer.on("quickplay-search-reply", (event, arg) => {
+    searchButton.innerText = "Searching...";
+    searchButton.disabled = true;
+});
+
+function Search(){
+    if(selectedMaps.length > 0) {
+        let createMatchArgs = <CreateMatchCommandParams>{};
+        createMatchArgs.maps = selectedMaps;
+        createMatchArgs.region = region.value;
+        createMatchArgs.missions = [];
+        createMatchArgs.region_locked = false;
+
+        ipcRenderer.send("quickplay-search", createMatchArgs);
+    }
+}
 
 function SetupToggle(toggle: Element) {
     // Get each trigger element
-    let btn = toggle.querySelector(":scope > .trigger");
+    let btn = toggle.children[0];//toggle.querySelector(":scope > .trigger");
     // Get content
-    let content = toggle.querySelector(":scope > .content");
+    let content = toggle.children[1];//toggle.querySelector(":scope > .content");
     btn.addEventListener("click", () => {
         btn.setAttribute("aria-expanded", btn.getAttribute("aria-expanded") === "false" ? "true" : "false");
         toggle.setAttribute(
@@ -146,5 +165,6 @@ function PopulateOptions(select: HTMLSelectElement, options: string[]){
 function NewOption(value: string): HTMLOptionElement {
     let newOption = <HTMLOptionElement>document.createElement("option");
     newOption.innerText = value;
+    newOption.value = value;
     return newOption;
 }

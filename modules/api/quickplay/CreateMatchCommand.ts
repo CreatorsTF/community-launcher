@@ -2,25 +2,26 @@ import { CreatorsAPICommand } from "../CreatorsAPICommand";
 
 class CreateMatchCommand extends CreatorsAPICommand<CreateMatchmakingQueryResponse>
 {
-    public endpoint = "/api/IMatchmaking/Match";
+    public endpoint = "IMatchmaking/Match";
+    public requestType = "POST";
+    public hasArguments = true;
 
-    private paramMap: Map<string, string>;
+    private paramMap: any;
 
     constructor(args: CreateMatchCommandParams) {
         super();
-        this.paramMap = new Map<string, string>();
+        this.paramMap = {};
         this.paramMap["region"] = args.region;
-        this.paramMap["missions"] = args.missions.join(",");
+        
+        if(args.missions.length > 0)
+            this.paramMap["missions"] = args.missions.join(",");
+
         this.paramMap["maps"] = args.maps.join(",");
-        this.paramMap["region_locked"] = args.region_locked.toString();
+        this.paramMap["region_locked"] = args.region_locked;
     }
 
-    GetCommandParameters(): Map<string, string> {
+    GetCommandParameters() : any {
         return this.paramMap;
-    }
-
-    GetCommandBody(): string | undefined {
-        return undefined;
     }
 }
 

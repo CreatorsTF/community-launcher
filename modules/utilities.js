@@ -18,7 +18,7 @@ var Utilities = (function () {
     function Utilities() {
     }
     Utilities.ErrorDialog = function (error, title) {
-        global.log.error("Error Dialog shown: " + title + " : " + error.toString());
+        electron_log_1.default.error("Error Dialog shown: " + title + " : " + error.toString());
         electron_1.dialog.showMessageBox(global.mainWindow, {
             type: "error",
             title: title,

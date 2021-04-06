@@ -24,15 +24,29 @@ ipcRenderer.on("quickplay-setup", function (event, sentConfig) {
         quickplayTypes.set(type.type, type);
         types.appendChild(NewOption(type.type));
     }
-    ShowOptionsForType(quickplayConfig.quickplayTypes[0]);
     SetupToggle(quickplay);
     quickplay.querySelectorAll(".quickplay-toggle").forEach(function (element) {
         SetupToggle(element);
     });
+    ShowOptionsForType(quickplayConfig.quickplayTypes[0]);
+    document.getElementById("quickplay-search").addEventListener("click", Search);
 });
+ipcRenderer.on("quickplay-search-reply", function (event, arg) {
+    log.log("Got search reply: " + JSON.stringify(arg));
+});
+function Search() {
+    if (selectedMaps.length > 0) {
+        var createMatchArgs = {};
+        createMatchArgs.maps = selectedMaps;
+        createMatchArgs.region = region.value;
+        createMatchArgs.missions = [];
+        createMatchArgs.region_locked = false;
+        ipcRenderer.send("quickplay-search", createMatchArgs);
+    }
+}
 function SetupToggle(toggle) {
-    var btn = toggle.querySelector(":scope > .trigger");
-    var content = toggle.querySelector(":scope > .content");
+    var btn = toggle.children[0];
+    var content = toggle.children[1];
     btn.addEventListener("click", function () {
         btn.setAttribute("aria-expanded", btn.getAttribute("aria-expanded") === "false" ? "true" : "false");
         toggle.setAttribute("data-drawer-showing", toggle.getAttribute("data-drawer-showing") === "true" ? "false" : "true");
@@ -114,6 +128,7 @@ function PopulateOptions(select, options) {
 function NewOption(value) {
     var newOption = document.createElement("option");
     newOption.innerText = value;
+    newOption.value = value;
     return newOption;
 }
 export {};

@@ -363,11 +363,4 @@ electron_1.ipcMain.on("GetModData", function (event, args) { return __awaiter(vo
         return [2];
     });
 }); });
-electron_1.ipcMain.on("InitQuickplay", function (event, args) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        electron_log_1.default.verbose("Sending Quickplay config to renderer");
-        event.reply("quickplay-setup", quickplay_config_loader_1.default.instance.GetFile());
-        return [2];
-    });
-}); });
 //# sourceMappingURL=main.js.map

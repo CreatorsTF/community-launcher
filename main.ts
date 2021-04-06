@@ -314,13 +314,5 @@ ipcMain.on("GetModData", async (event, args) => {
     });
 });
 
-ipcMain.on("InitQuickplay", async (event, args) => {
-    log.verbose("Sending Quickplay config to renderer");
-    event.reply("quickplay-setup", QuickPlayConfigLoader.instance.GetFile());
-});
-
-//Quickplay
-//ipcMain.on("")
-
 // Run games: steam://run/[ID]
 // Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]

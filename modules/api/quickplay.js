@@ -41,6 +41,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var CreatorsAPIDispatcher_1 = __importDefault(require("./CreatorsAPIDispatcher"));
 var CreateMatchCommand_1 = require("./quickplay/CreateMatchCommand");
+var quickplay_config_loader_1 = __importDefault(require("../remote_file_loader/quickplay_config_loader"));
+var electron_1 = require("electron");
+var electron_log_1 = __importDefault(require("electron-log"));
+var utilities_1 = require("../../modules/utilities");
+var electron_is_dev_1 = __importDefault(require("electron-is-dev"));
 var MM_QUERY_STATUS_INITITATED = 0;
 var MM_QUERY_STATUS_FINDING_SERVERS = 1;
 var MM_QUERY_STATUS_CHANGING_MAPS = 2;
@@ -49,15 +54,49 @@ var MM_QUERY_STATUS_CANCELLED = 4;
 var MM_QUERY_STATUS_FINISHED = 5;
 var Quickplay = (function () {
     function Quickplay() {
+        var _this = this;
+        electron_1.ipcMain.on("InitQuickplay", function (event, args) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                electron_log_1.default.verbose("Sending Quickplay config to renderer");
+                event.reply("quickplay-setup", quickplay_config_loader_1.default.instance.GetFile());
+                return [2];
+            });
+        }); });
+        electron_1.ipcMain.on("quickplay-search", function (event, arg) {
+            _this.Search(event, arg);
+        });
     }
+    Quickplay.prototype.Search = function (event, arg) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, resp, e_1, error;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        electron_log_1.default.log("Starting quickplay search...");
+                        params = arg;
+                        return [4, this.CreateNewMatch(params)];
+                    case 1:
+                        resp = _a.sent();
+                        event.reply("quickplay-search-reply", resp);
+                        return [3, 3];
+                    case 2:
+                        e_1 = _a.sent();
+                        error = electron_is_dev_1.default ? e_1.toString() : "Failed to start a quickplay search";
+                        utilities_1.Utilities.ErrorDialog(error, "Quickplay Error");
+                        return [3, 3];
+                    case 3: return [2];
+                }
+            });
+        });
+    };
     Quickplay.prototype.CreateNewMatch = function (params) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2, new Promise(function (resp, rej) {
                         var matchCmd = new CreateMatchCommand_1.CreateMatchCommand(params);
-                        matchCmd.OnResponse = function (response) {
-                            resp(response);
-                        };
+                        matchCmd.OnResponse = resp;
+                        matchCmd.OnFailure = rej;
                         CreatorsAPIDispatcher_1.default.instance.ExecuteCommand(matchCmd);
                     })];
             });

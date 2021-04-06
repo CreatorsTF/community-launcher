@@ -19,12 +19,15 @@ var CreateMatchCommand = (function (_super) {
     __extends(CreateMatchCommand, _super);
     function CreateMatchCommand(args) {
         var _this = _super.call(this) || this;
-        _this.endpoint = "/api/IMatchmaking/Match";
-        _this.paramMap = new Map();
+        _this.endpoint = "IMatchmaking/Match";
+        _this.requestType = "POST";
+        _this.hasArguments = true;
+        _this.paramMap = {};
         _this.paramMap["region"] = args.region;
-        _this.paramMap["missions"] = args.missions.join(",");
+        if (args.missions.length > 0)
+            _this.paramMap["missions"] = args.missions.join(",");
         _this.paramMap["maps"] = args.maps.join(",");
-        _this.paramMap["region_locked"] = args.region_locked.toString();
+        _this.paramMap["region_locked"] = args.region_locked;
         return _this;
     }
     CreateMatchCommand.prototype.GetCommandParameters = function () {

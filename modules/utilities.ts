@@ -4,7 +4,7 @@ import process from "process";
 import path from "path";
 const ProgressBar = require('electron-progressbar');
 const {app} = require("electron");
-import log from "electron-log";
+import ElectronLog from "electron-log";
 
 const loadingTextStyle = {
     color: "ghostwhite"
@@ -19,7 +19,7 @@ class Utilities {
      */
     static ErrorDialog(error : any, title : string){
         //@ts-ignore
-        global.log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
+        ElectronLog.error(`Error Dialog shown: ${title} : ${error.toString()}`);
         //@ts-ignore
         dialog.showMessageBox(global.mainWindow, {
             type: "error",
@@ -41,7 +41,7 @@ class Utilities {
     }
 
     static GetLogsFolder() : string {
-        return log.transports.file.getFile().path;
+        return ElectronLog.transports.file.getFile().path;
     }
 
 
