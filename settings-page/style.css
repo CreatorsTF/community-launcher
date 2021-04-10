@@ -70,6 +70,12 @@ p {
     margin: 5px 0px;
 }
 
+.subtitle
+{
+    font-size: 15px;
+    font-style: italic;
+}
+
 button {
     padding: 5px;
     border-radius: 5px;
