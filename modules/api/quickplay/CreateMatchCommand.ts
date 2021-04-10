@@ -4,7 +4,6 @@ class CreateMatchCommand extends CreatorsAPICommand<CreateMatchmakingQueryRespon
 {
     public endpoint = "IMatchmaking/Match";
     public requestType = "POST";
-    public hasArguments = true;
 
     private paramMap: any;
 
@@ -21,7 +20,11 @@ class CreateMatchCommand extends CreatorsAPICommand<CreateMatchmakingQueryRespon
     }
 
     GetCommandParameters() : any {
-        return this.paramMap;
+        return null;
+    }
+
+    GetCommandBody() : string {
+        return JSON.stringify(this.paramMap);
     }
 }
 

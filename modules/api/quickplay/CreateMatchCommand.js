@@ -21,7 +21,6 @@ var CreateMatchCommand = (function (_super) {
         var _this = _super.call(this) || this;
         _this.endpoint = "IMatchmaking/Match";
         _this.requestType = "POST";
-        _this.hasArguments = true;
         _this.paramMap = {};
         _this.paramMap["region"] = args.region;
         if (args.missions.length > 0)
@@ -31,10 +30,10 @@ var CreateMatchCommand = (function (_super) {
         return _this;
     }
     CreateMatchCommand.prototype.GetCommandParameters = function () {
-        return this.paramMap;
+        return null;
     };
     CreateMatchCommand.prototype.GetCommandBody = function () {
-        return undefined;
+        return JSON.stringify(this.paramMap);
     };
     return CreateMatchCommand;
 }(CreatorsAPICommand_1.CreatorsAPICommand));

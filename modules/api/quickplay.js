@@ -46,12 +46,13 @@ var electron_1 = require("electron");
 var electron_log_1 = __importDefault(require("electron-log"));
 var utilities_1 = require("../../modules/utilities");
 var electron_is_dev_1 = __importDefault(require("electron-is-dev"));
-var MM_QUERY_STATUS_INITITATED = 0;
-var MM_QUERY_STATUS_FINDING_SERVERS = 1;
-var MM_QUERY_STATUS_CHANGING_MAPS = 2;
-var MM_QUERY_STATUS_FAILED = 3;
-var MM_QUERY_STATUS_CANCELLED = 4;
-var MM_QUERY_STATUS_FINISHED = 5;
+var MatchStatusCommand_1 = require("./quickplay/MatchStatusCommand");
+var STATUS_INITITATED = 0;
+var STATUS_FINDING_SERVERS = 1;
+var STATUS_CHANGING_MAPS = 2;
+var STATUS_FAILED = 3;
+var STATUS_CANCELLED = 4;
+var STATUS_FINISHED = 5;
 var Quickplay = (function () {
     function Quickplay() {
         var _this = this;
@@ -63,6 +64,7 @@ var Quickplay = (function () {
             });
         }); });
         electron_1.ipcMain.on("quickplay-search", function (event, arg) {
+            _this.currentMatchId = null;
             _this.Search(event, arg);
         });
     }
@@ -72,20 +74,80 @@ var Quickplay = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
+                        _a.trys.push([0, 3, , 4]);
                         electron_log_1.default.log("Starting quickplay search...");
                         params = arg;
                         return [4, this.CreateNewMatch(params)];
                     case 1:
                         resp = _a.sent();
-                        event.reply("quickplay-search-reply", resp);
-                        return [3, 3];
+                        if (resp.result == "SUCCESS") {
+                            this.currentMatchId = resp.match_id;
+                            event.reply("quickplay-search-reply");
+                        }
+                        return [4, this.WaitForMatchResult(this.currentMatchId, event)];
                     case 2:
+                        _a.sent();
+                        return [3, 4];
+                    case 3:
                         e_1 = _a.sent();
                         error = electron_is_dev_1.default ? e_1.toString() : "Failed to start a quickplay search";
                         utilities_1.Utilities.ErrorDialog(error, "Quickplay Error");
-                        return [3, 3];
-                    case 3: return [2];
+                        return [3, 4];
+                    case 4: return [2];
+                }
+            });
+        });
+    };
+    Quickplay.prototype.WaitForMatchResult = function (matchId, event) {
+        return __awaiter(this, void 0, void 0, function () {
+            var status;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.GetEndMatchStatus(matchId)];
+                    case 1:
+                        status = _a.sent();
+                        if (status.status == STATUS_FINISHED) {
+                            event.reply("quickplay-search-success", status);
+                        }
+                        else {
+                            event.reply("quickplay-search-fail", null);
+                        }
+                        return [2];
+                }
+            });
+        });
+    };
+    Quickplay.prototype.GetEndMatchStatus = function (matchId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var resp, statusCommand, _resp;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        resp = null;
+                        _a.label = 1;
+                    case 1:
+                        if (!(resp == null)) return [3, 3];
+                        electron_log_1.default.verbose("Starting new MatchStatusCommand");
+                        statusCommand = new MatchStatusCommand_1.MatchStatusCommand(matchId);
+                        return [4, CreatorsAPIDispatcher_1.default.instance.ExecuteCommandAsync(statusCommand)];
+                    case 2:
+                        _resp = _a.sent();
+                        switch (_resp.status) {
+                            case STATUS_FINDING_SERVERS:
+                            case STATUS_CHANGING_MAPS:
+                            case STATUS_INITITATED:
+                                electron_log_1.default.verbose("Retrying MatchStatusCommand");
+                                resp = null;
+                                break;
+                            case STATUS_FINISHED:
+                            case STATUS_FAILED:
+                            case STATUS_CANCELLED:
+                                electron_log_1.default.verbose("Finished MatchStatusCommand, got FINISHED or FAILED");
+                                resp = _resp;
+                                break;
+                        }
+                        return [3, 1];
+                    case 3: return [2, resp];
                 }
             });
         });
@@ -103,16 +165,6 @@ var Quickplay = (function () {
         });
     };
     return Quickplay;
-}());
-var MatchmaingStatusQueryResponse = (function () {
-    function MatchmaingStatusQueryResponse() {
-    }
-    return MatchmaingStatusQueryResponse;
-}());
-var MatchmakingStatusServer = (function () {
-    function MatchmakingStatusServer() {
-    }
-    return MatchmakingStatusServer;
 }());
 exports.default = Quickplay;
 //# sourceMappingURL=quickplay.js.map

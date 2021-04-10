@@ -4,7 +4,6 @@ class MatchStatusCommand extends CreatorsAPICommand<MatchStatusResponse>
 {
     public endpoint = "IMatchmaking/Match";
     public requestType = "GET";
-    public hasArguments = true;
 
     private paramMap: any;
 
@@ -16,6 +15,10 @@ class MatchStatusCommand extends CreatorsAPICommand<MatchStatusResponse>
 
     GetCommandParameters() : any {
         return this.paramMap;
+    }
+
+    GetCommandBody() {
+        return null;
     }
 }
 

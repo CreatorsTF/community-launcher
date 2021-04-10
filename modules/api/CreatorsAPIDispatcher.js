@@ -48,7 +48,7 @@ var CreatorsAPIDispatcher = (function () {
     }
     CreatorsAPIDispatcher.prototype.ExecuteCommand = function (command) {
         return __awaiter(this, void 0, void 0, function () {
-            var resp, e_1;
+            var resp, e_1, error;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -56,7 +56,8 @@ var CreatorsAPIDispatcher = (function () {
                         return [4, axios_1.default.request({
                                 method: command.requestType,
                                 url: this.CreateRequestUrl(command),
-                                data: JSON.stringify(command.GetCommandParameters()),
+                                data: command.GetCommandBody(),
+                                params: command.GetCommandParameters(),
                                 headers: {
                                     "Content-Type": "application/json"
                                 }
@@ -69,7 +70,8 @@ var CreatorsAPIDispatcher = (function () {
                         e_1 = _a.sent();
                         if (command.OnFailure != null && command.OnFailure != undefined) {
                             if (electron_is_dev_1.default) {
-                                electron_log_1.default.error(e_1.message);
+                                error = e_1;
+                                electron_log_1.default.error(error.stack);
                             }
                             command.OnFailure(e_1);
                         }
@@ -77,6 +79,37 @@ var CreatorsAPIDispatcher = (function () {
                             throw e_1;
                         }
                         return [3, 3];
+                    case 3: return [2];
+                }
+            });
+        });
+    };
+    CreatorsAPIDispatcher.prototype.ExecuteCommandAsync = function (command) {
+        return __awaiter(this, void 0, void 0, function () {
+            var resp, e_2, error;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4, axios_1.default.request({
+                                method: command.requestType,
+                                url: this.CreateRequestUrl(command),
+                                data: command.GetCommandBody(),
+                                params: command.GetCommandParameters(),
+                                headers: {
+                                    "Content-Type": "application/json"
+                                }
+                            })];
+                    case 1:
+                        resp = _a.sent();
+                        return [2, resp.data];
+                    case 2:
+                        e_2 = _a.sent();
+                        if (electron_is_dev_1.default) {
+                            error = e_2;
+                            electron_log_1.default.error(error.stack);
+                        }
+                        throw e_2;
                     case 3: return [2];
                 }
             });

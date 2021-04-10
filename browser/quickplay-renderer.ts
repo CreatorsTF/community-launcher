@@ -2,6 +2,7 @@ import type { IpcRenderer } from "electron";
 import { create, ElectronLog } from "electron-log";
 import type { QuickPlayConfig, QuickPlayGameType } from "../modules/remote_file_loader/quickplay_config_loader";
 import type { CreateMatchCommandParams } from "../modules/api/quickplay/CreateMatchCommand";
+import type { MatchStatusResponse, MatchmakingStatusServer } from "../modules/api/quickplay/MatchStatusCommand";
 
 var ipcRenderer: IpcRenderer;
 var log: ElectronLog;
@@ -20,6 +21,7 @@ const missionsContent = missions.querySelector(".content");
 const types = <HTMLSelectElement>document.getElementById("quickplay-type");
 const region = <HTMLSelectElement>document.getElementById("quickplay-region");
 const searchButton = <HTMLButtonElement>document.getElementById("quickplay-search");
+const quickplayResult = document.getElementById("quickplay-result");
 var quickplayConfig: QuickPlayConfig;
 var quickplayTypes: Map<string, QuickPlayGameType>;
 var selectedMaps = new Array<string>();
@@ -50,6 +52,21 @@ ipcRenderer.on("quickplay-search-reply", (event, arg) => {
     searchButton.disabled = true;
 });
 
+ipcRenderer.on("quickplay-search-success", (event, arg) => {
+    searchButton.innerText = "Search";
+    searchButton.disabled = false;
+    let results = <MatchStatusResponse>arg;
+    //Display server with best result
+    ShowSerchResults(results.servers);
+});
+
+ipcRenderer.on("quickplay-search-fail", (event, arg) => {
+    searchButton.innerText = "Search";
+    searchButton.disabled = false;
+
+    log.error("Got search failed result back");
+});
+
 function Search(){
     if(selectedMaps.length > 0) {
         let createMatchArgs = <CreateMatchCommandParams>{};
@@ -60,6 +77,10 @@ function Search(){
 
         ipcRenderer.send("quickplay-search", createMatchArgs);
     }
+}
+
+function ShowSerchResults(servers : MatchmakingStatusServer[]){
+
 }
 
 function SetupToggle(toggle: Element) {

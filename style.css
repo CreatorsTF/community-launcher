@@ -90,6 +90,15 @@ body {
     flex-direction: column;
 }
 
+#quickplay-result
+{
+    flex: initial;
+    height: 150px;
+    text-align: center;
+    padding-top: 5px;
+    display: none;
+}
+
 .content
 {
     transition: max-height 0.2s;

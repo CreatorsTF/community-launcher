@@ -14,7 +14,8 @@ class CreatorsAPIDispatcher
             let resp = await axios.request({
                 method: <Method>command.requestType,
                 url: this.CreateRequestUrl(command),
-                data: JSON.stringify(command.GetCommandParameters()),
+                data: command.GetCommandBody(),
+                params: command.GetCommandParameters(),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -35,13 +36,30 @@ class CreatorsAPIDispatcher
         }
     }
 
+    async ExecuteCommandAsync<T>(command: CreatorsAPICommand<T>) : Promise<T>{
+        try{
+            let resp = await axios.request({
+                method: <Method>command.requestType,
+                url: this.CreateRequestUrl(command),
+                data: command.GetCommandBody(),
+                params: command.GetCommandParameters(),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            return <T>resp.data;
+        }
+        catch (e) {
+            if(electronIsDev){
+                let error = <Error>e;
+                ElectronLog.error(error.stack);
+            }
+            throw e;
+        }
+    }
+
     private CreateRequestUrl(command: CreatorsAPICommand<any>) : string{
         let baseUri = apiEndpoint + command.endpoint;
-
-        //if(command.hasArguments){
-        //    baseUri += this.MapToQueryString(command.GetCommandParameters());
-        //}
-
         return baseUri;
     }
 

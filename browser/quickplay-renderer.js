@@ -12,6 +12,7 @@ var missions = document.getElementById("missions");
 var missionsContent = missions.querySelector(".content");
 var types = document.getElementById("quickplay-type");
 var region = document.getElementById("quickplay-region");
+var searchButton = document.getElementById("quickplay-search");
 var quickplayConfig;
 var quickplayTypes;
 var selectedMaps = new Array();
@@ -29,10 +30,23 @@ ipcRenderer.on("quickplay-setup", function (event, sentConfig) {
         SetupToggle(element);
     });
     ShowOptionsForType(quickplayConfig.quickplayTypes[0]);
-    document.getElementById("quickplay-search").addEventListener("click", Search);
+    searchButton.addEventListener("click", Search);
 });
 ipcRenderer.on("quickplay-search-reply", function (event, arg) {
-    log.log("Got search reply: " + JSON.stringify(arg));
+    searchButton.innerText = "Searching...";
+    searchButton.disabled = true;
+});
+ipcRenderer.on("quickplay-search-success", function (event, arg) {
+    searchButton.innerText = "Search";
+    searchButton.disabled = false;
+    var results = arg;
+    log.log("Got a server result!");
+    log.log(JSON.stringify(results));
+});
+ipcRenderer.on("quickplay-search-fail", function (event, arg) {
+    searchButton.innerText = "Search";
+    searchButton.disabled = false;
+    log.error("Got search failed result back");
 });
 function Search() {
     if (selectedMaps.length > 0) {
