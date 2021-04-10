@@ -1,14 +1,15 @@
 const { BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const config = require("../modules/config");
-const path = global.path;
+const path = require("path");
 const {ModListLoader} = require("../modules/mod_list_loader");
 const {Utilities} = require("../modules/utilities");
+const isDev = require("electron-is-dev");
 
 var settingsWindow;
 var waitingForSettings = true;
 
 module.exports.OpenWindow = OpenWindow;
-function OpenWindow() {
+function OpenWindow(screenWidth, screenHeight, configObject) {
     global.log.info("Loading Settings window...");
     settingsWindow = new BrowserWindow({
         parent: global.mainWindow,
@@ -42,7 +43,7 @@ function OpenWindow() {
             //We can trigger this ourselves hence we need this.
             if (waitingForSettings) {
                 global.log.info("Settings window is going to be closed!");
-                settingsWindow.webContents.send("GetNewSettings", global.config);
+                settingsWindow.webContents.send("GetNewSettings", configObject);
 
                 //We need to prevent the close for us to save the new settings.
                 //Once that is done, THEN we close it ourselves.
@@ -56,11 +57,10 @@ function OpenWindow() {
             //Apply the new settings to the config.
             //The data we get is from the settings window, from the rendering process.
 
-            let c = global.config;
+            let c = configObject;
             c.tf2_directory = arg.tf2_directory;
             c.steam_directory = arg.steam_directory;
             await config.SaveConfig(c);
-            global.config = c;
 
             waitingForSettings = false;
 

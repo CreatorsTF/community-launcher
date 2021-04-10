@@ -200,10 +200,10 @@ ipcMain.on("restart_app", () => {
 });
 
 ipcMain.on("SettingsWindow", async (event, arg) => {
-    settingsPage.OpenWindow();
+    settingsPage.OpenWindow(Main.screenWidth, Main.screenHeight, Main.config);
 });
 ipcMain.on("PatchNotesWindow", async (event, arg) => {
-    patchnotesPage.OpenWindow();
+    patchnotesPage.OpenWindow(Main.screenWidth, Main.screenHeight);
 });
 ipcMain.on("ServerListWindow", async (event, arg) => {
     //Get the mod list data so we can get the server providers for the current mod.
