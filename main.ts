@@ -4,7 +4,7 @@ import isDev from "electron-is-dev";
 import settingsPage from "./settings-page/settingspage";
 import patchnotesPage from "./patchnotes-page/patchnotespage";
 import { ServerListPage } from "./serverlist-page/serverlistpage";
-import mod_manager from "./modules/mod_manager";
+import { modManager, State } from "./modules/mod_manager";
 import { autoUpdater } from "electron-updater";
 import { Utilities } from "./modules/utilities";
 import { ModListLoader, ModList } from "./modules/mod_list_loader";
@@ -40,8 +40,8 @@ class Main {
             Main.mainWindow = new BrowserWindow({
                 minWidth: 960,
                 minHeight: 540,
-                width: this.screenWidth-200,
-                height: this.screenHeight-150,
+                width: this.screenWidth - 200,
+                height: this.screenHeight - 150,
                 webPreferences: {
                     preload: path.join(__dirname, "preload.js"),
                     nodeIntegration: false
@@ -65,11 +65,11 @@ class Main {
                 //Also setup the mod manager.
                 this.config = c;
                 try {
-                    mod_manager.Setup().then(
+                    modManager.Setup().then(
                         () => Main.mainWindow.loadFile(path.resolve(__dirname, "index.html"))
                     );
                 }
-                catch(e) {
+                catch (e) {
                     log.error(e.toString());
                     dialog.showMessageBox({
                         type: "error",
@@ -81,19 +81,19 @@ class Main {
                     });
                 }
             })
-            .catch((e) => {
-                log.error(e.toString());
-                dialog.showMessageBox({
-                    type: "error",
-                    title: "Startup Error - Config Load",
-                    message: e.toString() + majorErrorMessageEnd,
-                    buttons: ["OK"]
-                }).then((button) => {
-                    app.quit();
+                .catch((e) => {
+                    log.error(e.toString());
+                    dialog.showMessageBox({
+                        type: "error",
+                        title: "Startup Error - Config Load",
+                        message: e.toString() + majorErrorMessageEnd,
+                        buttons: ["OK"]
+                    }).then((button) => {
+                        app.quit();
+                    });
                 });
-            });
         }
-        catch(majorE) {
+        catch (majorE) {
             log.error(majorE.toString());
             dialog.showMessageBox({
                 type: "error",
@@ -127,7 +127,7 @@ class Main {
 export default Main;
 
 app.on("ready", () => {
-    try{
+    try {
         ModListLoader.LoadLocalModList();
         Main.createWindow();
         Main.getClientCurrentVersion();
@@ -135,7 +135,7 @@ app.on("ready", () => {
         Main.logDeviceInfo();
         log.info("Launcher was opened/finished initialization.");
     }
-    catch(error) {
+    catch (error) {
         log.error(error.toString());
         dialog.showMessageBox({
             type: "error",
@@ -148,7 +148,7 @@ app.on("ready", () => {
     }
 });
 
-app.on("activate", function() {
+app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -156,7 +156,7 @@ app.on("activate", function() {
     }
 });
 
-app.on("window-all-closed", function() {
+app.on("window-all-closed", function () {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
@@ -213,10 +213,10 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
     var realModList = new ModList();
     Object.assign(realModList, modList);
 
-    var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
-    if(providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, providers);
-    else{
-        if (isDev){
+    var providers = realModList.GetMod(modManager.currentModData.name).serverlistproviders;
+    if (providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, providers);
+    else {
+        if (isDev) {
             Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
         }
         else {
@@ -235,31 +235,45 @@ ipcMain.on("GetConfig", async (event, arg) => {
     event.reply("GetConfig-Reply", Main.config);
 });
 
-ipcMain.on("SetCurrentMod", async (event, arg) => {    
+ipcMain.on("SetCurrentMod", async (event, arg) => {
     try {
-        const result = await mod_manager.ChangeCurrentMod(arg);
-        event.reply("InstallButtonName-Reply", result);
+        await modManager.ChangeCurrentMod(arg);
+        var buttonText = "";
+        switch (modManager.currentModState) {
+            case State.Installed:
+                buttonText = "Installed";
+                break;
+            case State.NotInstalled:
+                buttonText = "Install";
+                break;
+            case State.Update:
+                buttonText = "Update";
+                break;
+            default:
+                throw new Error("Unsupported mod state");
+        }
+        event.reply("InstallButtonName-Reply", buttonText);
     } catch (error) {
         event.reply("InstallButtonName-Reply", "Internal Error");
-            Utilities.ErrorDialog(isDev ? `Dev Error: ${error.toString()}` : `Failed to check if mod "${arg}" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.`, "Mod Update Check Error");
+        Utilities.ErrorDialog(isDev ? `Dev Error: ${error.toString()}` : `Failed to check if mod "${arg}" has updates. Its website may be down. Try again later.\nIf the error persists, please report it on our Discord.`, "Mod Update Check Error");
     }
 });
 
 ipcMain.on("install-play-click", async (event, args) => {
-    await mod_manager.ModInstallPlayButtonClick();
+    await modManager.ModInstallPlayButtonClick();
 });
 
-ipcMain.on("Visit-Mod-Social", async(event, arg) => {
-    let socialLink = mod_manager.currentModData[arg];
+ipcMain.on("Visit-Mod-Social", async (event, arg) => {
+    let socialLink = modManager.currentModData[arg];
     if (socialLink != null && socialLink != "") {
         shell.openExternal(socialLink);
     }
 });
 
-ipcMain.on("GetCurrentModVersion", async(event, arg) => {
+ipcMain.on("GetCurrentModVersion", async (event, arg) => {
     let version;
     try {
-        version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
+        version = modManager.GetCurrentModVersionFromConfig(modManager.currentModData.name);
         if (version == null) {
             version = "?";
         }
@@ -270,30 +284,30 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     event.reply("GetCurrentModVersion-Reply", version);
 });
 
-ipcMain.on("Remove-Mod", async(event, arg) => {
-    if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
+ipcMain.on("Remove-Mod", async (event, arg) => {
+    if (modManager.currentModData != null && (modManager.currentModState != State.NotInstalled)) {
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
             title: "Remove Mod",
-            message: `Would you like to uninstall the mod ${mod_manager.currentModData.name}?`,
+            message: `Would you like to uninstall the mod ${modManager.currentModData.name}?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
         }).then(async (button) => {
             if (button.response == 0) {
                 log.info("Will start the mod removal process. User said yes.");
-                await mod_manager.RemoveCurrentMod();
+                await modManager.RemoveCurrentMod();
             }
         });
     }
 });
 
 ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
-    if(steamdir != ""){
+    if (steamdir != "") {
         const tf2dir = await _config.GetTF2Directory(steamdir);
         if (tf2dir && tf2dir != "")
             Main.config.steam_directory = steamdir;
-            Main.config.tf2_directory = tf2dir;
-    
+        Main.config.tf2_directory = tf2dir;
+
         event.reply("GetConfig-Reply", Main.config);
     }
     else {
