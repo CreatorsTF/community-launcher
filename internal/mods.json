@@ -30,6 +30,33 @@
             }
         },
         {
+            "name": "Digital Directive MVM",
+            "blurb": "Mann vs. Machine missions assets",
+            "icon": "https://creators.tf/cdn/assets/images/tf2_square_event_mvm.png",
+            "titleimage": "https://fastdl.creators.tf/launcher/assets/mvm_event_logo.png",
+            "backgroundimage": "https://fastdl.creators.tf/launcher/assets/dd_mvm.png",
+            "bordercolor": "red",
+            "backgroundposX": "center",
+            "backgroundposY": "top",
+            "website": "https://creators.tf/campaign/digitaldirective",
+            "github": "",
+            "twitter": "https://creators.tf/twitter",
+            "instagram": "https://creators.tf/instagram",
+            "discord": "https://creators.tf/discord",
+            "serverlist": "yes",
+            "serverlistproviders": [15],
+            "modid": "",
+            "contenttext": "Contains only the necessary assets that are required to be able to play the Mann vs. Machine missions from the Digital Directive event.",
+            "install": {
+                "type": "jsonlist",
+                "get_url": "https://fastdl.creators.tf/launcher/digitaldirective.json",
+                "cloudflarebypass": true,
+                "targetdirectory": "{tf2_dir}/tf/download/",
+                "version_property_name": "Version",
+                "install_url_property_name": "DownloadLink"
+            }
+        },
+        {
             "name": "Creators.TF Events Servers",
             "blurb": "Content for the Events & Silly Servers",
             "icon": "images/logos/modcirclelogos/CTFEvents.png",
