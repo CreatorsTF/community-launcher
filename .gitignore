@@ -5,6 +5,4 @@ electron-builder.yml
 *.code-workspace
 build.js
 build.bat
-runappfordevtest.bat
-package-lock.json
 *.map
