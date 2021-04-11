@@ -13,6 +13,7 @@ var missionsContent = missions.querySelector(".content");
 var types = document.getElementById("quickplay-type");
 var region = document.getElementById("quickplay-region");
 var searchButton = document.getElementById("quickplay-search");
+var quickplayResult = document.getElementById("quickplay-result");
 var quickplayConfig;
 var quickplayTypes;
 var selectedMaps = new Array();
@@ -40,8 +41,7 @@ ipcRenderer.on("quickplay-search-success", function (event, arg) {
     searchButton.innerText = "Search";
     searchButton.disabled = false;
     var results = arg;
-    log.log("Got a server result!");
-    log.log(JSON.stringify(results));
+    ShowSerchResults(results.servers);
 });
 ipcRenderer.on("quickplay-search-fail", function (event, arg) {
     searchButton.innerText = "Search";
@@ -57,6 +57,8 @@ function Search() {
         createMatchArgs.region_locked = false;
         ipcRenderer.send("quickplay-search", createMatchArgs);
     }
+}
+function ShowSerchResults(servers) {
 }
 function SetupToggle(toggle) {
     var btn = toggle.children[0];

@@ -213,13 +213,13 @@ electron_1.ipcMain.on("restart_app", function () {
 });
 electron_1.ipcMain.on("SettingsWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        settingspage_1.default.OpenWindow();
+        settingspage_1.default.OpenWindow(Main.screenWidth, Main.screenHeight, Main.config);
         return [2];
     });
 }); });
 electron_1.ipcMain.on("PatchNotesWindow", function (event, arg) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        patchnotespage_1.default.OpenWindow();
+        patchnotespage_1.default.OpenWindow(Main.screenWidth, Main.screenHeight);
         return [2];
     });
 }); });

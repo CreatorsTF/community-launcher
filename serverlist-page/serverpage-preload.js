@@ -25,6 +25,9 @@ serverNames.set("ru", "Russia");
 serverNames.set("au", "Australia");
 serverNames.set("sg", "Singapore");
 serverNames.set("no", "Norway");
+serverNames.set("br", "Brazil");
+serverNames.set("de", "Germany");
+serverNames.set("pl", "Poland");
 
 //Remove certain characters from remote data.
 String.prototype.escape = function() {
@@ -101,7 +104,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 let mapPic = document.createElement("div");
                 serverDOMData.map.appendChild(mapPic);
                 mapPic.className = "mapCover";
-                mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
+                mapPic.style.backgroundImage = server.passworded ? "" : "url(" + mapThumb + `${server.map}` + ")";
 
                 serverDOMData.players.innerHTML = server.passworded ? "<p>??/??</p>" : `<p>${server.online}/${server.maxplayers}</p>`;
                 serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
@@ -117,7 +120,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 }
 
                 if (server.passworded === true) {
-                    serverDOMData.button.innerText = `Connect (${server.online}/${server.maxplayers}) `;
+                    serverDOMData.button.innerText = "Requires Password ";
                     if (serverDOMData.lock == null) {
                         serverDOMData.lock = document.createElement("i");
                         serverDOMData.lock.className = "mdi mdi-lock link-mini";

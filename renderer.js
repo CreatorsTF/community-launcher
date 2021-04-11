@@ -44,7 +44,12 @@ function OnClick_Mod(data) {
         bgImg = defaultBackgroundImage;
     }
 
-    content.style.backgroundImage = `url("${"./" + bgImg}")`;
+    if(bgImg.includes("https")){
+        content.style.backgroundImage = `url("${bgImg}")`;
+    }
+    else{
+        content.style.backgroundImage = `url("${"./" + bgImg}")`;
+    }
 
     if(data.titleimage == ""){
         titleheader.style.display = "block";

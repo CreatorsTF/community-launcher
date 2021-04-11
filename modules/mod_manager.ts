@@ -144,8 +144,10 @@ class ModManager {
                 try {
                     const _url = await this.source_manager.GetFileURL();
                     ElectronLog.log("Successfuly got mod install file urls. Will proceed to try to download them.");
-                    await this.ModInstall(_url);
-                    await this.SetupNewModAsInstalled();
+                    let result = await this.ModInstall(_url);
+                    if(result){
+                        await this.SetupNewModAsInstalled();
+                    }
                 } catch (e) {
                     this.FakeClickMod();
                     await ErrorDialog(e, "Mod Begin Install Error");
@@ -232,61 +234,66 @@ class ModManager {
                         
                     if(urls.length > 0) {
                         ElectronLog.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
-                        await this.ModInstall(urls);
-                    
-                        //Update the version for the mod.
-                        
-                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                        let result = await this.ModInstall(urls);
+                        if(result){
+                            //Update the version for the mod.
+                            
+                            SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
-                        //Save the config changes.
-                        await config.SaveConfig(Main.config);
+                            //Save the config changes.
+                            await config.SaveConfig(Main.config);
 
-                        this.FakeClickMod();
+                            this.FakeClickMod();
 
-                        await dialog.showMessageBox(Main.mainWindow, {
-                            type: "info",
-                            title: "Mod Update",
-                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
-                            buttons: ["OK"]
-                        });
+                            await dialog.showMessageBox(Main.mainWindow, {
+                                type: "info",
+                                title: "Mod Update",
+                                message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                                buttons: ["OK"]
+                            });
+                        }
                     }
                     else {
                         //We need to update using the main zip. Not ideal but works.
                         ElectronLog.warn("Update source does not have patch data! Will have to download again fully.");
                         const _url = await this.source_manager.GetFileURL();
-                        await this.ModInstall(_url);
-                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                        let result = await this.ModInstall(_url);
+                        if(result){
+                            SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
-                        //Save the config changes.
-                        await config.SaveConfig(Main.config);
-
-                        this.FakeClickMod();
-
-                        await dialog.showMessageBox(Main.mainWindow, {
-                            type: "info",
-                            title: "Mod Update",
-                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
-                            buttons: ["OK"]
-                        });
+                            //Save the config changes.
+                            await config.SaveConfig(Main.config);
+    
+                            this.FakeClickMod();
+    
+                            await dialog.showMessageBox(Main.mainWindow, {
+                                type: "info",
+                                title: "Mod Update",
+                                message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                                buttons: ["OK"]
+                            });
+                        }
                     }
                 }
                 else if (this.currentModData.install.type == "github") {
                     //Current mod is not a jsonlist type. Just get and install the latest.
                     const _url = await this.source_manager.GetFileURL();
                     ElectronLog.log("Mod is type GitHub, will update using the most recent release url: " + _url);
-                    await this.ModInstall(_url);
-                    SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                    //Save the config changes.
-                    await config.SaveConfig(Main.config);
+                    let result = await this.ModInstall(_url);
+                    if(result){
+                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                        //Save the config changes.
+                        await config.SaveConfig(Main.config);
 
-                    this.FakeClickMod();
+                        this.FakeClickMod();
 
-                    await dialog.showMessageBox(Main.mainWindow, {
-                        type: "info",
-                        title: "Mod Update",
-                        message: `Mod update for ${this.currentModData.name} was completed successfully.`,
-                        buttons: ["OK"]
-                    });
+                        await dialog.showMessageBox(Main.mainWindow, {
+                            type: "info",
+                            title: "Mod Update",
+                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                            buttons: ["OK"]
+                        });
+                    }
                 }
                 else {
                     ElectronLog.error("Unknown mod type found during update attempt.");
@@ -299,7 +306,7 @@ class ModManager {
         }
     }
 
-    static async ModInstall(contentURL){
+    static async ModInstall(contentURL) : Promise<boolean>{
         let urlArray;
         if(Array.isArray(contentURL)) urlArray = contentURL;
         else{
@@ -311,11 +318,14 @@ class ModManager {
             const files = await DownloadFiles_UI(urlArray);     
             try {        
                 await this.InstallFiles(files);
+                return true;
             } catch (e) {
                 await ErrorDialog(e, "Mod Install Error"); this.FakeClickMod();
+                return false;
             }
         } catch (e) {
             await ErrorDialog(e, "Mod Files Download Error"); this.FakeClickMod();
+            return false;
         }
     }
 
