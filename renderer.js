@@ -35,18 +35,18 @@ const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 function OnClick_Mod(data) {
     window.log.info("Mod entry clicked: " + data.name);
 
-    
+
     var bgImg;
-    if(data.backgroundimage != ""){
+    if (data.backgroundimage != "") {
         bgImg = data.backgroundimage;
     }
-    else{
+    else {
         bgImg = defaultBackgroundImage;
     }
 
     content.style.backgroundImage = `url("${"./" + bgImg}")`;
 
-    if(data.titleimage == ""){
+    if (data.titleimage == "") {
         titleheader.style.display = "block";
         titleheader.innerText = data.name;
         titleImage.style.display = "none";
@@ -125,13 +125,13 @@ window.ipcRenderer.on("update_downloaded", () => {
     window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
 
-document.getElementById("settings-button").addEventListener("click", (a,b) => {
+document.getElementById("settings-button").addEventListener("click", (a, b) => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
-document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
+document.getElementById("patchnotes-button").addEventListener("click", (a, b) => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-document.getElementById("serverlist").addEventListener("click", (a,b) => {
+document.getElementById("serverlist").addEventListener("click", (a, b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
@@ -153,7 +153,7 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
         installButton.disabled = false;
     }
 
-    switch(arg) {
+    switch (arg) {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
             removeButton.style.display = "block";
@@ -182,6 +182,6 @@ window.ipcRenderer.on("FakeClickMod", (event, moddata) => {
     OnClick_Mod(moddata);
 });
 
-removeButton.addEventListener("click", function(e) {
+removeButton.addEventListener("click", function (e) {
     window.ipcRenderer.send("Remove-Mod", "");
 });

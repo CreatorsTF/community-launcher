@@ -3,7 +3,7 @@ import fs from "fs";
 import process from "process";
 import path from "path";
 const ProgressBar = require('electron-progressbar');
-const {app} = require("electron");
+const { app } = require("electron");
 import log from "electron-log";
 
 const loadingTextStyle = {
@@ -17,7 +17,7 @@ class Utilities {
      * @param error The error object/message.
      * @param title Title for the error dialog.
      */
-    static ErrorDialog(error : any, title : string){
+    static ErrorDialog(error: any, title: string) {
         //@ts-ignore
         global.log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
         //@ts-ignore
@@ -32,20 +32,29 @@ class Utilities {
     /**
      * Get the data folder dynamically based on the platform.
      */
-    static GetDataFolder() : string {
-        let _path = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
-        
-        if(!fs.existsSync(_path)) fs.mkdirSync(_path);
+    static GetDataFolder(): string {
+        let path = this.getDataFolderPath();
 
-        return _path;
+        if (!fs.existsSync(path)) {
+            fs.mkdirSync(path);
+        }
+
+        return path;
     }
 
-    static GetLogsFolder() : string {
+    private static getDataFolderPath(): string {
+        const systemDataFolder = process.platform == 'darwin'
+            ? process.env.HOME + '/Library/Preferences'
+            : process.env.HOME + "/.local/share";
+        return process.env.APPDATA || systemDataFolder + '/creators-tf-launcher';
+    }
+
+    static GetLogsFolder(): string {
         return log.transports.file.getFile().path;
     }
 
 
-    static GetNewLoadingPopup(title : string, mainWindow : any, onCanceled: () => void) : any {
+    static GetNewLoadingPopup(title: string, mainWindow: any, onCanceled: () => void): any {
         var progressBar = new ProgressBar({
             text: title,
             detail: '...',
@@ -65,9 +74,9 @@ class Utilities {
                 value: loadingTextStyle
             }
         }, app);
-        
+
         progressBar
-        .on('aborted', onCanceled);
+            .on('aborted', onCanceled);
 
         return progressBar;
     }
@@ -75,17 +84,18 @@ class Utilities {
     static currentLauncherVersion = null;
 
     static GetCurrentVersion() {
-        if (this.currentLauncherVersion == null) {
-            try {
-                let packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));
-                this.currentLauncherVersion = JSON.parse(packageJson.toString()).version;
-            }
-            catch {
-                return null;
-            }
+        if (this.currentLauncherVersion != null) {
+            return this.currentLauncherVersion;
         }
-        return this.currentLauncherVersion;
+        
+        try {
+            let packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));
+            this.currentLauncherVersion = JSON.parse(packageJson.toString()).version;
+        }
+        catch {
+            return null;
+        }
     }
 }
 
-export {Utilities};
+export { Utilities };

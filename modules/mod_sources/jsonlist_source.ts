@@ -10,26 +10,26 @@ class JsonListSource extends ModInstallSource {
     fileType = "ARCHIVE";
     jsonlist_data = null;
 
-    constructor(install_data){
+    constructor(install_data) {
         super(install_data);
         this.url = install_data.get_url;
 
         //If this property is present, lets add a random query on the end of the URL to get an un cached version of this file.
-        if(install_data.cloudflarebypass != null){
+        if (install_data.cloudflarebypass != null) {
             this.url += `?${Math.floor(Math.random() * 1000000000)}`;
         }
     }
 
-    GetJsonData() : Promise<any>{
+    GetJsonData(): Promise<any> {
         return new Promise((resolve, reject) => {
-            if(this.jsonlist_data == null){
+            if (this.jsonlist_data == null) {
                 this.GetJsonReleaseData().then(resolve).catch(reject);
             }
             else resolve(this.jsonlist_data);
         });
     }
 
-    GetLatestVersionNumber() : Promise<number>{
+    GetLatestVersionNumber(): Promise<number> {
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
                 resolve(json_data[this.data.version_property_name]);
@@ -41,7 +41,7 @@ class JsonListSource extends ModInstallSource {
         return await this.GetLatestVersionNumber().toString();
     }
 
-    GetFileURL() : Promise<string>{
+    GetFileURL(): Promise<string> {
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
                 resolve(json_data[this.data.install_url_property_name]);
@@ -49,7 +49,7 @@ class JsonListSource extends ModInstallSource {
         });
     }
 
-    GetJsonReleaseData(){
+    GetJsonReleaseData() {
         return new Promise((resolve, reject) => {
             var data = [];
 
@@ -63,7 +63,7 @@ class JsonListSource extends ModInstallSource {
                 console.log(`statusCode: ${res.statusCode}`);
 
                 res.on('data', d => {
-                    if(res.statusCode == 503){
+                    if (res.statusCode == 503) {
                         reject(cloudFlareMessage);
                         return;
                     }
@@ -71,35 +71,35 @@ class JsonListSource extends ModInstallSource {
                     data.push(d);
                 });
 
-                res.on("end",  () => {
-                    try{
+                res.on("end", () => {
+                    try {
                         var buf = Buffer.concat(data);
-                        if(res.statusCode == 503){
+                        if (res.statusCode == 503) {
                             reject(cloudFlareMessage);
                             return;
                         }
-                        else if(res.statusCode != 200){
+                        else if (res.statusCode != 200) {
                             reject(`Failed accessing ${this.url}: ${res.statusCode}.`);
                             ElectronLog.error(buf.toString());
                             return;
                         }
-                        else{
+                        else {
                             let parsed = JSON.parse(buf.toString());
                             resolve(parsed);
                         }
                     }
-                    catch (error){
+                    catch (error) {
                         //Json parsing failed soo reject.
                         ElectronLog.error("Json parse failed. Endpoint is probably not returning valid JSON. Site may be down!");
                         reject(error.toString());
                     }
                 });
             });
-            
+
             req.on('error', error => {
                 reject(error);
             });
-            
+
             req.end();
         });
     }
