@@ -50,6 +50,7 @@ ipcRenderer.on("quickplay-setup", (event : any, sentConfig : any) => {
 ipcRenderer.on("quickplay-search-reply", (event, arg) => {
     searchButton.innerText = "Searching...";
     searchButton.disabled = true;
+    quickplayResult.style.display = "none";
 });
 
 ipcRenderer.on("quickplay-search-success", (event, arg) => {
@@ -80,7 +81,20 @@ function Search(){
 }
 
 function ShowSerchResults(servers : MatchmakingStatusServer[]){
-
+    quickplayResult.style.display = "flex";
+    let cSrv: MatchmakingStatusServer;
+    for(let server of servers){
+        if(cSrv == null || cSrv.score < server.score){
+            cSrv = server;
+        }
+    }
+    
+    quickplayResult.innerHTML =
+    `<h2>Search Result:</h2>
+    <p>${cSrv.map} ${cSrv.players}/${cSrv.maxplayers} ${cSrv.ip}:${cSrv.port}</p>
+    <button id="quickplay-join">Join</button>`;
+    let joinBtn = document.getElementById("quickplay-join");
+    joinBtn.addEventListener("click", () => ipcRenderer.send("quickplay-join", cSrv));
 }
 
 function SetupToggle(toggle: Element) {

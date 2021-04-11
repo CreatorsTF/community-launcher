@@ -36,6 +36,7 @@ ipcRenderer.on("quickplay-setup", function (event, sentConfig) {
 ipcRenderer.on("quickplay-search-reply", function (event, arg) {
     searchButton.innerText = "Searching...";
     searchButton.disabled = true;
+    quickplayResult.style.display = "none";
 });
 ipcRenderer.on("quickplay-search-success", function (event, arg) {
     searchButton.innerText = "Search";
@@ -59,6 +60,18 @@ function Search() {
     }
 }
 function ShowSerchResults(servers) {
+    quickplayResult.style.display = "flex";
+    var cSrv;
+    for (var _i = 0, servers_1 = servers; _i < servers_1.length; _i++) {
+        var server = servers_1[_i];
+        if (cSrv == null || cSrv.score < server.score) {
+            cSrv = server;
+        }
+    }
+    quickplayResult.innerHTML =
+        "<h2>Search Result:</h2>\n    <p>" + cSrv.map + " " + cSrv.players + "/" + cSrv.maxplayers + " " + cSrv.ip + ":" + cSrv.port + "</p>\n    <button id=\"quickplay-join\">Join</button>";
+    var joinBtn = document.getElementById("quickplay-join");
+    joinBtn.addEventListener("click", function () { return ipcRenderer.send("quickplay-join", cSrv); });
 }
 function SetupToggle(toggle) {
     var btn = toggle.children[0];

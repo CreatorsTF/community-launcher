@@ -1,12 +1,12 @@
 import CreatorsAPIDispatcher from "./CreatorsAPIDispatcher";
 import {CreateMatchCommand, CreateMatchCommandParams, CreateMatchmakingQueryResponse} from "./quickplay/CreateMatchCommand";
 import QuickPlayConfigLoader from "../remote_file_loader/quickplay_config_loader";
-import { ipcMain } from "electron";
+import { ipcMain, shell } from "electron";
 import ElectronLog from "electron-log";
 import { Utilities } from "../../modules/utilities";
 import electronIsDev from "electron-is-dev";
 import { IpcMainEvent } from "electron/main";
-import { MatchStatusCommand, MatchStatusResponse } from "./quickplay/MatchStatusCommand";
+import { MatchmakingStatusServer, MatchStatusCommand, MatchStatusResponse } from "./quickplay/MatchStatusCommand";
 
 const STATUS_INITITATED = 0;       // Default state of the MM query. All queries take this value when they're created.
 const STATUS_FINDING_SERVERS = 1;  // Matchmaking system is currently searching through servers.
@@ -28,6 +28,10 @@ class Quickplay {
         ipcMain.on("quickplay-search", (event, arg) => {
             this.currentMatchId = null;
             this.Search(event, arg);
+        });
+
+        ipcMain.on("quickplay-join", (event, arg : MatchmakingStatusServer) => {
+            shell.openExternal(`steam://connect/${arg.ip}/${arg.port}`);
         });
     }
 

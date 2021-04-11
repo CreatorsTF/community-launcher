@@ -67,6 +67,9 @@ var Quickplay = (function () {
             _this.currentMatchId = null;
             _this.Search(event, arg);
         });
+        electron_1.ipcMain.on("quickplay-join", function (event, arg) {
+            electron_1.shell.openExternal("steam://connect/" + arg.ip + "/" + arg.port);
+        });
     }
     Quickplay.prototype.Search = function (event, arg) {
         return __awaiter(this, void 0, void 0, function () {
