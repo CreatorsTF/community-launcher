@@ -154,7 +154,7 @@ var ModManager = /** @class */ (function () {
     //This is called when the Install / Update / Installed button is pressed in the UI.
     ModManager.ModInstallPlayButtonClick = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, _url, e_2, version, displayVersion, update_msg, button;
+            var _a, _url, result, e_2, version, displayVersion, update_msg, button;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -169,9 +169,9 @@ var ModManager = /** @class */ (function () {
                         _a = this.currentModState;
                         switch (_a) {
                             case "NOT_INSTALLED": return [3 /*break*/, 3];
-                            case "UPDATE": return [3 /*break*/, 12];
+                            case "UPDATE": return [3 /*break*/, 13];
                         }
-                        return [3 /*break*/, 18];
+                        return [3 /*break*/, 19];
                     case 3:
                         //We should try to install this mod!
                         //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
@@ -186,36 +186,38 @@ var ModManager = /** @class */ (function () {
                         electron_log_2.default.log("TF2 Path was validated.");
                         _b.label = 5;
                     case 5:
-                        _b.trys.push([5, 9, , 11]);
+                        _b.trys.push([5, 10, , 12]);
                         return [4 /*yield*/, this.source_manager.GetFileURL()];
                     case 6:
                         _url = _b.sent();
                         electron_log_2.default.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                         return [4 /*yield*/, this.ModInstall(_url)];
                     case 7:
-                        _b.sent();
+                        result = _b.sent();
+                        if (!result) return [3 /*break*/, 9];
                         return [4 /*yield*/, this.SetupNewModAsInstalled()];
                     case 8:
                         _b.sent();
-                        return [3 /*break*/, 11];
-                    case 9:
+                        _b.label = 9;
+                    case 9: return [3 /*break*/, 12];
+                    case 10:
                         e_2 = _b.sent();
                         this.FakeClickMod();
                         return [4 /*yield*/, ErrorDialog(e_2, "Mod Begin Install Error")];
-                    case 10:
+                    case 11:
                         _b.sent();
-                        return [3 /*break*/, 11];
-                    case 11: return [3 /*break*/, 19];
-                    case 12:
+                        return [3 /*break*/, 12];
+                    case 12: return [3 /*break*/, 20];
+                    case 13:
                         //We should try to update this mod!
                         //Setup the message to include the version if we have the data.
                         //Really we should for this state to be active but best to be sure.
                         electron_log_2.default.log("Asking user if they want to update this mod.");
                         return [4 /*yield*/, this.source_manager.GetLatestVersionNumber()];
-                    case 13:
+                    case 14:
                         version = _b.sent();
                         return [4 /*yield*/, this.source_manager.GetDisplayVersionNumber()];
-                    case 14:
+                    case 15:
                         displayVersion = _b.sent();
                         update_msg = "Would you like to update this mod to version \"" + displayVersion + "\"?";
                         return [4 /*yield*/, electron_1.dialog.showMessageBox(main_1.default.mainWindow, {
@@ -225,20 +227,20 @@ var ModManager = /** @class */ (function () {
                                 buttons: ["Yes", "Cancel"],
                                 cancelId: 1
                             })];
-                    case 15:
+                    case 16:
                         button = _b.sent();
-                        if (!(button.response == 0)) return [3 /*break*/, 17];
+                        if (!(button.response == 0)) return [3 /*break*/, 18];
                         //Do the update!
                         electron_log_2.default.log("Starting update process...");
                         return [4 /*yield*/, this.UpdateCurrentMod()];
-                    case 16:
+                    case 17:
                         _b.sent();
-                        _b.label = 17;
-                    case 17: return [3 /*break*/, 19];
-                    case 18:
+                        _b.label = 18;
+                    case 18: return [3 /*break*/, 20];
+                    case 19:
                         electron_log_2.default.error("Somehow the install button was clicked when the mod is in the installed state.");
-                        return [3 /*break*/, 19];
-                    case 19: return [2 /*return*/];
+                        return [3 /*break*/, 20];
+                    case 20: return [2 /*return*/];
                 }
             });
         });
@@ -246,7 +248,7 @@ var ModManager = /** @class */ (function () {
     //Attempt an update. If possible then we do it. Will try to do it incrementally or a full re download.
     ModManager.UpdateCurrentMod = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var version, jsonSourceManager, data, urls, patchObjects, patchURLS_1, i, _url, _url, e_3;
+            var version, jsonSourceManager, data, urls, patchObjects, patchURLS_1, i, result, _url, result, _url, result, e_3;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -262,9 +264,9 @@ var ModManager = /** @class */ (function () {
                         version = _a.sent();
                         _a.label = 3;
                     case 3:
-                        _a.trys.push([3, 22, , 24]);
-                        if (!(version > this.currentModVersion)) return [3 /*break*/, 21];
-                        if (!(this.currentModData.install.type == "jsonlist")) return [3 /*break*/, 14];
+                        _a.trys.push([3, 24, , 26]);
+                        if (!(version > this.currentModVersion)) return [3 /*break*/, 23];
+                        if (!(this.currentModData.install.type == "jsonlist")) return [3 /*break*/, 15];
                         jsonSourceManager = this.source_manager;
                         return [4 /*yield*/, jsonSourceManager.GetJsonData()];
                     case 4:
@@ -292,11 +294,12 @@ var ModManager = /** @class */ (function () {
                                 urls.push(patchURLS_1[i].DownloadURL);
                             }
                         }
-                        if (!(urls.length > 0)) return [3 /*break*/, 8];
+                        if (!(urls.length > 0)) return [3 /*break*/, 9];
                         electron_log_2.default.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
                         return [4 /*yield*/, this.ModInstall(urls)];
                     case 5:
-                        _a.sent();
+                        result = _a.sent();
+                        if (!result) return [3 /*break*/, 8];
                         //Update the version for the mod.
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
@@ -313,20 +316,22 @@ var ModManager = /** @class */ (function () {
                             })];
                     case 7:
                         _a.sent();
-                        return [3 /*break*/, 13];
-                    case 8:
+                        _a.label = 8;
+                    case 8: return [3 /*break*/, 14];
+                    case 9:
                         //We need to update using the main zip. Not ideal but works.
                         electron_log_2.default.warn("Update source does not have patch data! Will have to download again fully.");
                         return [4 /*yield*/, this.source_manager.GetFileURL()];
-                    case 9:
+                    case 10:
                         _url = _a.sent();
                         return [4 /*yield*/, this.ModInstall(_url)];
-                    case 10:
-                        _a.sent();
+                    case 11:
+                        result = _a.sent();
+                        if (!result) return [3 /*break*/, 14];
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
                         return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
-                    case 11:
+                    case 12:
                         //Save the config changes.
                         _a.sent();
                         this.FakeClickMod();
@@ -336,23 +341,24 @@ var ModManager = /** @class */ (function () {
                                 message: "Mod update for " + this.currentModData.name + " was completed successfully.",
                                 buttons: ["OK"]
                             })];
-                    case 12:
+                    case 13:
                         _a.sent();
-                        _a.label = 13;
-                    case 13: return [3 /*break*/, 21];
-                    case 14:
-                        if (!(this.currentModData.install.type == "github")) return [3 /*break*/, 19];
-                        return [4 /*yield*/, this.source_manager.GetFileURL()];
+                        _a.label = 14;
+                    case 14: return [3 /*break*/, 23];
                     case 15:
+                        if (!(this.currentModData.install.type == "github")) return [3 /*break*/, 21];
+                        return [4 /*yield*/, this.source_manager.GetFileURL()];
+                    case 16:
                         _url = _a.sent();
                         electron_log_2.default.log("Mod is type GitHub, will update using the most recent release url: " + _url);
                         return [4 /*yield*/, this.ModInstall(_url)];
-                    case 16:
-                        _a.sent();
+                    case 17:
+                        result = _a.sent();
+                        if (!result) return [3 /*break*/, 20];
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
                         return [4 /*yield*/, config_1.default.SaveConfig(main_1.default.config)];
-                    case 17:
+                    case 18:
                         //Save the config changes.
                         _a.sent();
                         this.FakeClickMod();
@@ -362,23 +368,24 @@ var ModManager = /** @class */ (function () {
                                 message: "Mod update for " + this.currentModData.name + " was completed successfully.",
                                 buttons: ["OK"]
                             })];
-                    case 18:
-                        _a.sent();
-                        return [3 /*break*/, 21];
                     case 19:
+                        _a.sent();
+                        _a.label = 20;
+                    case 20: return [3 /*break*/, 23];
+                    case 21:
                         electron_log_2.default.error("Unknown mod type found during update attempt.");
                         return [4 /*yield*/, ErrorDialog("Unknown mod type found during update attempt.", "Error")];
-                    case 20:
-                        _a.sent();
-                        _a.label = 21;
-                    case 21: return [3 /*break*/, 24];
                     case 22:
+                        _a.sent();
+                        _a.label = 23;
+                    case 23: return [3 /*break*/, 26];
+                    case 24:
                         e_3 = _a.sent();
                         return [4 /*yield*/, ErrorDialog(e_3, "Mod Update Error")];
-                    case 23:
+                    case 25:
                         _a.sent();
-                        return [3 /*break*/, 24];
-                    case 24: return [2 /*return*/];
+                        return [3 /*break*/, 26];
+                    case 26: return [2 /*return*/];
                 }
             });
         });
@@ -407,14 +414,14 @@ var ModManager = /** @class */ (function () {
                         return [4 /*yield*/, this.InstallFiles(files)];
                     case 4:
                         _a.sent();
-                        return [3 /*break*/, 7];
+                        return [2 /*return*/, true];
                     case 5:
                         e_4 = _a.sent();
                         return [4 /*yield*/, ErrorDialog(e_4, "Mod Install Error")];
                     case 6:
                         _a.sent();
                         this.FakeClickMod();
-                        return [3 /*break*/, 7];
+                        return [2 /*return*/, false];
                     case 7: return [3 /*break*/, 10];
                     case 8:
                         e_5 = _a.sent();
@@ -422,7 +429,7 @@ var ModManager = /** @class */ (function () {
                     case 9:
                         _a.sent();
                         this.FakeClickMod();
-                        return [3 /*break*/, 10];
+                        return [2 /*return*/, false];
                     case 10: return [2 /*return*/];
                 }
             });

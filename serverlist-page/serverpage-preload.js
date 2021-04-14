@@ -25,6 +25,9 @@ serverNames.set("ru", "Russia");
 serverNames.set("au", "Australia");
 serverNames.set("sg", "Singapore");
 serverNames.set("no", "Norway");
+serverNames.set("br", "Brazil");
+serverNames.set("de", "Germany");
+serverNames.set("pl", "Poland");
 
 //Remove certain characters from remote data.
 String.prototype.escape = function() {
@@ -72,78 +75,88 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     refreshing = false;
-    if (serverListData != null && serverListData.result == "SUCCESS") {
-        var servers = serverListData.servers;
-        serverCount = servers.length;
-        var serverRegionMap = SortServersIntoRegions(servers);
+    try{
+        if (serverListData != null && serverListData.result != null && serverListData.result == "SUCCESS") {
+            var servers = serverListData.servers;
+            serverCount = servers.length;
+            var serverRegionMap = SortServersIntoRegions(servers);
 
-        //Create DOM elements for the servers if not created already.
-        if (!hasCreatedPageContent) {
-            CreateServerDOMElements(serverRegionMap);
-        }
-
-        //Update server DOM elements with the recieved information.
-        for (const region of serverRegionMap) {
-            var regionName = region[0].toLowerCase();
-            if (!regionDOMData.has(regionName)) {
-                continue;
+            //Create DOM elements for the servers if not created already.
+            if (!hasCreatedPageContent) {
+                CreateServerDOMElements(serverRegionMap);
             }
 
-            var regionDOMs = regionDOMData.get(regionName);
-
-            for (let server of region[1]) {
-                var serverDOMData = regionDOMs.get(parseInt(server.id));
-
-                serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
-                serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
-                serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
-
-                let mapPic = document.createElement("div");
-                serverDOMData.map.appendChild(mapPic);
-                mapPic.className = "mapCover";
-                mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
-
-                serverDOMData.players.innerHTML = server.passworded ? "<p>??/??</p>" : `<p>${server.online}/${server.maxplayers}</p>`;
-                serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
-
-                if (server.is_down === false) {
-                    serverDOMData.status.className = "mdi mdi-check-circle link-mini up";
-                    serverDOMData.status.title = "Server is up!"
-                    serverDOMData.tr.style.backgroundColor = null;
-                } else {
-                    serverDOMData.status.className = "mdi mdi-alert-circle link-mini down";
-                    serverDOMData.status.title = "Server is down!"
-                    serverDOMData.tr.style.backgroundColor = "#6B0F0F";
+            //Update server DOM elements with the recieved information.
+            for (const region of serverRegionMap) {
+                var regionName = region[0].toLowerCase();
+                if (!regionDOMData.has(regionName)) {
+                    continue;
                 }
 
-                if (server.passworded === true) {
-                    serverDOMData.button.innerText = `Connect (${server.online}/${server.maxplayers}) `;
-                    if (serverDOMData.lock == null) {
-                        serverDOMData.lock = document.createElement("i");
-                        serverDOMData.lock.className = "mdi mdi-lock link-mini";
-                        serverDOMData.lock.title = "This server requires a password to join";
+                var regionDOMs = regionDOMData.get(regionName);
+
+                for (let server of region[1]) {
+                    var serverDOMData = regionDOMs.get(parseInt(server.id));
+
+                    serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
+                    serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
+                    serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
+
+                    let mapPic = document.createElement("div");
+                    serverDOMData.map.appendChild(mapPic);
+                    mapPic.className = "mapCover";
+                    mapPic.style.backgroundImage = server.passworded ? "" : "url(" + mapThumb + `${server.map}` + ")";
+
+                    serverDOMData.players.innerHTML = server.passworded ? "<p>??/??</p>" : `<p>${server.online}/${server.maxplayers}</p>`;
+                    serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
+
+                    if (server.is_down === false) {
+                        serverDOMData.status.className = "mdi mdi-check-circle link-mini up";
+                        serverDOMData.status.title = "Server is up!"
+                        serverDOMData.tr.style.backgroundColor = null;
+                    } else {
+                        serverDOMData.status.className = "mdi mdi-alert-circle link-mini down";
+                        serverDOMData.status.title = "Server is down!"
+                        serverDOMData.tr.style.backgroundColor = "#6B0F0F";
                     }
-                    serverDOMData.lock.style.display = "inline";
-                    serverDOMData.button.appendChild(serverDOMData.lock);
-                } else {
-                    if (serverDOMData.lock != null) {
-                        serverDOMData.lock.style.display = "none";
+
+                    if (server.passworded === true) {
+                        serverDOMData.button.innerText = "Requires Password ";
+                        if (serverDOMData.lock == null) {
+                            serverDOMData.lock = document.createElement("i");
+                            serverDOMData.lock.className = "mdi mdi-lock link-mini";
+                            serverDOMData.lock.title = "This server requires a password to join";
+                        }
+                        serverDOMData.lock.style.display = "inline";
+                        serverDOMData.button.appendChild(serverDOMData.lock);
+                    } else {
+                        if (serverDOMData.lock != null) {
+                            serverDOMData.lock.style.display = "none";
+                        }
+                        serverDOMData.button.innerText = "Connect";
                     }
-                    serverDOMData.button.innerText = "Connect";
                 }
             }
         }
+        else if(serverListData == "503"){
+            loading.remove();
+            document.getElementById("cloudflare-error").style.display = "block";
+        }
+        else {
+            ShowFailMessage();
+        }
     }
-    else if(serverListData == "503"){
-        loading.remove();
-        document.getElementById("cloudflare-error").style.display = "block";
-    }
-    else {
-        loading.remove();
-        document.getElementById("failMessage").style.display = "block";
-        console.error("Server list failed to show.");
+    catch (e) {
+        console.error(e.toString());
+        ShowFailMessage();
     }
 });
+
+function ShowFailMessage(){
+    loading.remove();
+    document.getElementById("failMessage").style.display = "block";
+    console.error("Server list failed to show.");
+}
 
 function CreateServerDOMElements(serverRegionMap){
     loading.remove();

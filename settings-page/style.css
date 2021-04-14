@@ -59,6 +59,12 @@ p {
     color: #EEE;
 }
 
+.subtitle
+{
+    font-size: 15px;
+    font-style: italic;
+}
+
 button {
     border-radius: 5px;
     margin-left: 10px;

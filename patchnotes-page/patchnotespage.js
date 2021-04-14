@@ -1,10 +1,11 @@
 const { BrowserWindow } = require('electron');
 const path = require("path");
+const isDev = require("electron-is-dev");
 
 var patchNotesWindow;
 
 module.exports.OpenWindow = OpenWindow;
-function OpenWindow() {
+function OpenWindow(screenWidth, screenHeight) {
     global.log.info("Loading Patch Notes window...");
     patchNotesWindow = new BrowserWindow({
         parent: global.mainWindow,
