@@ -28,9 +28,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "electron": "^12.0.2",
+    "electron": "^12.0.4",
     "electron-builder": "^22.8.0",
-    "typescript": "^4.0.2"
+    "typescript": "^4.2.4"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",
@@ -41,7 +41,7 @@
     "electron-updater": "^4.3.4",
     "flag-icon-css": "^3.5.0",
     "jszip": "^3.5.0",
-    "marked": "^2.0.2",
+    "marked": "^2.0.3",
     "string-format": "^2.0.0"
   }
 }
