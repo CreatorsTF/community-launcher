@@ -50,7 +50,7 @@ var apiEndpoint = "https://creators.tf/api/IServers/GServerList?provider={0}";
 var ServerListPage = /** @class */ (function () {
     function ServerListPage() {
     }
-    ServerListPage.OpenWindow = function (mainWindow, screenWidth, screenHeight, providers) {
+    ServerListPage.OpenWindow = function (mainWindow, screenWidth, screenHeight, minWindowWidth, minWindowHeight, providers) {
         var _this = this;
         electron_log_1.default.info("Loading Server List window...");
         this.serverlistWindow = new electron_1.BrowserWindow({
@@ -66,9 +66,9 @@ var ServerListPage = /** @class */ (function () {
             maximizable: true,
             resizable: true,
             autoHideMenuBar: true,
-            minWidth: 960,
-            minHeight: 600,
-            width: screenWidth - 300,
+            minWidth: minWindowWidth,
+            minHeight: minWindowHeight,
+            width: screenWidth - 250,
             height: screenHeight - 100
         });
         if (!electron_is_dev_1.default)

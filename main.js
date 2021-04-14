@@ -71,10 +71,12 @@ var Main = /** @class */ (function () {
         var _a = electron_1.screen.getPrimaryDisplay().workAreaSize, width = _a.width, height = _a.height;
         this.screenWidth = width;
         this.screenHeight = height;
+        this.minWindowWidth = 960;
+        this.minWindowHeight = 540;
         try {
             Main.mainWindow = new electron_1.BrowserWindow({
-                minWidth: 960,
-                minHeight: 540,
+                minWidth: this.minWindowWidth,
+                minHeight: this.minWindowHeight,
                 width: this.screenWidth - 200,
                 height: this.screenHeight - 150,
                 webPreferences: {
@@ -240,7 +242,7 @@ electron_1.ipcMain.on("ServerListWindow", function (event, arg) { return __await
         Object.assign(realModList, modList);
         providers = realModList.GetMod(mod_manager_1.default.currentModData.name).serverlistproviders;
         if (providers != null)
-            serverlistpage_1.ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, providers);
+            serverlistpage_1.ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, providers);
         else {
             if (electron_is_dev_1.default) {
                 utilities_1.Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");

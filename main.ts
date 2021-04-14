@@ -30,16 +30,20 @@ class Main {
     static config: any;
     static screenWidth: number;
     static screenHeight: number;
+    static minWindowWidth: number;
+    static minWindowHeight: number;
 
     public static createWindow() {
         //@ts-ignore
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
         this.screenWidth = width;
         this.screenHeight = height;
+        this.minWindowWidth = 960;
+        this.minWindowHeight = 540;
         try {
             Main.mainWindow = new BrowserWindow({
-                minWidth: 960,
-                minHeight: 540,
+                minWidth: this.minWindowWidth,
+                minHeight: this.minWindowHeight,
                 width: this.screenWidth-200,
                 height: this.screenHeight-150,
                 webPreferences: {
@@ -214,7 +218,7 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
     Object.assign(realModList, modList);
 
     var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
-    if(providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, providers);
+    if (providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, providers);
     else{
         if (isDev){
             Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
