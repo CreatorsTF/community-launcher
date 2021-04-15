@@ -36,7 +36,7 @@ body {
 }
 
 #coglabel i {
-    color: (--white-2);
+    color: var(--white-2);
     font-size: 10vh;
     transform: rotate(-45deg);
 
@@ -59,15 +59,14 @@ p {
     color: #EEE;
 }
 
-.subtitle
+small
 {
-    font-size: 15px;
-    font-style: italic;
+    font-size: 2vh;
 }
 
 button {
-    border-radius: 5px;
-    margin-left: 10px;
+    border-radius: 1vh;
+    margin-left: 2vh;
     transition: 0.2s;
 }
 
@@ -76,17 +75,17 @@ button:first-child {
 }
 
 .inputLabelRow {
-    margin: 5px auto;
+    margin: 1vh auto;
     text-align: center;
-    text-shadow: 0px 0px 25px #0007;
+    text-shadow: 0px 0px 3vh #0007;
     font-family: Roboto Medium, Arial, sans-serif;
-    font-size: 28px;
+    font-size: 5vh;
     color: #EEE;
 }
 
 .inputRow {
     width: 55%;
-    margin-bottom: 20px;
+    margin-bottom: 3vh;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -98,7 +97,7 @@ button:first-child {
 }
 
 #reload-button {
-    padding: 5px 10px;
+    padding: 1vh 2vh;
 }
 
 #config-debug {
@@ -165,5 +164,5 @@ button:first-child {
 }
 
 #version-box p {
-    font-size: 14px;
+    font-size: 2.5vh;
 }

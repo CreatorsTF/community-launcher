@@ -20,8 +20,8 @@ function OpenWindow(screenWidth, screenHeight) {
         maximizable: true,
         resizable: true,
         autoHideMenuBar: true,
-        minWidth: minWindowWidth,
-        minHeight: minWindowHeight,
+        minWidth: 960,
+        minHeight: 540,
         width: screenWidth-250,
         height: screenHeight-100
     });
