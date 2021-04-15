@@ -15,7 +15,8 @@ function OpenWindow(screenWidth, screenHeight, configObject) {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "settingspage-preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
+            contextIsolation: false
         },
         modal: true,
         show: false,

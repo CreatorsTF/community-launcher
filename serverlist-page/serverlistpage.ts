@@ -17,7 +17,8 @@ class ServerListPage {
             parent: mainWindow,
             webPreferences: {
                 preload: path.join(__dirname, "serverpage-preload.js"),
-                nodeIntegration: false
+                nodeIntegration: false,
+                contextIsolation: false
             },
             modal: true,
             show: false,
