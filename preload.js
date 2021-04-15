@@ -43,7 +43,7 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
         blurb.innerText = modentry.blurb;
         divModInfoSidebar.appendChild(blurb);
 
-        div.addEventListener("click", function(e) {
+        div.addEventListener("click", function(event) {
             OnClick_Mod(modentry);
 
             // TODO: Check if other element is selected to avoid 2 selected elements.

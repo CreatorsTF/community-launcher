@@ -25,6 +25,10 @@ html, body {
     padding: 0;
 }
 
+h1, h2, h3, h4, h5, h6, p, a, span {
+    line-height: 110%
+}
+
 @keyframes fadeInSuperFancyTransition {
     0% { opacity: 0; }
     100% { opacity: 1; }

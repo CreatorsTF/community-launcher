@@ -19,8 +19,8 @@ h1, h2, p {
 
 h1 {
     font-family: Roboto Black, Arial, sans-serif;
-    font-size: 60px;
-    padding: 20px 0px 0px 0px;
+    font-size: 10vh;
+    padding-top: 3vh;
 }
 
 #loading {
@@ -54,13 +54,13 @@ h1 {
 }
 
 #refreshHolder {
-    margin: 10px auto 20px auto;
+    margin: 2vh auto;
     text-align: center;
 }
 
 #refreshButton {
-    border-radius: 50px;
-    padding: 5px;
+    border-radius: 10vh;
+    padding: 1vh;
     transition: 0.2s;
 }
 
@@ -69,12 +69,12 @@ h1 {
 }
 
 #refreshButton i {
-    font-size: 35px;
+    font-size: 5vh;
 }
 
 .serverRegions {
-    margin: 10px auto;
-    font-size: 25px;
+    margin: 2vh auto;
+    font-size: 3.5vh;
     color: #EEE;
     font-family: Roboto Light, Arial, sans-serif;
     cursor: pointer;
@@ -86,10 +86,8 @@ h1 {
 }
 
 .serverRegions i {
-    margin: 0px 8px;
-    position: relative;
-    top: 1px;
-    border-radius: 3px;
+    margin: 0px 1vh;
+    border-radius: 0.5vh;
 }
 
 .serverRegions i:last-child {
@@ -98,18 +96,18 @@ h1 {
 
 p {
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 17px;
-    padding: 0px 5px;
+    font-size: 2.3vh;
+    padding: 0px 1vh;
 }
 
 button {
-    padding: 10px 5px;
+    padding: 1.25vh;
     cursor: pointer;
     transition: 0.2s;
     border: 0;
     outline: 0;
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 16px;
+    font-size: 2.3vh;
 }
 
 button:hover {
@@ -125,7 +123,6 @@ tr {
     background-color: #161616;
     width: 100%;
     text-align: center;
-    border-radius: 0px 10px 10px 0px;
     transition: 0.2s;
 }
 
@@ -139,13 +136,13 @@ tr:hover {
 
 .id {
     min-width: 43px;
-    width: 6%;
-    border-radius: 10px 0px 0px 10px;
+    width: 5%;
+    border-radius: 1vh 0 0 1vh;
 }
 
 .name {
     min-width: 328px;
-    width: 37%;
+    width: 38%;
 }
 
 .map {
@@ -198,11 +195,12 @@ tr:hover {
 .status {
     min-width: 35px;
     width: 5%;
-    border-radius: 0px 10px 10px 0px;
+    border-radius: 0 1vh 1vh 0;
+    padding: 1vh;
 }
 
 .link-mini {
-    font-size: 20px;
+    font-size: 3vh;
 }
 
 .down { color: red; }
