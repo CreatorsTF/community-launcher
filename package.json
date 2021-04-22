@@ -6,10 +6,10 @@
   "scripts": {
     "start": "electron .",
     "compileAndStart": "npx tsc && electron .",
-    "buildwindows": "electron-builder build --win --x64 --ia32 --publish never && node buildfix.js",
-    "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
+    "buildWindows": "electron-builder build --win --x64 --ia32 --publish never && node buildfix.js",
+    "buildLinux": "electron-builder build --linux deb tar.gz --publish never",
     "deploy": "electron-builder build --win --x64 --ia32 --publish always",
-    "buildfix": "node buildfix.js",
+    "buildFix": "node buildfix.js",
     "compile": "npx tsc"
   },
   "keywords": [
