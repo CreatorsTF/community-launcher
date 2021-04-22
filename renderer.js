@@ -66,10 +66,10 @@ function OnClick_Mod(data) {
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
     content.style.backgroundPositionY = data.backgroundposY;
+    content.style.backgroundBlendMode = data.backgroundBlendMode;
 
     contentDummy.remove();
     content.style.display = "flex";
-    content.style.backgroundBlendMode = "soft-light";
 
     installButton.style.background = "";
     installButton.style.backgroundColor = "grey";
