@@ -16,6 +16,7 @@ body {
     padding: 3vh;
     z-index: 1;
     overflow-x: hidden;
+    position: relative;
 }
 
 #modlist-updating {
@@ -192,10 +193,10 @@ body {
 }
 
 #launcher-version {
-    width: 300px;
+    width: fit-content;
     color: var(--white-2);
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 15px;
+    font-size: 2vh;
     text-shadow: 1px 1px 1px var(--black);
     padding: 20px;
     position: absolute;

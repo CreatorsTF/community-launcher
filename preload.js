@@ -64,7 +64,7 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
                 if (currentClientVersion === version) {
                     launcherVersionBox.remove();
                 } else {
-                    launcherVersionBox.innerText = "A new update is available for the launcher. Check the website to download the new version. If you are using the auto-updater version, download it automatically by clicking the yellow button!";
+                    launcherVersionBox.innerText = "A new update is available for the launcher. You can check the repository to download the newest version.\nIf you are using the auto-updater version, download it automatically by clicking the yellow button!";
                 }
             } else {
                 launcherVersionBox.innerText = "Can't check for updates. Either your internet or GitHub's API is down!";
