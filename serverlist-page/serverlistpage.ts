@@ -65,7 +65,9 @@ class ServerListPage {
                     console.log(`statusCode: ${res.statusCode}`);
                         res.on('data', d => {
                             if (res.statusCode != 200) {
-                                throw new Error(res.statusCode.toString());
+                                reject(res.statusCode.toString());
+                                req.destroy();
+                                return;
                             }
                             data.push(d);
                         });
@@ -76,13 +78,15 @@ class ServerListPage {
                                 let parsed = JSON.parse(buf.toString());
                                 resolve(parsed);
                             }
-                            catch (e) {
-                                throw e;
+                            catch (e){
+                                log.error("Server List Parse error: " + e.toString());
+                                reject();
                             }
                         });
                     });
                 req.on('error', error => {
-                    throw new Error(error.toString());
+                    reject(error.toString());
+                    req.destroy();
                 });
                 req.end();
             });
@@ -105,7 +109,7 @@ class ServerListPage {
         }
 
         if(serverData == null){
-            throw new Error("Unable to get any server list data.");            
+            log.error("Unable to get any server list data.");            
         }
 
         return serverData;
