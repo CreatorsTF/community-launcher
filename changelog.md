@@ -1,10 +1,10 @@
 ## Version 0.2.2 - (ALPHA)
 ### 25/04/2021 - 23:00 (GMT)
 - Clearer error messages for when server list is unable to operate due to website issues
-- Fixed issues with error handling for donwl;oading and installing files.
+- Fixed issues with error handling for downloading and installing files.
 - Fixed a mod being set as installed even if canceled
 - Main screen UI update
-- Now hide server data for passworded servers
+- Now hide server data for password-ed servers
 - Internal code base cleanup. More classes changed to TS
 - Added missing server region names
 - Internal change to allow adding of new mods easier
