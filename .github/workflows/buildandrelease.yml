@@ -1,0 +1,160 @@
+# The name of the workflow on the "Actions" tab
+name: Build AND release launcher
+
+on:
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: Enter the current version here (don't include "v" at the start)
+        default: 0.0.0
+        required: true
+      GIT-REF:
+        description: Git Ref (optional -- in case it's needed to rollback) [IF IT ISN'T CLEAR, LEAVE IT BLANK WHEN IT'S NOT NEEDED]
+        required: false
+jobs:
+  build:
+    # Name of the workflow itself
+    name: Building and releasing launcher
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repository (latest)
+        uses: actions/checkout@v2
+        if: github.event.inputs.GIT-REF == ''
+        with:
+          persist-credentials: false
+      - name: Cloning Repository (custom git-ref)
+        uses: actions/checkout@v2
+        if: github.event.inputs.GIT-REF != ''
+        with:
+          ref: ${{ github.event.inputs.GIT-REF }}
+          persist-credentials: false
+      - name: Setting up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Installing repository's dependencies
+        run: npm install
+      - name: Compiling TypeScript files
+        run: |
+          sh tools/make_ts_compile.sh
+      - name: Building launcher (Windows -- x64 and x86)
+        run: |
+          sh tools/make_app_windows.sh
+      - name: Zipping Windows unpacked files
+        run: |
+          sh tools/zip_unpacked.sh
+      - name: Building launcher (Linux -- AppImage, deb and tar.gz)
+        run: |
+          sh tools/make_app_linux.sh
+      - name: Getting release information
+        id: release_information
+        run: |
+          echo ::set-output name=VERSION::${{ github.event.inputs.VERSION }}
+          echo ::set-output name=TODAY_DATE::$(date +'%d/%m/%Y')
+          echo ::set-output name=TODAY_HOUR::$(date +'%R')
+      - name: Creating GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.release_information.outputs.VERSION }}
+          release_name: ${{ steps.release_information.outputs.VERSION }}
+          prerelease: false
+          draft: true
+          body: |
+            ## Version ${{ steps.release_information.outputs.VERSION }} - (ALPHA)
+            ### ${{ steps.release_information.outputs.TODAY_DATE }} - ${{ steps.release_information.outputs.TODAY_HOUR }} (GMT)
+            - Insert
+            - Changes
+            - Here
+      # creators-tf-launcher-{VERSION}.tar.gz
+      - name: Uploading Linux build (tar.gz)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/creators-tf-launcher-${{ steps.release_information.outputs.VERSION }}.tar.gz
+          asset_name: creators-tf-launcher-${{ steps.release_information.outputs.VERSION }}.tar.gz
+          asset_content_type: application/x-gzip
+      # creators-tf-launcher_{VERSION}_amd64.deb
+      - name: Uploading Linux build (deb)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/creators-tf-launcher_${{ steps.release_information.outputs.VERSION }}_amd64.deb
+          asset_name: creators-tf-launcher_${{ steps.release_information.outputs.VERSION }}_amd64.deb
+          asset_content_type: application/octet-stream
+      # Creators.TF-Launcher-{VERSION}.AppImage
+      - name: Uploading Linux build (AppImage)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/Creators.TF Launcher-${{ steps.release_information.outputs.VERSION }}.AppImage
+          asset_name: Creators.TF-Launcher-${{ steps.release_information.outputs.VERSION }}.AppImage
+          asset_content_type: application/octet-stream
+      # latest-linux.yml
+      - name: Uploading latest-linux.yml
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/latest-linux.yml
+          asset_name: latest-linux.yml
+          asset_content_type: application/octet-stream
+      # Creators.TF-Launcher-Setup-{VERSION}.exe
+      - name: Uploading Windows build (exe)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/Creators.TF Launcher Setup ${{ steps.release_information.outputs.VERSION }}.exe
+          asset_name: Creators.TF-Launcher-Setup-${{ steps.release_information.outputs.VERSION }}.exe
+          asset_content_type: application/x-msdownload
+      # win-ia32-unpacked.zip
+      - name: Uploading Windows build (unpacked x86)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/win-ia32-unpacked.zip
+          asset_name: win-ia32-unpacked.zip
+          asset_content_type: application/x-zip-compressed
+      # win-unpacked.zip
+      - name: Uploading Windows build (unpacked x64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/win-unpacked.zip
+          asset_name: win-unpacked.zip
+          asset_content_type: application/x-zip-compressed
+      # latest.yml
+      - name: Uploading latest.yml
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/latest.yml
+          asset_name: latest.yml
+          asset_content_type: application/octet-stream
+      # Creators.TF-Launcher-Setup-{VERSION}.exe.blockmap
+      - name: Uploading Windows installer exe blockmap
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/Creators.TF Launcher Setup ${{ steps.release_information.outputs.VERSION }}.exe.blockmap
+          asset_name: Creators.TF-Launcher-Setup-${{ steps.release_information.outputs.VERSION }}.exe.blockmap
+          asset_content_type: application/octet-stream

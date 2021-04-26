@@ -154,13 +154,13 @@ button:first-child {
 }
 
 #version-box {
+    background-color: black;
+    padding: 1vh;
+    text-align: center;
+    border-radius: 0 2vh 0 0;
     position: absolute;
     left: 0px;
     bottom: 0px;
-    background-color: black;
-    text-align: center;
-    padding: 7px;
-    border-radius: 0px 10px 0px 0px;
 }
 
 #version-box p {

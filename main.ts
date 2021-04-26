@@ -1,5 +1,5 @@
 //@ts-ignore
-import { app, BrowserWindow, ipcMain, shell, dialog, screen, App, contextBridge } from "electron";
+import { app, BrowserWindow, ipcMain, shell, dialog, screen, App } from "electron";
 import isDev from "electron-is-dev";
 import settingsPage from "./settings-page/settingspage";
 import patchnotesPage from "./patchnotes-page/patchnotespage";
@@ -132,7 +132,7 @@ class Main {
 export default Main;
 
 app.on("ready", () => {
-    try{
+    try {
         ModListLoader.LoadLocalModList();
         Main.createWindow();
         Main.getClientCurrentVersion();

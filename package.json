@@ -6,8 +6,8 @@
   "scripts": {
     "start": "electron .",
     "compileAndStart": "npx tsc && electron .",
-    "buildWindows": "electron-builder build --win --x64 --ia32 --publish never && node buildfix.js",
-    "buildLinux": "electron-builder build --linux deb tar.gz --publish never",
+    "buildWindows": "electron-builder build --win --x64 --ia32 --publish never",
+    "buildLinux": "electron-builder build --linux AppImage deb tar.gz --publish never",
     "deploy": "electron-builder build --win --x64 --ia32 --publish always",
     "buildFix": "node buildfix.js",
     "compile": "npx tsc"

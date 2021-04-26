@@ -1,0 +1,32 @@
+# The name of the workflow on the "Actions" tab
+name: Build launcher
+
+on: workflow_dispatch
+jobs:
+  build:
+    # Name of the workflow itself
+    name: Building launcher
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repository
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Setting up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Installing repository's dependencies
+        run: npm install
+      - name: Compiling TypeScript files
+        run: |
+          sh tools/make_ts_compile.sh
+      - name: Building launcher (Windows -- x64 and x86)
+        run: |
+          sh tools/make_app_windows.sh
+      - name: Zipping Windows unpacked files
+        run: |
+          sh tools/zip_unpacked.sh
+      - name: Building launcher (Linux -- AppImage, deb and tar.gz)
+        run: |
+          sh tools/make_app_linux.sh
