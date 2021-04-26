@@ -1,5 +1,5 @@
 {
-    "version": 1.33,
+    "version": 1.34,
     "mods":
     [
         {
@@ -33,7 +33,7 @@
         {
             "name": "Creators.TF Events Servers",
             "blurb": "Content for the Events & Silly Servers",
-            "icon": "images/logos/modcirclelogos/CTFEvents.png",
+            "icon": "images/logos/modcirclelogos/ctf_events.svg",
             "titleimage": "images/logos/modlogos/eventsbanner.png",
             "backgroundimage": "images/backgrounds/events.png",
             "backgroundBlendMode": "soft-light",
@@ -87,7 +87,7 @@
         {
             "name": "Ultimate TF2 Visual Fix Pack",
             "blurb": "Community Visual Fix Pack",
-            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.png",
+            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.svg",
             "titleimage": "images/logos/modlogos/ultimate_tf2_visual_fixes_largelogo.png",
             "backgroundimage": "",
             "backgroundBlendMode": "multiply",
