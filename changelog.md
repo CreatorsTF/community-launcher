@@ -1,6 +1,18 @@
+## Version 0.2.2 - (ALPHA)
+### 25/04/2021 - 22:35 (GMT)
+- Clearer error messages for when server list is unable to operate due to website issues.
+- Fixed issues with error handling for downloading and installing files.
+- Fixed a mod being set as installed even if cancelled.
+- The mod version box will no longer appear in the page of mods that are not installed.
+- Overall UI changes to allow the launcher to dynamically resize itself.
+- Password protected servers now have their data hidden.
+- Internal code base cleanup. More classes changed to TS.
+- Added missing server region names.
+- Internal change to allow adding of new mods easier.
+
 ## Version 0.2.1 - (ALPHA)
 ### 28/12/2020 - 16:25 (GMT)
-- Added version display to settings page
+- Added version display to Settings page
 - Added "Open Log Folder" button to settings page to help with finding logs on linux.
 - Updated server mod list to be more flexable.
 - Server list for Creators.TF content now includes BalanceMod servers.

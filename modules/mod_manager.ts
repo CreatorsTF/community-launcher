@@ -373,7 +373,8 @@ class ModManager {
                     closeOnComplete: false,
                     browserWindow: {
                         webPreferences: {
-                            nodeIntegration: true
+                            nodeIntegration: true,
+                            contextIsolation: false
                         },
                         width: 550,
                         parent: Main.mainWindow,
@@ -600,7 +601,8 @@ function DownloadFiles_UI(urls){
                 closeOnComplete: false,
                 browserWindow: {
                     webPreferences: {
-                        nodeIntegration: true
+                        nodeIntegration: true,
+                        contextIsolation: false
                     },
                     width: 550,
                     parent: Main.mainWindow,
@@ -684,7 +686,8 @@ async function WriteZIPsToDirectory(targetPath, zips, currentModData){
         detail: 'Starting data extraction...',
         browserWindow: {
             webPreferences: {
-                nodeIntegration: true
+                nodeIntegration: true,
+                contextIsolation: false
             },
             parent: Main.mainWindow,
             modal: true,
@@ -852,7 +855,8 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
         detail: 'Starting data extraction...',
         browserWindow: {
             webPreferences: {
-                nodeIntegration: true
+                nodeIntegration: true,
+                contextIsolation: false
             },
             parent: Main.mainWindow,
             modal: true,

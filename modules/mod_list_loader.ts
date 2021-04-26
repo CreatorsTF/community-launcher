@@ -172,6 +172,7 @@ class ModListEntry
     icon: string;
     titleimage: string;
     backgroundimage: string;
+    backgroundBlendMode: string;
     bordercolor: string;
     backgroundposX: string;
     backgroundposY: string;
