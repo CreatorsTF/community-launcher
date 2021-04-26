@@ -2,7 +2,6 @@ node_modules
 dist
 build
 .vs
-electron-builder.yml
 *.code-workspace
 build.js
 build.bat

@@ -1,7 +1,14 @@
 # The name of the workflow on the "Actions" tab
 name: Build launcher
 
-on: workflow_dispatch
+# Run build on every push or pull request but only for the master branch
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
     # Name of the workflow itself

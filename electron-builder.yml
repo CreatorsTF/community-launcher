@@ -1,0 +1,57 @@
+directories:
+  output: dist
+  buildResources: images/installer
+appId: com.creatorstf.launcher
+productName: Creators.TF Launcher
+asar: true
+win:
+  icon: images/installer/icon.ico
+nsis:
+  oneClick: false
+  perMachine: true
+  displayLanguageSelector: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  deleteAppDataOnUninstall: true
+  shortcutName: Creators.TF Launcher
+  uninstallDisplayName: ${productName} ${version}
+  installerIcon: images/installer/installerIcon.ico
+  uninstallerIcon: images/installer/uninstallerIcon.ico
+  installerSidebar: images/installer/installerSidebar.bmp
+  uninstallerSidebar: images/installer/uninstallerSidebar.bmp
+  installerHeader: images/installer/installerHeader.bmp
+  installerHeaderIcon: images/installer/installerHeaderIcon.ico
+linux:
+  icon: images/installer/256x256.png
+  synopsis: An easier way to install, update and play TF2 content.
+  description: An easier way to install, update and play TF2 content.
+  category: Network
+deb:
+  priority: optional
+  packageCategory: net
+publish:
+  provider: github
+  owner: ampersoftware
+  repo: Creators.TF-Community-Launcher
+  releaseType: draft
+  vPrefixedTagName: false
+files:
+  [
+  "**/*",
+  "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+  "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+  "!**/node_modules/*.d.ts",
+  "!**/node_modules/.bin",
+  "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+  "!.editorconfig",
+  "!**/._*",
+  "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+  "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+  "!**/{appveyor.yml,.travis.yml,circle.yml}",
+  "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+  "!*.ts",
+  "!*.js.map",
+  "!buildfix.js"
+]
+electronVersion: 12.0.5
