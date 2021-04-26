@@ -1,3 +1,9 @@
+## Version 0.2.3 - (ALPHA)
+### 26/04/2021 - 20:45 (GMT)
+- Linux users are now able to get auto updates for the launcher by downloading the AppImage format, removing the need to manually download new versions.
+- Fixed wrong version showing for mod updates.
+- Added method to avoid the rapid navigation between mods.
+
 ## Version 0.2.2 - (ALPHA)
 ### 25/04/2021 - 22:35 (GMT)
 - Clearer error messages for when server list is unable to operate due to website issues.
