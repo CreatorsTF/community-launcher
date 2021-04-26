@@ -14,7 +14,7 @@ on:
 jobs:
   build:
     # Name of the workflow itself
-    name: Building and releasing launcher
+    name: Building and releasing
     runs-on: ubuntu-latest
     steps:
       - name: Cloning repository (latest)
