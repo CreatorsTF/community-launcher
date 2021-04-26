@@ -1,7 +1,7 @@
 # [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher) (Alpha)
 
-![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml/badge.svg)
-![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml/badge.svg)
+[![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml)
+[![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml)
 
 ## This repository contains the source code and releases for the [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher)
 

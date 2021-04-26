@@ -1,5 +1,5 @@
 # The name of the workflow on the "Actions" tab
-name: Build AND release launcher
+name: Build and release launcher
 
 on:
   workflow_dispatch:
