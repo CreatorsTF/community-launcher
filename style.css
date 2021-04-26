@@ -20,12 +20,12 @@ body {
 }
 
 #modlist-updating {
-    width: 300px;
+    margin: 0 auto;
+    width: fit-content;
+    padding: 3vh;
     color: var(--white-2);
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 30px;
-    text-shadow: 1px 1px 1px var(--black);
-    padding: 20px;
+    font-size: 3.8vh;
     text-align: center;
 }
 
