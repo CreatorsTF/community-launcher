@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14.x'
-      - name: Installing repository's dependencies
+      - name: Installing dependencies
         run: npm install
       - name: Compiling TypeScript files
         run: |
@@ -31,9 +31,6 @@ jobs:
       - name: Building launcher (Windows -- x64 and x86)
         run: |
           sh tools/make_app_windows.sh
-      - name: Zipping Windows unpacked files
-        run: |
-          sh tools/zip_unpacked.sh
       - name: Building launcher (Linux -- AppImage, deb and tar.gz)
         run: |
           sh tools/make_app_linux.sh
