@@ -21,6 +21,8 @@ var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
 
+var hasClickedInstallButton = false;
+
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
 twitter.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
@@ -34,6 +36,8 @@ document.onload = () => {
 const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 
 function OnClick_Mod(data) {
+    if(hasClickedInstallButton) return;
+
     window.log.info("Mod entry clicked: " + data.name);
     
     var bgImg;
@@ -88,6 +92,8 @@ function OnClick_Mod(data) {
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
+
+    hasClickedInstallButton = true;
 }
 
 updateButton_Download.onclick = (downloadUpdate) => {
@@ -157,6 +163,7 @@ window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
 });
 
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
+    hasClickedInstallButton = false;
     arg = arg.toLowerCase();
     installButton.innerText = arg.toUpperCase();
     if (arg != "installed" && arg != "internal error") {
