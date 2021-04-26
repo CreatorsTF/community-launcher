@@ -46,12 +46,15 @@ files:
   "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
   "!.editorconfig",
   "!**/._*",
-  "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
-  "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+  "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes,.github}",
+  "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.vscode,.nyc_output}",
   "!**/{appveyor.yml,.travis.yml,circle.yml}",
   "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
-  "!*.ts",
-  "!*.js.map",
-  "!buildfix.js"
+  "!**/*.ts",
+  "!**/*.js.map",
+  "!buildfix.js",
+  "!tools/*.sh",
+  "!CODE_OF_CONDUCT.md",
+  "!README.md"
 ]
 electronVersion: 12.0.5
