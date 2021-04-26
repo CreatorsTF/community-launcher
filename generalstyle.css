@@ -48,8 +48,8 @@ button:active {
 input {
     width: 100%;
     padding: 1vh;
-    border: 0px;
-    outline: 0px;
+    border: 0;
+    outline: 0;
     border-radius: 1vh;
     text-align: center;
     font-family: Roboto Light, Arial, sans-serif;
@@ -62,7 +62,7 @@ input {
     background: rgba(50,50,50,0.75);
     border-color: #B35215;
     border-style: solid;
-    border-width: thin;
+    border-width: 0.1vh;
     color: #E6E6E6;
     font-size: 3vh;
     font-family: Roboto Light, Arial, sans-serif;

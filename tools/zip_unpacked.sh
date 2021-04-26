@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "========== Starting zipping of unpacked Windows files =========="
-DISTDIR=dist/build
+DISTDIR=dist
 cd $DISTDIR
 
 echo "========== [ZIPPING] Creating ZIP package for Windows 32bits files =========="
