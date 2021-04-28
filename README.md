@@ -6,7 +6,7 @@
 ## This repository contains the source code and releases for the [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher)
 
 ### Core features:
-* Launcher auto-updating (Only via installer)
+* Launcher auto-updating *(Only via .exe and .AppImage)*
 * Custom mod support
 * GitHub release mod support
 * More details on our [website page](https://creators.tf/launcher)
