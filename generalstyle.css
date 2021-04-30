@@ -9,6 +9,7 @@
     --gray: #252525;
     --default-bg-color: #2B2826;
     --dark-orange: #B35215;
+    --error: #D62828;
     --subtle-shadow: rgba(0,0,0,0.35);
     --not-so-subtle-shadow: rgba(0,0,0,0.7);
     --button-update-download-color: #EBBD34;
@@ -53,7 +54,7 @@ input {
     border-radius: 1vh;
     text-align: center;
     font-family: Roboto Light, Arial, sans-serif;
-    font-size: 3vh;
+    font-size: 2.8vh;
     box-shadow: -0.5vh 0.5vh 0px #000;
 }
 

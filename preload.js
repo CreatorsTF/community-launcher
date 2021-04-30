@@ -51,6 +51,7 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
             // div.classList.toggle("entrySelected");
         }, false);
 
+        var updateButton_Fail = document.getElementById("update-button-fail");
         var launcherVersionBox = document.getElementById("launcher-version");
         const config = fs.readFileSync(path.join(__dirname, "package.json"));
         const currentClientVersion = JSON.parse(config).version;
@@ -60,14 +61,14 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
         request.onload = () => {
             if (request.status === 200) {
                 var answer = JSON.parse(request.response);
-                var version = answer.name;
+                var version = answer.tag_name;
                 if (currentClientVersion === version) {
                     launcherVersionBox.remove();
                 } else {
-                    launcherVersionBox.innerText = "A new update is available for the launcher. You can check the repository to download the newest version.\nIf you are using the auto-updater version, download it automatically by clicking the yellow button!";
+                    launcherVersionBox.innerText = "A new update is available for the launcher.";
                 }
             } else {
-                launcherVersionBox.innerText = "Can't check for updates. Either your internet or GitHub's API is down!";
+                updateButton_Fail.classList.remove("hidden");
             }
         }
     });

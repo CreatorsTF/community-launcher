@@ -5,9 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    /* background: linear-gradient(90deg, rgba(255,181,64,1) 5%, rgba(250,182,75,1) 50%, rgba(255,206,129,1) 95%); */
-    /* background: #FAB64B; */
-    background: #D69225;
+    background: #CA712D;
     background-image: url(../images/engineer_fix.svg);
     background-size: 25%;
     background-position: bottom right;
@@ -18,6 +16,7 @@ body {
     animation-fill-mode: both;
     animation-timing-function: ease-in;
     animation-duration: 0.2s;
+    filter: drop-shadow(0 0 1vh #0005)
 }
 
 #coglabel {
@@ -68,6 +67,7 @@ button {
     border-radius: 1vh;
     margin-left: 2vh;
     transition: 0.2s;
+    font-size: 2.65vh !important;
 }
 
 button:first-child {
@@ -75,7 +75,7 @@ button:first-child {
 }
 
 .inputLabelRow {
-    margin: 1vh auto;
+    margin: 1vh auto 0;
     text-align: center;
     text-shadow: 0px 0px 3vh #0007;
     font-family: Roboto Medium, Arial, sans-serif;
@@ -155,9 +155,9 @@ button:first-child {
 
 #version-box {
     background-color: black;
-    padding: 1vh;
+    padding: 1vh 1.5vh;
     text-align: center;
-    border-radius: 0 2vh 0 0;
+    border-radius: 0 1.5vh 0 0;
     position: absolute;
     left: 0px;
     bottom: 0px;

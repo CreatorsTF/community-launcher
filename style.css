@@ -11,7 +11,7 @@ body {
 #sidebar {
     min-width: 300px;
     width: 27%;
-    max-width: 30%;
+    max-width: 500px;
     background-color: var(--black-2);
     padding: 3vh;
     z-index: 1;
@@ -100,11 +100,12 @@ body {
 }
 
 .mod-info-sidebar h2 {
-    font-size: 3.35vh;
+    font-size: 3.2vh;
 }
 
 .mod-info-sidebar p {
-    font-size: 2.1vh;
+    font-size: 2vh;
+    font-family: Open Sans Light, Arial, sans-serif;
 }
 
 .updatealertnotification {
@@ -126,8 +127,8 @@ body {
 
 #box-of-buttons button {
     width: 100%;
-    font-size: 3.35vh;
-    padding: 0.75vh;
+    font-size: 3.2vh;
+    padding: 0.55vh;
     transition: 0.2s;
     border-radius: 1vh;
     margin-left: 1.5vh;
@@ -138,13 +139,13 @@ body {
     margin-left: 0px;
 }
 
-#box-of-buttons button:hover {
+#box-of-buttons .config-button:hover {
     background-color: #333;
     color: var(--white-2);
     border: 1px solid var(--gray);
 }
 
-#box-of-buttons button:active {
+#box-of-buttons .config-button:active {
     background-color: var(--gray);
 }
 
@@ -164,6 +165,10 @@ body {
 @keyframes updateAlert {
     0% { background-color: var(--button-update-update-color); }
     100% { background-color: var(--button-update-update-color); }
+}
+
+.update-buttons:hover {
+    border: 1px solid var(--gray) !important;
 }
 
 #update-button-download {
@@ -188,8 +193,9 @@ body {
     cursor: default;
 }
 
-#update-button-updated:active {
-    color: var(--black-2) !important;
+#update-button-fail {
+    background-color: var(--error);
+    cursor: not-allowed;
 }
 
 #launcher-version {
