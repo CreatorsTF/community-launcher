@@ -29,7 +29,7 @@ class JsonListSource extends ModInstallSource {
         });
     }
 
-    GetLatestVersionNumber() : Promise<number>{
+    async GetLatestVersionNumber() : Promise<number> {
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
                 resolve(json_data[this.data.version_property_name]);

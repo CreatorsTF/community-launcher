@@ -1,5 +1,5 @@
 {
-    "version": 1.33,
+    "version": 1.34,
     "mods":
     [
         {
@@ -8,6 +8,7 @@
             "icon": "images/logos/modcirclelogos/creatorstf.svg",
             "titleimage": "images/logos/modlogos/creatorstf.png",
             "backgroundimage": "images/backgrounds/creatorstf.png",
+            "backgroundBlendMode": "soft-light",
             "bordercolor": "orange",
             "backgroundposX": "left",
             "backgroundposY": "top",
@@ -32,10 +33,11 @@
         {
             "name": "Creators.TF Events Servers",
             "blurb": "Content for the Events & Silly Servers",
-            "icon": "images/logos/modcirclelogos/CTFEvents.png",
+            "icon": "images/logos/modcirclelogos/ctf_events.svg",
             "titleimage": "images/logos/modlogos/eventsbanner.png",
             "backgroundimage": "images/backgrounds/events.png",
-            "bordercolor": "#2ecc71",
+            "backgroundBlendMode": "soft-light",
+            "bordercolor": "#2ECC71",
             "backgroundposX": "right",
             "backgroundposY": "top",
             "website": "https://creators.tf/post/blog/83",
@@ -61,6 +63,7 @@
             "icon": "images/logos/modcirclelogos/gmanannouncer.png",
             "titleimage": "images/logos/modlogos/gmanannouncer.png",
             "backgroundimage": "images/backgrounds/gmanannouncer.jpg",
+            "backgroundBlendMode": "soft-light",
             "bordercolor": "#6969FF",
             "backgroundposX": "center",
             "backgroundposY": "bottom",
@@ -84,10 +87,11 @@
         {
             "name": "Ultimate TF2 Visual Fix Pack",
             "blurb": "Community Visual Fix Pack",
-            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.png",
+            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.svg",
             "titleimage": "images/logos/modlogos/ultimate_tf2_visual_fixes_largelogo.png",
             "backgroundimage": "",
-            "bordercolor": "#3e3c3f",
+            "backgroundBlendMode": "multiply",
+            "bordercolor": "#3E3C3F",
             "backgroundposX": "left",
             "backgroundposY": "top",
             "website": "",

@@ -1,8 +1,9 @@
 var content = document.getElementById("content");
-var contentDummy = document.getElementById("contentdummy");
+var contentDummy = document.getElementById("content-dummy");
 var titleImage = document.getElementById("title-image");
 var text = document.getElementById("content-text");
-var version = document.getElementById("version-text");
+var modVersion = document.getElementById("mod-version");
+var modVersionText = document.getElementById("mod-version-text");
 
 var installButton = document.getElementById("install-play-button");
 var removeButton = document.getElementById("remove-mod");
@@ -17,8 +18,10 @@ var github = document.getElementById("socialMediaGithub");
 var twitter = document.getElementById("socialMediaTwitter");
 var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
-var serverlist = document.getElementById("serverlist");
+var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
+
+var hasClickedInstallButton = false;
 
 website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
 github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
@@ -33,14 +36,15 @@ document.onload = () => {
 const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 
 function OnClick_Mod(data) {
-    window.log.info("Mod entry clicked: " + data.name);
+    if(hasClickedInstallButton) return;
 
+    window.log.info("Mod entry clicked: " + data.name);
     
     var bgImg;
-    if(data.backgroundimage != ""){
+    if (data.backgroundimage != "") {
         bgImg = data.backgroundimage;
     }
-    else{
+    else {
         bgImg = defaultBackgroundImage;
     }
 
@@ -51,7 +55,7 @@ function OnClick_Mod(data) {
         content.style.backgroundImage = `url("${"./" + bgImg}")`;
     }
 
-    if(data.titleimage == ""){
+    if (data.titleimage == "") {
         titleheader.style.display = "block";
         titleheader.innerText = data.name;
         titleImage.style.display = "none";
@@ -66,10 +70,10 @@ function OnClick_Mod(data) {
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
     content.style.backgroundPositionY = data.backgroundposY;
+    content.style.backgroundBlendMode = data.backgroundBlendMode;
 
     contentDummy.remove();
     content.style.display = "flex";
-    content.style.backgroundBlendMode = "soft-light";
 
     installButton.style.background = "";
     installButton.style.backgroundColor = "grey";
@@ -88,6 +92,8 @@ function OnClick_Mod(data) {
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
+
+    hasClickedInstallButton = true;
 }
 
 updateButton_Download.onclick = (downloadUpdate) => {
@@ -136,7 +142,7 @@ document.getElementById("settings-button").addEventListener("click", (a,b) => {
 document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-document.getElementById("serverlist").addEventListener("click", (a,b) => {
+document.getElementById("server-list").addEventListener("click", (a,b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
@@ -148,10 +154,16 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    version.innerText = "Mod version: " + arg;
+    if (arg == "?") {
+        modVersion.style.display = "none";
+    } else {
+        modVersion.style.display = "block";
+        modVersionText.innerText = "Mod version: " + arg;
+    }
 });
 
 window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
+    hasClickedInstallButton = false;
     arg = arg.toLowerCase();
     installButton.innerText = arg.toUpperCase();
     if (arg != "installed" && arg != "internal error") {
@@ -172,7 +184,6 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             removeButton.style.display = "block";
             break;
         case "internal error":
-            // installButton.style.background = "#B51804";
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
             removeButton.style.display = "none";
             break;

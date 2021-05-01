@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 ipcRenderer.on("ShowMods", (event, moddata) => {
-    document.getElementById("modlist-updating").style.display = "none";
+    document.getElementById("modlist-updating").remove();
 
     sidebar = document.getElementById("sidebar-main");
 
@@ -33,7 +33,7 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
         div.appendChild(image);
 
         let divModInfoSidebar = document.createElement("div");
-        divModInfoSidebar.className = "modInfoSidebar";
+        divModInfoSidebar.className = "mod-info-sidebar";
         div.appendChild(divModInfoSidebar);
 
         let title = document.createElement("h2");
@@ -52,7 +52,8 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
             // div.classList.toggle("entrySelected");
         }, false);
 
-        var launcherversionBox = document.getElementById("launcherversion");
+        var updateButton_Fail = document.getElementById("update-button-fail");
+        var launcherVersionBox = document.getElementById("launcher-version");
         const config = fs.readFileSync(path.join(__dirname, "package.json"));
         const currentClientVersion = JSON.parse(config).version;
         let request = new XMLHttpRequest();
@@ -61,14 +62,14 @@ ipcRenderer.on("ShowMods", (event, moddata) => {
         request.onload = () => {
             if (request.status === 200) {
                 var answer = JSON.parse(request.response);
-                var version = answer.name;
+                var version = answer.tag_name;
                 if (currentClientVersion === version) {
-                    launcherversionBox.remove();
+                    launcherVersionBox.remove();
                 } else {
-                    launcherversionBox.innerText = "A new update is available for the launcher. Check the website to download the new version. If you are using the auto-updater version, download it automatically by clicking the yellow button!";
+                    launcherVersionBox.innerText = "A new update is available for the launcher.";
                 }
             } else {
-                launcherversionBox.innerText = "Can't check for updates. Either your internet or GitHub's API is down!";
+                updateButton_Fail.classList.remove("hidden");
             }
         }
     });

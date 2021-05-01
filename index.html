@@ -2,8 +2,8 @@
     <head>
         <meta charset="utf-8">
         <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://api.github.com/ https://creators.tf/; script-src 'self'">
         <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest https://creators.tf https://fastdl.creators.tf 'self'; img-src 'self' https://creators.tf https://fastdl.creators.tf; style-src 'self'; base-uri 'self'; form-action 'self'; font-src 'self';">
         <title>Creators.TF Launcher - Alpha Version</title>
         <link rel="stylesheet" href="node_modules/@mdi/font/css/materialdesignicons.min.css">
         <link rel="stylesheet" href="fonts/fonts.css">
@@ -12,17 +12,17 @@
     </head>
     <body>
         <div id="sidebar">
-            <div id="sidebar-main">
-                <div id="boxOfButtons">
-                    <button id="settings-button" title="Settings section. This is where you can change your folder directories and see other technical stuff."><i class="mdi mdi-cog"></i></button>
-                    <button id="patchnotes-button" title="Patch notes. Here we put all the changes that happened related to the launcher."><i class="mdi mdi-format-list-bulleted-square"></i></button>
-                    <button id="update-button-updated" class="hidden" title="Your launcher is up to date."><i class="mdi mdi-check-bold"></i></button>
-                    <button id="update-button-download" class="hidden" title="An update is available. Download now?"><i class="mdi mdi-download"></i></button>
-                    <button id="update-button-downloading" class="hidden" title="A new update is being downloaded."><i class="mdi mdi-loading"></i></button>
-                    <button id="update-button-update" class="hidden" title="An update is installed. Update now?"><i class="mdi mdi-sync-alert"></i></button>
-                </div>
-                <div id="modlist-updating">Getting lastest mod data...</div>
-                <div id="launcherversion">Checking for updates...</div>
+            <div id="box-of-buttons">
+                <button id="settings-button" class="config-button" title="Settings section. This is where you can change your folder directories and see other technical stuff."><i class="mdi mdi-cog"></i></button>
+                <button id="patchnotes-button" class="config-button" title="Patch notes. Here we put all the changes that happened related to the launcher."><i class="mdi mdi-format-list-bulleted-square"></i></button>
+                <button id="update-button-fail" class="hidden" title="Can't check for updates, either GitHub or your internet is down."><i class="mdi mdi-alert-circle"></i></button>
+                <button id="update-button-updated" class="hidden" title="Your launcher is up to date."><i class="mdi mdi-check-bold"></i></button>
+                <button id="update-button-download" class="update-buttons hidden" title="An update is available. Download now?"><i class="mdi mdi-download"></i></button>
+                <button id="update-button-downloading" class="hidden"><i class="mdi mdi-loading"></i></button>
+                <button id="update-button-update" class="update-buttons hidden" title="An update is installed. Update now?"><i class="mdi mdi-sync-alert"></i></button>
+            </div>
+            <p id="modlist-updating">Getting latest mod data...</p>
+            <p id="launcher-version">Checking for launcher updates...</p>
             </div>
             <div id="quickplay" class="quickplay-toggle">
                 <div class="trigger">
@@ -55,37 +55,35 @@
                 </div>
             </div>
         </div>
-        <div id="contentdummy" class="defaultbg"></div>
+        <div id="content-dummy" class="default-bg"></div>
         <div id="content">
             <section id="content-area">
-                <div id="content-area-back">
-                    <div id="version">
-                        <i class="mdi mdi-hammer-wrench"></i> <span id="version-text">MOD VERSION</span>
-                    </div>
-                    <div id="boxOfModButtons">
-                        <button id="serverlist" title="Server list."><i class="mdi mdi-server"></i></button>
-                        <button id="remove-mod" title="Uninstall mod."><i class="mdi mdi-delete-forever"></i></button>
-                    </div>
+                <div id="mod-version">
+                    <i class="mdi mdi-hammer-wrench"></i> <span id="mod-version-text">MOD VERSION</span>
                 </div>
-                <div id="content-area-front">
-                    <div class="mod-info">
-                    <div id="title-image-holder">
-                        <h1 id="title-header">Mod Name Here</h1>
-                        <img id="title-image">
-                    </div>
-                    <p id="content-text">Description Text goes here</p>
-                    <section class="modInfoBox">
-                        <button id="socialMediaGithub"></button>
-                        <button id="socialMediaWebsite"></button>
-                        <button id="socialMediaTwitter"></button>
-                        <button id="socialMediaInstagram"></button>
-                        <button id="socialMediaDiscord"></button>
-                    </section>
+                <div id="box-of-mod-buttons">
+                    <button id="server-list" title="Server List."><i class="mdi mdi-server"></i></button>
+                    <button id="remove-mod" title="Uninstall Mod."><i class="mdi mdi-delete-forever"></i></button>
+                </div>
+                <div id="content-area-mod">
+                    <div id="mod-info">
+                        <div id="title-image-holder">
+                            <h1 id="title-header">Mod Name Here</h1>
+                            <img id="title-image">
+                        </div>
+                        <p id="content-text">Description Text goes here</p>
+                        <section id="mod-info-box">
+                            <button id="socialMediaGithub"></button>
+                            <button id="socialMediaWebsite"></button>
+                            <button id="socialMediaTwitter"></button>
+                            <button id="socialMediaInstagram"></button>
+                            <button id="socialMediaDiscord"></button>
+                        </section>
                     </div>
                 </div>
             </section>
             <button id="install-play-button">Loading...</button>
-            <!--<div id="fadebehindbutton"></div>-->
+            <div id="fadebehindbutton"></div>
         </div>
         <script type="module" src="./browser/quickplay-renderer.js"></script>
         <script src="./renderer.js"></script>

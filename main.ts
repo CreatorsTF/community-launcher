@@ -33,21 +33,26 @@ class Main {
     static screenWidth: number;
     static screenHeight: number;
     static quickPlay: Quickplay;
+    static minWindowWidth: number;
+    static minWindowHeight: number;
 
     public static createWindow() {
         //@ts-ignore
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
         this.screenWidth = width;
         this.screenHeight = height;
+        this.minWindowWidth = 960;
+        this.minWindowHeight = 540;
         try {
             Main.mainWindow = new BrowserWindow({
-                minWidth: 960,
-                minHeight: 540,
+                minWidth: this.minWindowWidth,
+                minHeight: this.minWindowHeight,
                 width: this.screenWidth-200,
                 height: this.screenHeight-150,
                 webPreferences: {
                     preload: path.join(__dirname, "preload.js"),
-                    nodeIntegration: false
+                    nodeIntegration: false,
+                    contextIsolation: false
                 },
                 center: true,
                 maximizable: true,
@@ -153,14 +158,6 @@ app.on("ready", () => {
     }
 });
 
-app.on("activate", function() {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        Main.createWindow();
-    }
-});
-
 app.on("window-all-closed", function() {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
@@ -219,7 +216,7 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
     Object.assign(realModList, modList);
 
     var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
-    if(providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, providers);
+    if (providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, providers);
     else{
         if (isDev){
             Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");

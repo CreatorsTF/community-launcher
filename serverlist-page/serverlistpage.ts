@@ -11,13 +11,14 @@ class ServerListPage {
     static serverlistWindow: BrowserWindow;
     static latestProviders: Array<number>
 
-    static OpenWindow(mainWindow : any, screenWidth: number, screenHeight: number, providers: Array<number>) {
+    static OpenWindow(mainWindow: any, screenWidth: number, screenHeight: number, minWindowWidth: number, minWindowHeight: number, providers: Array<number>) {
         log.info("Loading Server List window...");
         this.serverlistWindow = new BrowserWindow({
             parent: mainWindow,
             webPreferences: {
                 preload: path.join(__dirname, "serverpage-preload.js"),
-                nodeIntegration: false
+                nodeIntegration: false,
+                contextIsolation: false
             },
             modal: true,
             show: false,
@@ -26,9 +27,9 @@ class ServerListPage {
             maximizable: true,
             resizable: true,
             autoHideMenuBar: true,
-            minWidth: 960,
-            minHeight: 600,
-            width: screenWidth-300,
+            minWidth: minWindowWidth,
+            minHeight: minWindowHeight,
+            width: screenWidth-250,
             height: screenHeight-100
         });
         if (!isDev) this.serverlistWindow.removeMenu();
@@ -64,7 +65,9 @@ class ServerListPage {
                     console.log(`statusCode: ${res.statusCode}`);
                         res.on('data', d => {
                             if (res.statusCode != 200) {
-                                throw new Error(res.statusCode.toString());
+                                reject(res.statusCode.toString());
+                                req.destroy();
+                                return;
                             }
                             data.push(d);
                         });
@@ -75,13 +78,15 @@ class ServerListPage {
                                 let parsed = JSON.parse(buf.toString());
                                 resolve(parsed);
                             }
-                            catch (e) {
-                                throw e;
+                            catch (e){
+                                log.error("Server List Parse error: " + e.toString());
+                                reject();
                             }
                         });
                     });
                 req.on('error', error => {
-                    throw new Error(error.toString());
+                    reject(error.toString());
+                    req.destroy();
                 });
                 req.end();
             });
@@ -104,7 +109,7 @@ class ServerListPage {
         }
 
         if(serverData == null){
-            throw new Error("Unable to get any server list data.");            
+            log.error("Unable to get any server list data.");            
         }
 
         return serverData;

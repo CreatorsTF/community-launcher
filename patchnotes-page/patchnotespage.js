@@ -11,7 +11,8 @@ function OpenWindow(screenWidth, screenHeight) {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
+            contextIsolation: false
         },
         modal: true,
         show: false,
@@ -21,8 +22,8 @@ function OpenWindow(screenWidth, screenHeight) {
         resizable: true,
         autoHideMenuBar: true,
         minWidth: 960,
-        minHeight: 600,
-        width: screenWidth-350,
+        minHeight: 540,
+        width: screenWidth-250,
         height: screenHeight-100
     });
     if (!isDev) patchNotesWindow.removeMenu();

@@ -1,20 +1,39 @@
+## Version 0.2.3 - (ALPHA)
+### 26/04/2021 - 20:45 (GMT)
+- Linux users are now able to get auto updates for the launcher by downloading the AppImage format, removing the need to manually download new versions.
+- Fixed wrong version showing for mod updates.
+- Added method to avoid the rapid navigation between mods.
+
+## Version 0.2.2 - (ALPHA)
+### 25/04/2021 - 22:35 (GMT)
+- Clearer error messages for when server list is unable to operate due to website issues.
+- Fixed issues with error handling for downloading and installing files.
+- Fixed a mod being set as installed even if cancelled.
+- The mod version box will no longer appear in the page of mods that are not installed.
+- Overall UI changes to allow the launcher to dynamically resize itself.
+- Password protected servers now have their data hidden.
+- Internal code base cleanup. More classes changed to TS.
+- Added missing server region names.
+- Internal change to allow adding of new mods easier.
+
 ## Version 0.2.1 - (ALPHA)
 ### 28/12/2020 - 16:25 (GMT)
-- Added version display to settings page
+- Added version display to Settings page
 - Added "Open Log Folder" button to settings page to help with finding logs on linux.
 - Updated server mod list to be more flexable.
 - Server list for Creators.TF content now includes BalanceMod servers.
 - Events servers can now be seen on the server list when viewed from the "Creators.TF Events Servers" mod.
 - Updated events content logo.
 - Fixed bug preventing mod installation using new mod list data.
-- Changed Events server content install location to /download/ (existing installations un affected).
+- Changed Events server content install location to `/download/` (existing installations are unaffected).
 - Added cache work around to ensure launcher can get latest mod information sooner.
+
 
 ## Version 0.2 - (ALPHA)
 ### 29/11/2020 - 21:00 (GMT)
 - Added Creators.TF Events Servers content to launcher. (Thanks Kaya for the artwork!)
 - Added Ultimate TF2 fixes to the launcher. (Thanks agrastiOs!)
-- Better error handling for Cloud flare issues
+- Better error handling for Cloudflare issues
 - Fixed bug with mod removal failing.
 - Added support to cancel downloads and installs.
 - Should have fixed error of download never finishing. (Please open an Issue if you get this still).
@@ -22,6 +41,7 @@
 - Fixed issue with failing to write zip file contents
 - Fixed file name retrieval from downloaded files.
 - Fixed some main page styling issues.
+
 
 ## Version 0.1.32 - (ALPHA)
 ### 25/10/2020 - 14:35 (GMT)

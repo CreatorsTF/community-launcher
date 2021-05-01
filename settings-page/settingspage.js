@@ -15,7 +15,8 @@ function OpenWindow(screenWidth, screenHeight, configObject) {
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "settingspage-preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
+            contextIsolation: false
         },
         modal: true,
         show: false,
@@ -25,8 +26,8 @@ function OpenWindow(screenWidth, screenHeight, configObject) {
         resizable: true,
         autoHideMenuBar: true,
         minWidth: 960,
-        minHeight: 600,
-        width: screenWidth-325,
+        minHeight: 540,
+        width: screenWidth-250,
         height: screenHeight-100
     });
     if (!isDev) settingsWindow.removeMenu();

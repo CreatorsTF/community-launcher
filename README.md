@@ -1,9 +1,12 @@
 # [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher) (Alpha)
 
+[![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml)
+[![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml)
+
 ## This repository contains the source code and releases for the [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher)
 
 ### Core features:
-* Launcher auto-updating (Only via installer)
+* Launcher auto-updating *(Only via .exe and .AppImage)*
 * Custom mod support
 * GitHub release mod support
 * More details on our [website page](https://creators.tf/launcher)
@@ -30,6 +33,7 @@ The launcher is currently in an alpha state so any help is appreciated.
 If you want to build the launcher yourself, you need to have [Node.JS](https://nodejs.org/en/download/) installed, which should also include [npm](https://www.npmjs.com/get-npm).
 Clone the repository using git *(or download from this page)* and do `npm install` in the main repository using your system's CLI to download the required packages.
 
-You can start the launcher for testing purposes without building via `npm start`.
-You can build for Windows or Linux via the included build scripts using `npm run buildwindows` or `npm run buildlinux`.
-If you need, you can edit these in [package.json](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/7f7c202fa949aae20579d1d7c51e5cdcaa33c4bc/package.json#L8) to build to your liking, but changes made to these should not be committed if you plan to make a PR.
+You can start the launcher for testing purposes without building via `npm run compileAndStart`.
+
+You can build for Windows or Linux via the included build scripts using `npm run buildWindows` or `npm run buildLinux`.
+If you need, you can edit these in [package.json](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/package.json#L9) to build to your liking, but changes made to these should not be committed if you plan to make a PR.
