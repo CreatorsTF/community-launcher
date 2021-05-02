@@ -102,10 +102,10 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                     serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
                     serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
 
-                    let mapPic = document.createElement("div");
-                    serverDOMData.map.appendChild(mapPic);
-                    mapPic.className = "mapCover";
-                    mapPic.style.backgroundImage = server.passworded ? "" : "url(" + mapThumb + `${server.map}` + ")";
+                    // let mapPic = document.createElement("div");
+                    // serverDOMData.map.appendChild(mapPic);
+                    // mapPic.className = "mapCover";
+                    // mapPic.style.backgroundImage = server.passworded ? "" : "url(" + mapThumb + `${server.map}` + ")";
 
                     serverDOMData.players.innerHTML = server.passworded ? "<p>??/??</p>" : `<p>${server.online}/${server.maxplayers}</p>`;
                     serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
@@ -165,10 +165,11 @@ function CreateServerDOMElements(serverRegionMap){
     for (const region of serverRegionMap) {
         var heading = document.createElement("span");
         var headingFlag = document.createElement("i");
+        var regionName = region[0].toLowerCase();
 
         container.appendChild(heading);
         heading.className = "serverRegions";
-        var regionName = region[0].toLowerCase();
+    
         if (serverNames.has(regionName)) {
             heading.innerText = serverNames.get(regionName);
             headingFlag.className = "flag-icon flag-icon-" + regionName;
@@ -176,6 +177,7 @@ function CreateServerDOMElements(serverRegionMap){
         else {
             heading.innerText = regionName.toUpperCase();
         }
+
         heading.appendChild(headingFlag);
         heading.innerHTML += arrowDownHTML;
 

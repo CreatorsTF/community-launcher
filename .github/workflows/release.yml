@@ -37,6 +37,9 @@ jobs:
       - name: Compiling TypeScript files
         run: |
           sh tools/make_ts_compile.sh
+      - name: Compiling Sass files
+        run: |
+          sh tools/make_sass_compile.sh
       - name: Building launcher (Windows -- x64 and x86)
         run: |
           sh tools/make_app_windows.sh

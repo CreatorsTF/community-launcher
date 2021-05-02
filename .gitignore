@@ -20,3 +20,5 @@ modules/utilities.js
 modules/mod_sources/github_source.js
 modules/mod_sources/jsonlist_source.js
 modules/mod_sources/mod_source_base.js
+
+*.css
