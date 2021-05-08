@@ -1,5 +1,5 @@
 # The name of the workflow on the "Actions" tab
-name: Build launcher
+name: Build
 
 # Run build on every push or pull request but only for the master branch
 on:
