@@ -21,6 +21,8 @@ $button-update-alert-secondary-color: #2963A9;
 $button-server-list: #FF8E37;
 $button-remove-mod: #B74848;
 
+$default-border-radius: 1vh;
+
 $down: #D62828;
 $up: #008F00;
 $blue: #2963A9;
@@ -72,7 +74,7 @@ button {
 }
 
 small {
-    font-size: 2vh;
+    font-size: 1.5vh;
 }
 
 input {
@@ -80,7 +82,7 @@ input {
     padding: 1vh;
     border: 0;
     outline: 0;
-    border-radius: 1vh;
+    border-radius: $default-border-radius;
     text-align: center;
     font-family: Roboto Light, Arial, sans-serif;
     font-size: 2.8vh;

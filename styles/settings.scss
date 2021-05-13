@@ -35,7 +35,9 @@ body {
 }
 
 
-h1, p { color: $black-3; }
+h1, p {
+    color: $black-3;
+}
 
 h1 {
     font-family: Roboto Black, Arial, sans-serif;
@@ -53,7 +55,7 @@ p {
 }
 
 button {
-    border-radius: 1vh;
+    border-radius: $default-border-radius;
     margin-left: 2vh;
     transition: 0.2s;
     font-size: 2.65vh !important;
@@ -64,9 +66,9 @@ button:first-child {
 }
 
 .inputLabelRow {
-    margin: 1vh auto 0;
+    margin: 0 auto;
     text-align: center;
-    text-shadow: 0px 0px 3vh $not-so-subtle-shadow;
+    text-shadow: 0px 0px 10vh $not-so-subtle-shadow;
     font-family: Roboto Medium, Arial, sans-serif;
     font-size: 5vh;
     color: $white-2;
@@ -91,10 +93,10 @@ button:first-child {
 
 #config-debug {
     background: radial-gradient(ellipse at bottom left, $dark-gray, $black-3);
-    width: 75%;
-    margin: 20px 0px 0px 0px;
-    padding: 10px;
-    border-radius: 10px;
+    width: 70%;
+    margin: 3vh 0 0 0;
+    padding: 2vh;
+    border-radius: 1vh;
     display: none;
     text-align: center;
 }
