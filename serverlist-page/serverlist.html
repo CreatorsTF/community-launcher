@@ -5,9 +5,7 @@
         <title>Creators.TF Launcher - Alpha Version - Server List</title>
         <link rel="stylesheet" href="../node_modules/flag-icon-css/css/flag-icon.min.css">
         <link rel="stylesheet" href="../node_modules/@mdi/font/css/materialdesignicons.min.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
-        <link rel="stylesheet" href="../generalstyle.css">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../styles/serverlist.css">
     </head>
     <body>
         <h1 id="modname">Creators.TF - Server List</h1>
@@ -15,17 +13,17 @@
             <button id="refreshButton"><i class="mdi mdi-refresh-circle blue"></i></button>
         </div>
         <div id="server-container"></div>
-        <div id="loading">LOADING...</div>
+        <p id="loading">LOADING...</p>
         <div id="failMessage" class="error">
             <p>Failed to get servers.</p>
-            <p>Your internet may be down OR Creators.TF may be down.</p>
+            <p>Either your internet OR our servers are down.</p>
             <p>Go to our Twitter (@CreatorsTF) for more info!</p>
         </div>
         <div id="cloudflare-error" class="error">
             <p>The server window is currently unavaliable due to Cloudflare.</p>
-            <p><a href="#" id="serverpagea">Please use the server page on our website.</a></p>
+            <a href="#" id="serverpagea">Please use the server page on our website.</a>
             <br>
-            <p><i>If this error persists for over a few days please check on our Discord for more info.</i></p>
+            <i>If this error persists for over a few days please check on our Discord for more info.</i>
         </div>
         <script src="../consolewarning.js"></script>
     </body>
