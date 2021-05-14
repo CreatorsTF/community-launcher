@@ -184,7 +184,8 @@
                     "itemname": "medium_high",
                     "displayname": "Medium High",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
-                    "asset_index": 6
+                    "asset_index": 6,
+                    "default": true
                 },
                 {
                     "modname": "Mastercomfig",

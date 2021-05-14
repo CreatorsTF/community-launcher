@@ -101,11 +101,15 @@ function OnClick_Mod(data) {
         //Clear the select
         select.innerHTML = '';
         //Populate the select
+        let defaultItem
         data.items.forEach(element => {
             let opt = document.createElement("option");
             opt.value = element.itemname;
             opt.innerHTML = element.displayname;
             select.appendChild(opt);
+            if (element.default == true) {
+                opt.selected = true;
+            }
         });
     }
     else {
