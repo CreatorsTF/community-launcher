@@ -306,7 +306,10 @@ ipcMain.on("GetModData", async (event, args) => {
     });
 });
 
-
+ipcMain.on("get-config", async (event, arg) => {
+    let res = await _config.GetConfig();
+    event.reply(res);
+})
 
 
 //Quickplay

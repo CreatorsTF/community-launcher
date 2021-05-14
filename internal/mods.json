@@ -22,6 +22,7 @@
             "modid": "",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
+                "modname": "Creators.tf",
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/ctfpack.json",
                 "cloudflarebypass": true,
@@ -49,6 +50,7 @@
             "modid": "",
             "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
             "install": {
+                "modname": "Creators.TF Events Servers",
                 "type": "jsonlist",
                 "get_url": "https://fastdl-events.creators.tf/launcher/eventscontent.json",
                 "cloudflarebypass": true,
@@ -76,6 +78,7 @@
             "modid": "",
             "contenttext": "Custom Creators.TF G-Man Announcer Pack",
             "install": {
+                "modname": "GMan Announcer",
                 "type": "jsonlist",
                 "get_url": "https://fastdl.creators.tf/launcher/gman_announcer.json?v=1",
                 "cloudflarebypass": true,
@@ -102,6 +105,7 @@
             "serverlist": "",
             "contenttext": "Community made Visual Fixes for various issues with cosmetics, weapons, particles, visual effects,\n plus fixing Dragon’s Fury lag, opaque and glitchy Flamethrower flames, worse looking stock weapons, and more!",
             "install": {
+                "modname": "Ultimate TF2 Visual Fix Pack",
                 "type": "github",
                 "owner": "agrastiOs",
                 "name": "Ultimate-TF2-Visual-Fix-Pack",
@@ -112,11 +116,11 @@
         {
             "name": "Mastercomfig",
             "blurb": "Mastercomfig",
-            "icon": "images/logos/modcirclelogos/tf2_visual_fixes.svg",
-            "titleimage": "images/logos/modlogos/ultimate_tf2_visual_fixes_largelogo.png",
-            "backgroundimage": "",
+            "icon": "images/logos/modcirclelogos/mastercomfig_logo_transparent.svg",
+            "titleimage": "images/logos/modcirclelogos/mastercomfig_logo_transparent.svg",
+            "backgroundimage": "images/backgrounds/cp_badlands01.jpg",
             "backgroundBlendMode": "multiply",
-            "bordercolor": "#3E3C3F",
+            "bordercolor": "#B2DFDB",
             "backgroundposX": "left",
             "backgroundposY": "top",
             "website": "https://mastercomfig.com/",
@@ -127,10 +131,13 @@
             "serverlist": "",
             "contenttext": "Several optimization scripts for modern hardware",
             "install": {
-                "type": "githubcollection"
+                "modname": "Mastercomfig",
+                "type": "githubcollection",
+                "targetdirectory": "{tf2_dir}/tf/custom/"
             },
             "items": [
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -140,6 +147,7 @@
                     "asset_index": 15
                 },
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -149,6 +157,7 @@
                     "asset_index": 4
                 },
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -158,6 +167,7 @@
                     "asset_index": 7
                 },
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -167,6 +177,7 @@
                     "asset_index": 8
                 },
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -176,6 +187,7 @@
                     "asset_index": 6
                 },
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -185,6 +197,7 @@
                     "asset_index": 3
                 },
                 {
+                    "modname": "Mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",

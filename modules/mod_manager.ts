@@ -127,7 +127,7 @@ class ModManager {
 
     //Trigger the correct response to the current mod depending on its state.
     //This is called when the Install / Update / Installed button is pressed in the UI.
-    static async ModInstallPlayButtonClick(args?){
+    static async ModInstallPlayButtonClick(args? : string){
         ElectronLog.log("Install button was clicked! Reacting based on state: " + this.currentModState)
         if (this.currentModData == null){
             this.FakeClickMod();
@@ -139,6 +139,7 @@ class ModManager {
             case "NOT_INSTALLED":
                 //We should try to install this mod!
                 //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
+
                 ElectronLog.log("Will validate TF2 path before starting download...");
                 if(!await ValidateTF2Dir()){                
                     this.FakeClickMod();
@@ -150,9 +151,21 @@ class ModManager {
                 //Perform mod download and install.
                 try {
                     let _url = "";
+                    //TS won't let me delete this bit
+                    //This is a typeguard BTW to separate the collections from the non-collections
                     if ("push" in this.source_manager.data) {
                         //It is an install[] then
-                        _url = await this.source_manager.GetFileURL(args);
+                        //Args is a string. Convert it to a number
+                        let desiredCollectionVersion = 0;
+                        for (let i = 0; i < this.source_manager.data.length; i++) {
+                            const element = this.source_manager.data[i];
+                            if (element.itemname == args) {
+                                //We've found it!
+                                desiredCollectionVersion = i;
+                                break;
+                            }
+                        }
+                        _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
                     }
                     else {
                         //It is an Install
@@ -161,7 +174,13 @@ class ModManager {
                     ElectronLog.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                     let result = await this.ModInstall(_url);
                     if(result){
-                        await this.SetupNewModAsInstalled();
+                        //This is a typeguard BTW to separate the collections from the non-collections
+                        if ("push" in this.source_manager.data) {
+                            await this.SetupNewModAsInstalled(args);
+                        }
+                        else {
+                            await this.SetupNewModAsInstalled();
+                        }
                     }
                 } catch (e) {
                     this.FakeClickMod();
@@ -191,7 +210,34 @@ class ModManager {
                 if(button.response == 0) {
                     //Do the update!
                     ElectronLog.log("Starting update process...");
-                    await this.UpdateCurrentMod();
+                    
+                    let configObj = await config.GetConfig();
+                    let modList = configObj.current_mod_versions;
+                    //Find the current mod version we want
+                    let desiredCollectionVersion = 0;
+                    let collectionVersionInstalled : string;
+                    if ("push" in this.source_manager.data) {
+                        //It is an install[] then
+                        modList.forEach(element => {
+                            if (element.name == this.source_manager.data[0].modname) {
+                                //We've found our mod
+                                collectionVersionInstalled = element.collectionversion;
+                            }
+                        });
+                        //Args is a string. Convert it to a number
+                        for (let i = 0; i < this.source_manager.data.length; i++) {
+                            const element = this.source_manager.data[i];
+                            if (element.itemname == collectionVersionInstalled) {
+                                //We've found it!
+                                desiredCollectionVersion = i;
+                                break;
+                            }
+                        }
+                         await this.UpdateCurrentMod(desiredCollectionVersion);
+                    }
+                    else {
+                        await this.UpdateCurrentMod();
+                    }
                 }
                 break;
             default:
@@ -201,7 +247,7 @@ class ModManager {
     }
 
     //Attempt an update. If possible then we do it. Will try to do it incrementally or a full re download.
-    static async UpdateCurrentMod() {
+    static async UpdateCurrentMod(collectionVersion? : number) {
         //Validate tf2 dir, then make sure we have the current data for the mod.
         if (!await ValidateTF2Dir()) {
             this.FakeClickMod();
@@ -310,6 +356,26 @@ class ModManager {
                         });
                     }
                 }
+                else if (this.currentModData.install.type == "githubcollection") {
+                    //Current mod is not a jsonlist type. Just get and install the latest.
+                    const _url = await this.source_manager.GetFileURL(collectionVersion);
+                    ElectronLog.log("Mod is type GitHub Collection, will update using the most recent release url: " + _url);
+                    let result = await this.ModInstall(_url);
+                    if(result){
+                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                        //Save the config changes.
+                        await config.SaveConfig(Main.config);
+
+                        this.FakeClickMod();
+
+                        await dialog.showMessageBox(Main.mainWindow, {
+                            type: "info",
+                            title: "Mod Update",
+                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                            buttons: ["OK"]
+                        });
+                    }
+                }
                 else {
                     ElectronLog.error("Unknown mod type found during update attempt.");
                     await ErrorDialog("Unknown mod type found during update attempt.", "Error");
@@ -345,14 +411,16 @@ class ModManager {
     }
 
     //Set up the config information to actually define this mod as installed. MUST BE DONE.
-    static async SetupNewModAsInstalled(){
+    static async SetupNewModAsInstalled(collectionVersion? : string){
         //Finish up the installation process.
         //Set the current version of the mod in the config.
 
         let versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
         //If we didnt update the version of an exstisting object. Add it.
-        if(!versionUpdated) Main.config.current_mod_versions.push({name: this.currentModData.name, version: this.currentModVersionRemote})
+        if(!versionUpdated) Main.config.current_mod_versions.push({name: this.currentModData.name,
+            version: this.currentModVersionRemote,
+            collectionversion: collectionVersion})
 
         //Save the config changes.
         await config.SaveConfig(Main.config);
@@ -516,8 +584,9 @@ class ModManager {
             return null;
         }
     }
+    ///Only use the argument if using collections
+    static GetRealInstallPath(asset_name?){
 
-    static GetRealInstallPath(){
         let realPath = this.currentModData.install.targetdirectory;
 
         //To ensure the path is correct when resolved. Good one Zonical.

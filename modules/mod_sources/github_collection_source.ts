@@ -2,6 +2,7 @@ import  ModInstallSource from "./mod_source_base.js";
 import CollectionSource from "./collection_source"
 import https from "https";
 import { Install } from "modules/mod_list_loader.js";
+import ElectronLog from "electron-log";
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 
@@ -45,7 +46,7 @@ class GithubCollectionSource extends CollectionSource {
         return `${githubData[0].name} (${versionNumber})`;
     }
 
-    async GetFileURL(asset_number: number) : Promise<string>{
+    async GetFileURL(collection_version: number) : Promise<string>{
         return new Promise((resolve, reject) => {
             //Try to get the download url for the release asset.
             this._GetGithubData().then((data) => {
@@ -53,14 +54,13 @@ class GithubCollectionSource extends CollectionSource {
                 if(releaseAssets != null && releaseAssets != []){
                     let asset : Asset;
                     
-                    if(this.data.hasOwnProperty("asset_index")) asset = releaseAssets[this.data[asset_number].asset_index];
-                    else asset = releaseAssets[0];
+                    asset = releaseAssets[this.data[collection_version].asset_index];
 
                     if(asset != null){
                         resolve(asset.browser_download_url);
                     }
 
-                    reject("This Github repositorys latest release was missing a usable asset.");
+                    reject("This Github repositories latest release was missing a usable asset.");
                 }
                 else reject("This Github repository has no releases avaliable.");
              }).catch(reject);
@@ -72,6 +72,7 @@ class GithubCollectionSource extends CollectionSource {
             //Construct initial request url to github api
             //Use the first one
             let url = github_api_url + `repos/${this.data[0].owner}/${this.data[0].name}/releases`;
+            ElectronLog.log("Url for releases is: " + url)
             var options = {
                 headers: {
                   'User-Agent': 'creators-tf-launcher'

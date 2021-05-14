@@ -1,4 +1,4 @@
-const { ipcRenderer } = require("electron");
+//const { ipcRenderer } = require("electron");
 
 var content = document.getElementById("content");
 var contentDummy = document.getElementById("content-dummy");
@@ -65,6 +65,7 @@ function OnClick_Mod(data) {
     else {
         titleImage.src = data.titleimage;
         titleImage.style.display = "block";
+        titleImage.style.height = titleImage.style.height > (500 * (window.height / 100)) ? (500 * (window.height / 100)): true;
         titleheader.style.display = "none";
     }
 
@@ -98,9 +99,13 @@ function OnClick_Mod(data) {
         //Do stuff for collections
         let select = document.getElementById("collection-versions");
         select.style.display = "block";
+        //Clear the select
+        select.innerHTML = '';
+        //Populate the select
         data.items.forEach(element => {
             let opt = document.createElement("option");
-            opt.va = element.displayname;
+            opt.value = element.itemname;
+            opt.innerHTML = element.displayname;
             select.appendChild(opt);
         });
     }

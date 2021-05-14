@@ -314,6 +314,7 @@ body {
 #title-image {
     width: 100% !important;
     pointer-events: none;
+    max-height: 20vh;
 }
 
 #title-header {

@@ -56,6 +56,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var collection_source_1 = __importDefault(require("./collection_source"));
 var https_1 = __importDefault(require("https"));
+var electron_log_1 = __importDefault(require("electron-log"));
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 var github_api_url = "https://api.github.com/";
 var GithubCollectionSource = /** @class */ (function (_super) {
@@ -114,7 +115,7 @@ var GithubCollectionSource = /** @class */ (function (_super) {
             });
         });
     };
-    GithubCollectionSource.prototype.GetFileURL = function (asset_number) {
+    GithubCollectionSource.prototype.GetFileURL = function (collection_version) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -124,14 +125,11 @@ var GithubCollectionSource = /** @class */ (function (_super) {
                             var releaseAssets = data[0].assets;
                             if (releaseAssets != null && releaseAssets != []) {
                                 var asset = void 0;
-                                if (_this.data.hasOwnProperty("asset_index"))
-                                    asset = releaseAssets[_this.data[asset_number].asset_index];
-                                else
-                                    asset = releaseAssets[0];
+                                asset = releaseAssets[_this.data[collection_version].asset_index];
                                 if (asset != null) {
                                     resolve(asset.browser_download_url);
                                 }
-                                reject("This Github repositorys latest release was missing a usable asset.");
+                                reject("This Github repositories latest release was missing a usable asset.");
                             }
                             else
                                 reject("This Github repository has no releases avaliable.");
@@ -146,6 +144,7 @@ var GithubCollectionSource = /** @class */ (function (_super) {
             //Construct initial request url to github api
             //Use the first one
             var url = github_api_url + ("repos/" + _this.data[0].owner + "/" + _this.data[0].name + "/releases");
+            electron_log_1.default.log("Url for releases is: " + url);
             var options = {
                 headers: {
                     'User-Agent': 'creators-tf-launcher'

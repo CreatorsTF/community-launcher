@@ -167,6 +167,7 @@ class ModList
 
 class Install {
     type: string;
+    modname: string;
     get_url: string;
     targetdirectory: string;
     version_property_name: string;
