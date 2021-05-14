@@ -2,11 +2,13 @@ node_modules
 dist
 build
 .vs
+.vscode
 *.code-workspace
 build.js
-build.bat
-*.map
+.bat
 dev-app-update.yml
+*.map
+*.css
 
 # list of .js files that are just compiled versions of .ts
 main.js
