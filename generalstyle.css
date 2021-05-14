@@ -42,6 +42,11 @@ button {
     transition: 0.2s;
 }
 
+select {
+    cursor: pointer;
+    width: -webkit-fill-available;
+}
+
 button:active {
     background-color: #222;
 }

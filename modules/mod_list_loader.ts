@@ -165,6 +165,19 @@ class ModList
     }
 }
 
+class Install {
+    type: string;
+    get_url: string;
+    targetdirectory: string;
+    version_property_name: string;
+    install_url_property_name: string;
+    asset_index: number
+    itemname: string
+    owner?: string
+    name?: string
+	displayname?: string
+}
+
 class ModListEntry
 {
     name: string;
@@ -185,13 +198,8 @@ class ModListEntry
     serverlistproviders: Array<number>;
     modid: string;
     contenttext: string;
-    install: {
-        type: string;
-        get_url: string;
-        targetdirectory: string;
-        version_property_name: string;
-        install_url_property_name: string;
-    };
+    install: Install
+    items: Install[]
 }
 
-export { ModListLoader, ModList, ModListEntry }
+export { ModListLoader, ModList, ModListEntry, Install }

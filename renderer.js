@@ -1,3 +1,5 @@
+const { ipcRenderer } = require("electron");
+
 var content = document.getElementById("content");
 var contentDummy = document.getElementById("content-dummy");
 var titleImage = document.getElementById("title-image");
@@ -92,6 +94,19 @@ function OnClick_Mod(data) {
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
+    if ((data.install.type == "githubcollection") || (data.install.type == "jsonlistcollection")) {
+        //Do stuff for collections
+        let select = document.getElementById("collection-versions");
+        select.style.display = "block";
+        data.items.forEach(element => {
+            let opt = document.createElement("option");
+            opt.va = element.displayname;
+            select.appendChild(opt);
+        });
+    }
+    else {
+        document.getElementById("collection-versions").style.display = "none";
+    }
 
     hasClickedInstallButton = true;
 }
@@ -150,7 +165,7 @@ installButton.addEventListener("click", (e) => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
-    window.ipcRenderer.send("install-play-click", "");
+    window.ipcRenderer.send("install-play-click", document.getElementById("collection-versions").value);
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {

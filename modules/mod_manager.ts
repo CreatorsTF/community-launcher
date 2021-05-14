@@ -12,11 +12,13 @@ import config from './config';
 import errors from './errors';
 import filemanager from "./file_manager";
 import GithubSource from "./mod_sources/github_source.js";
+import GithubCollectionSource from "./mod_sources/github_collection_source"
 import JsonListSource from "./mod_sources/jsonlist_source.js";
-import { ModList, ModListEntry, ModListLoader } from "./mod_list_loader";
+import { Install, ModList, ModListEntry, ModListLoader } from "./mod_list_loader";
 import Main from "../main";
 import ModInstallSource from "./mod_sources/mod_source_base";
 import ElectronLog from "electron-log";
+import CollectionSource from "./mod_sources/collection_source";
 
 var functionMap = new Map();
 
@@ -51,7 +53,7 @@ class ModManager {
     static currentModVersionRemote = 0
     static downloadWindow: BrowserWindow = null;
     static files_object: any;
-    static source_manager: ModInstallSource;
+    static source_manager: ModInstallSource | CollectionSource;
 
     //Sets up the module.
     static async Setup(){
@@ -67,6 +69,7 @@ class ModManager {
         this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
+        
 
         ElectronLog.log(`Set current mod to: ${this.currentModData.name}`);
 
@@ -77,6 +80,10 @@ class ModManager {
                 break;
             case "github":
                 this.source_manager = new GithubSource(this.currentModData.install);
+                break;
+            case "githubcollection":
+                this.source_manager = new GithubCollectionSource(this.currentModData.items);
+                
                 break;
             default:
                 this.source_manager = null;
@@ -120,7 +127,7 @@ class ModManager {
 
     //Trigger the correct response to the current mod depending on its state.
     //This is called when the Install / Update / Installed button is pressed in the UI.
-    static async ModInstallPlayButtonClick(){
+    static async ModInstallPlayButtonClick(args?){
         ElectronLog.log("Install button was clicked! Reacting based on state: " + this.currentModState)
         if (this.currentModData == null){
             this.FakeClickMod();
@@ -142,7 +149,15 @@ class ModManager {
                     
                 //Perform mod download and install.
                 try {
-                    const _url = await this.source_manager.GetFileURL();
+                    let _url = "";
+                    if ("push" in this.source_manager.data) {
+                        //It is an install[] then
+                        _url = await this.source_manager.GetFileURL(args);
+                    }
+                    else {
+                        //It is an Install
+                        _url = await this.source_manager.GetFileURL();
+                    }
                     ElectronLog.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                     let result = await this.ModInstall(_url);
                     if(result){

@@ -243,7 +243,7 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
 });
 
 ipcMain.on("install-play-click", async (event, args) => {
-    await mod_manager.ModInstallPlayButtonClick();
+    await mod_manager.ModInstallPlayButtonClick(args);
 });
 
 ipcMain.on("Visit-Mod-Social", async(event, arg) => {
@@ -305,6 +305,9 @@ ipcMain.on("GetModData", async (event, args) => {
         event.reply("ShowMods", ModListLoader.GetModList());
     });
 });
+
+
+
 
 //Quickplay
 //ipcMain.on("")

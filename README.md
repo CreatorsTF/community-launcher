@@ -1,7 +1,5 @@
 # [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher) (Alpha)
 
-**This is a fork of the original project, avaliable [here](https://github.com/ampersoftware/Creators.TF-Community-Launcher)**
-
 [![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml)
 [![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml)
 
