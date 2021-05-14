@@ -33,24 +33,23 @@ h1 {
 }
 
 .error {
-    padding-top: 1vh;
-    margin: 0 auto;
+    margin: 5vh auto;
     display: none;
-    
-    p, p a {
-        font-size: 1vh;
+    flex-direction: column;
+
+    p, i, a {
+        font-size: 3vh;
         color: lightcoral;
         text-align: center;
-        font-family: Roboto Black, Arial, sans-serif;
         transition: 0.2s;
-        
-        & a:hover {
-            color: lightskyblue;
-        }
-        
-        i {
-            font-size: 1.1vh;
-        }
+    }
+    
+    a:hover {
+        color: lightskyblue;
+    }
+
+    i {
+        font-size: 2vh;
     }
 }
 

@@ -140,7 +140,7 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
         }
         else if(serverListData == "503"){
             loading.remove();
-            document.getElementById("cloudflare-error").style.display = "block";
+            document.getElementById("cloudflare-error").style.display = "flex";
         }
         else {
             ShowFailMessage();

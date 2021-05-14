@@ -1,7 +1,6 @@
 @use "general.scss" as *;
 
 body {
-    font-family: Roboto Medium, Arial, sans-serif;
     display: flex;
     background: linear-gradient(0deg, $black 0%, $black-3 100%);
     user-select: none;
