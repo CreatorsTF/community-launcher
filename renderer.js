@@ -65,7 +65,6 @@ function OnClick_Mod(data) {
     else {
         titleImage.src = data.titleimage;
         titleImage.style.display = "block";
-        titleImage.style.height = titleImage.style.height > (500 * (window.height / 100)) ? (500 * (window.height / 100)): true;
         titleheader.style.display = "none";
     }
 
