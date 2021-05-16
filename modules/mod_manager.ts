@@ -153,18 +153,10 @@ class ModManager {
                     let _url = "";
                     //TS won't let me delete this bit
                     //This is a typeguard BTW to separate the collections from the non-collections
-                    if ("push" in this.source_manager.data) {
+                    if (!(IsInstall(this.source_manager.data))) {
                         //It is an install[] then
                         //Args is a string. Convert it to a number
-                        let desiredCollectionVersion = 0;
-                        for (let i = 0; i < this.source_manager.data.length; i++) {
-                            const element = this.source_manager.data[i];
-                            if (element.itemname == args) {
-                                //We've found it!
-                                desiredCollectionVersion = i;
-                                break;
-                            }
-                        }
+                        let desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, args);
                         _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
                     }
                     else {
@@ -175,7 +167,7 @@ class ModManager {
                     let result = await this.ModInstall(_url);
                     if(result){
                         //This is a typeguard BTW to separate the collections from the non-collections
-                        if ("push" in this.source_manager.data) {
+                        if (!(IsInstall(this.source_manager.data))) {
                             await this.SetupNewModAsInstalled(args);
                         }
                         else {
@@ -214,9 +206,9 @@ class ModManager {
                     let configObj = await config.GetConfig();
                     let modList = configObj.current_mod_versions;
                     //Find the current mod version we want
-                    let desiredCollectionVersion = 0;
                     let collectionVersionInstalled : string;
-                    if ("push" in this.source_manager.data) {
+                    let desiredCollectionVersion : number;
+                    if (!(IsInstall(this.source_manager.data))) {
                         //It is an install[] then
                         modList.forEach(element => {
                             if (element.name == this.source_manager.data[0].modname) {
@@ -224,15 +216,7 @@ class ModManager {
                                 collectionVersionInstalled = element.collectionversion;
                             }
                         });
-                        //Args is a string. Convert it to a number
-                        for (let i = 0; i < this.source_manager.data.length; i++) {
-                            const element = this.source_manager.data[i];
-                            if (element.itemname == collectionVersionInstalled) {
-                                //We've found it!
-                                desiredCollectionVersion = i;
-                                break;
-                            }
-                        }
+                       desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
                          await this.UpdateCurrentMod(desiredCollectionVersion);
                     }
                     else {
@@ -1183,6 +1167,27 @@ function GetFileWriteFunction(extension){
     }
 
     else return WriteFilesToDirectory;
+}
+
+//Uses a typeguard to check if an object is or is not of type Install
+function IsInstall(arg : Install | Install[]): arg is Install {
+    if (arg instanceof Install) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+//Find which element in an Install[] has the desiredCollectionString as an argument
+function FindCollectionNumber(Installs: Install[], desiredCollectionString: string) : number {
+    for (let i = 0; i < Installs.length; i++) {
+        const element = Installs[i];
+        if (element.itemname == desiredCollectionString) {
+            //We've found it!
+            return i;
+        }
+    }
 }
 
 functionMap.set("zip", WriteZIPsToDirectory);
