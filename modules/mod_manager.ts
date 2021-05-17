@@ -8,6 +8,7 @@ import url from "url";
 import ProgressBar from 'electron-progressbar';
 import log from 'electron-log';
 import fsPromises from './fs_extensions';
+import fs from "fs";
 import config from './config';
 import errors from './errors';
 import filemanager from "./file_manager";
@@ -174,6 +175,7 @@ class ModManager {
                             await this.SetupNewModAsInstalled();
                         }
                     }
+                    
                 } catch (e) {
                     this.FakeClickMod();
                     await ErrorDialog(e, "Mod Begin Install Error");
@@ -216,8 +218,8 @@ class ModManager {
                                 collectionVersionInstalled = element.collectionversion;
                             }
                         });
-                       desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
-                         await this.UpdateCurrentMod(desiredCollectionVersion);
+                        desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
+                        await this.UpdateCurrentMod(desiredCollectionVersion);
                     }
                     else {
                         await this.UpdateCurrentMod();
@@ -408,11 +410,64 @@ class ModManager {
 
         //Save the config changes.
         await config.SaveConfig(Main.config);
+        
+        let setup_func: string = "";
+        if((typeof(collectionVersion) != "undefined") && (!(IsInstall(this.source_manager.data)))) {
+            if (!(typeof (this.source_manager.data[FindCollectionNumber(this.source_manager.data, collectionVersion)].setupfunc) == "undefined")) {
+                setup_func = this.source_manager.data[FindCollectionNumber(this.source_manager.data, collectionVersion)].setupfunc;
+            }
+        }
+        else {
+            if(IsInstall(this.source_manager.data)) {
+                if (!(typeof (this.source_manager.data.setupfunc) == "undefined")) {
+                    setup_func = this.source_manager.data.setupfunc;
+                }
+            }
+        }
+        switch (setup_func) {
+            case "movecfgs":
+                ElectronLog.log("Executing movecfgs install operation")
+                let filesToMove = ["autoexec.cfg", "scout.cfg", "soldier.cfg", "pyro.cfg", "demoman.cfg", "heavyweapons.cfg",
+                "engineer.cfg", "medic.cfg", "sniper.cfg", "spy.cfg"]
+                //Move cfgs
+                let cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
+                let usercfgpath = path.join(cfgpath, "user");
+                ElectronLog.log("cfg path is: " + cfgpath);
+                ElectronLog.log("user cfg path is: \"" + usercfgpath + "\"");
+                if (!(fs.existsSync(usercfgpath))) {
+                    //Create usercfgpath
+                    ElectronLog.log("user cfg path does not exist, creating...");
+                    fs.mkdirSync(usercfgpath, {recursive: true});
+                }
+                //Actually move them
+                fs.readdir(cfgpath, (err, files) => {
+                    if (err) {
+                        ElectronLog.error("there was an error on mod_manager.ts, line 447 when trying to read the cfg directory to move cfg files. Trying to read directory: " + cfgpath + " , the error was:" + err)
+                    }
+                    else {
+                        files.forEach(file => {
+                            ElectronLog.log("Checking if should move file: " + file)
+                            if(filesToMove.indexOf(file) > -1) {
+                                ElectronLog.log("Trying to move file " + path.join(cfgpath, file) + " to " + path.join(usercfgpath, path.basename(file)))
+                                fs.rename(path.join(cfgpath ,file), path.join(usercfgpath, path.basename(file)), (err) => {
+                                    if (err) {
+                                        ElectronLog.error("There was an error trying to move file " + path.join(cfgpath, file) + " to " + path.join(usercfgpath, path.basename(file)))
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+                break;
+                        
+            default:
+                break;
+        }
 
         this.currentModState = "INSTALLED";
 
         this.FakeClickMod();
-
+        
         await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
             title: "Mod Install",
@@ -479,7 +534,55 @@ class ModManager {
                     if(await fsPromises.fileExists(files_object.files[i])) await fsPromises.unlink(files_object.files[i]);
                     progressBar.value = i + 1;
                 }
-
+                //Try to execute mod specific operations, like moving tf/user/cfg/class.cfg and tf/user/cfg/autoexec.cfg back to /tf/cfg/class.cfg
+                //and /tf/cfg/autoexec.cfg respectively for Mastercomfig
+                let setup_func: string = "";
+                if(!(IsInstall(this.source_manager.data))) {
+                    if (typeof (this.source_manager.data[0]) != "undefined") {
+                        if ((typeof (this.source_manager.data[0].setupfunc)) != "undefined")
+                        setup_func = this.source_manager.data[0].setupfunc;
+                    }
+                }
+                else {
+                    if (typeof (this.source_manager.data) != "undefined") {
+                        if (typeof(this.source_manager.data.setupfunc != "undefined")) {
+                            setup_func = this.source_manager.data.setupfunc;  
+                        }
+                    }
+                }
+                switch (setup_func) {
+                    case "movecfgs":
+                        //Move them back
+                        ElectronLog.log("Executing movecfgs uninstall operation")
+                        let filesToMove = ["autoexec.cfg", "scout.cfg", "soldier.cfg", "pyro.cfg", "demoman.cfg", "heavyweapons.cfg",
+                        "engineer.cfg", "medic.cfg", "sniper.cfg", "spy.cfg"]
+                        //Move cfgs
+                        let cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
+                        let usercfgpath = path.join(cfgpath, "user");
+                        ElectronLog.log("cfg path is: " + cfgpath);
+                        ElectronLog.log("user cfg path is: \"" + usercfgpath + "\"");
+                        //Actually move them
+                        fs.readdir(usercfgpath, (err, files) => {
+                            if (err)
+                                ElectronLog.error("there was an error on mod_manager.ts, line 566 when trying to read the cfg directory to move cfg files. Trying to read directory: " + cfgpath + "the error was:" + err)
+                            else {
+                                files.forEach(file => {
+                                    ElectronLog.log("Checking if should move file: " + file)
+                                    if(filesToMove.indexOf(file) > -1) {
+                                        ElectronLog.log("Trying to move file " + path.join(usercfgpath, file) + " to " + path.join(cfgpath, path.basename(file)))
+                                        fs.rename(path.join(usercfgpath ,file), path.join(cfgpath, path.basename(file)), (err) => {
+                                            if (err) {
+                                                ElectronLog.error("There was an error trying to move file " + path.join(usercfgpath, file) + " to " + path.join(cfgpath, path.basename(file)))
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                        break;                        
+                    default:
+                        break;
+                }
                 await Delay(300);        
                 running = false;
                 progressBar.setCompleted();

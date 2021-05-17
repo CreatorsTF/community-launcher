@@ -9,6 +9,7 @@ import { autoUpdater } from "electron-updater";
 import { Utilities } from "./modules/utilities";
 import { ModListLoader, ModList } from "./modules/mod_list_loader";
 import path from "path";
+import ConfigType from "modules/configtype";
 import os from "os";
 const _config = require("./modules/config");
 
@@ -27,7 +28,7 @@ const majorErrorMessageEnd = "\nIf this error persists, please report it on our 
 class Main {
     static mainWindow: BrowserWindow;
     static app: App;
-    static config: any;
+    static config: ConfigType;
     static screenWidth: number;
     static screenHeight: number;
     static minWindowWidth: number;

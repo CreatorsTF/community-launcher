@@ -177,6 +177,7 @@ class Install {
     owner?: string
     name?: string
 	displayname?: string
+    setupfunc?: string
 }
 
 class ModListEntry

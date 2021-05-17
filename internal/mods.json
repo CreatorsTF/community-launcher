@@ -129,7 +129,7 @@
             "instagram": "",
             "discord": "",
             "serverlist": "",
-            "contenttext": "Several optimization scripts for modern hardware",
+            "contenttext": "Several optimization scripts for modern hardware. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with Mastercomfig.",
             "install": {
                 "modname": "Mastercomfig",
                 "type": "githubcollection",
@@ -144,6 +144,7 @@
                     "itemname": "very_low",
                     "displayname": "Very Low",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 15
                 },
                 {
@@ -154,6 +155,7 @@
                     "itemname": "low",
                     "displayname": "Low",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 4
                 },
                 {
@@ -164,6 +166,7 @@
                     "itemname": "medium_low",
                     "displayname": "Medium Low",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 7
                 },
                 {
@@ -174,6 +177,7 @@
                     "itemname": "medium",
                     "displayname": "Medium",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 8
                 },
                 {
@@ -184,6 +188,7 @@
                     "itemname": "medium_high",
                     "displayname": "Medium High",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 6,
                     "default": true
                 },
@@ -195,6 +200,7 @@
                     "itemname": "high",
                     "displayname": "High",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 3
                 },
                 {
@@ -205,6 +211,7 @@
                     "itemname": "ultra",
                     "displayname": "Ultra",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
+                    "setupfunc": "movecfgs",
                     "asset_index": 14
                 }
             ]
