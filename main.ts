@@ -9,7 +9,7 @@ import { autoUpdater } from "electron-updater";
 import { Utilities } from "./modules/utilities";
 import { ModListLoader, ModList } from "./modules/mod_list_loader";
 import path from "path";
-import ConfigType from "modules/configtype";
+import { ConfigType } from "modules/mod_list_loader";
 import os from "os";
 const _config = require("./modules/config");
 

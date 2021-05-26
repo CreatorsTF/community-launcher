@@ -212,4 +212,17 @@ class GithubAsset {
     size: string
 }
 
-export { ModListLoader, ModList, ModListEntry, Install, GithubAsset }
+class ConfigType {
+    steam_directory: string;
+    tf2_directory: string;
+    current_mod_versions: ModVersion[]
+}
+
+
+class ModVersion {
+    name: string;
+    version: any;
+    collectionversion?: string;
+}
+
+export { ModListLoader, ModList, ModListEntry, Install, GithubAsset, ConfigType }

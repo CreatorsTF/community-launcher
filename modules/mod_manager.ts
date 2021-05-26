@@ -153,17 +153,11 @@ class ModManager {
                 try {
                     let _url = "";
                     //TS won't let me delete this bit
-                    //This is a function to separate the collections from the non-collections
-                    if (!(IsNotCollection(this.source_manager.data))) {
-                        //It is a Collection then
-                        //Args is a string. Convert it to a number
-                        let desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, args);
-                        _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
-                    }
-                    else {
-                        //It is an Install
-                        _url = await this.source_manager.GetFileURL();
-                    }
+                    //Args is a string. Convert it to a number
+                    let desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, args);
+
+                    _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
+                    
                     ElectronLog.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                     let result = await this.ModInstall(_url);
                     if(result){
@@ -220,9 +214,6 @@ class ModManager {
                         });
                         desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
                         await this.UpdateCurrentMod(desiredCollectionVersion);
-                    }
-                    else {
-                        await this.UpdateCurrentMod();
                     }
                 }
                 break;
@@ -404,26 +395,28 @@ class ModManager {
         let versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
         //If we didnt update the version of an exstisting object. Add it.
-        if(!versionUpdated) Main.config.current_mod_versions.push({name: this.currentModData.name,
-            version: this.currentModVersionRemote,
-            collectionversion: collectionVersion})
+        if (typeof(collectionVersion) != "undefined") {
+            if(!versionUpdated) {
+                Main.config.current_mod_versions.push({name: this.currentModData.name,
+                    version: this.currentModVersionRemote,
+                    collectionversion: collectionVersion})
+            }
+        }
+        else {
+            if(!versionUpdated) Main.config.current_mod_versions.push({name: this.currentModData.name,
+                version: this.currentModVersionRemote})
+        }
 
         //Save the config changes.
         await config.SaveConfig(Main.config);
         
         let setup_func: string = "";
-        if((typeof(collectionVersion) != "undefined") && (!(IsNotCollection(this.source_manager.data)))) {
+        if(typeof(collectionVersion) != "undefined") {
             if (!(typeof (this.source_manager.data[FindCollectionNumber(this.source_manager.data, collectionVersion)].setupfunc) == "undefined")) {
                 setup_func = this.source_manager.data[FindCollectionNumber(this.source_manager.data, collectionVersion)].setupfunc;
             }
         }
-        else {
-            if(IsNotCollection(this.source_manager.data)) {
-                if (!(typeof (this.source_manager.data[0].setupfunc) == "undefined")) {
-                    setup_func = this.source_manager.data[0].setupfunc;
-                }
-            }
-        }
+        
         switch (setup_func) {
             case "movecfgs":
                 ElectronLog.log("Executing movecfgs install operation")
@@ -537,18 +530,9 @@ class ModManager {
                 //Try to execute mod specific operations, like moving tf/user/cfg/class.cfg and tf/user/cfg/autoexec.cfg back to /tf/cfg/class.cfg
                 //and /tf/cfg/autoexec.cfg respectively for Mastercomfig
                 let setup_func: string = "";
-                if(!(IsNotCollection(this.source_manager.data))) {
-                    if (typeof (this.source_manager.data[0]) != "undefined") {
-                        if ((typeof (this.source_manager.data[0].setupfunc)) != "undefined")
-                        setup_func = this.source_manager.data[0].setupfunc;
-                    }
-                }
-                else {
-                    if (typeof (this.source_manager.data) != "undefined") {
-                        if (typeof(this.source_manager.data[0].setupfunc != "undefined")) {
-                            setup_func = this.source_manager.data[0].setupfunc;  
-                        }
-                    }
+                if (typeof (this.source_manager.data[0]) != "undefined") {
+                    if ((typeof (this.source_manager.data[0].setupfunc)) != "undefined")
+                    setup_func = this.source_manager.data[0].setupfunc;
                 }
                 switch (setup_func) {
                     case "movecfgs":
@@ -1285,6 +1269,10 @@ function IsNotCollection(arg: Install[]): Boolean {
 
 //Find which element in an Install[] has the desiredCollectionString as an argument
 function FindCollectionNumber(Installs: Install[], desiredCollectionString: string) : number {
+    if(Installs.length < 2) {
+        //It has a single item
+        return 0
+    }
     for (let i = 0; i < Installs.length; i++) {
         const element = Installs[i];
         if (element.itemname == desiredCollectionString) {
