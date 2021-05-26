@@ -2,10 +2,10 @@ import {Install, ModListEntry} from '../mod_list_loader'
 
 
 abstract class ModInstallSource {
-    data: Install;
+    data: Install[];
     fileType = "UNKNOWN";
 
-    constructor(install_data : Install){
+    constructor(install_data : Install[]){
         this.data = install_data;
     }
     abstract GetLatestVersionNumber() : Promise<number>;

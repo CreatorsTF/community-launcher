@@ -54,7 +54,7 @@ class ModManager {
     static currentModVersionRemote = 0
     static downloadWindow: BrowserWindow = null;
     static files_object: any;
-    static source_manager: ModInstallSource | CollectionSource;
+    static source_manager: ModInstallSource;
 
     //Sets up the module.
     static async Setup(){
@@ -75,16 +75,16 @@ class ModManager {
         ElectronLog.log(`Set current mod to: ${this.currentModData.name}`);
 
         //Setup the source manager object depending on the type of the mod.
+        //If it is not a collection, create a list with one object (the install) in it
         switch(this.currentModData.install.type){
             case "jsonlist":
-                this.source_manager = new JsonListSource(this.currentModData.install);
+                this.source_manager = new JsonListSource([this.currentModData.install]);
                 break;
             case "github":
-                this.source_manager = new GithubSource(this.currentModData.install);
+                this.source_manager = new GithubSource([this.currentModData.install]);
                 break;
             case "githubcollection":
                 this.source_manager = new GithubCollectionSource(this.currentModData.items);
-                
                 break;
             default:
                 this.source_manager = null;
@@ -153,9 +153,9 @@ class ModManager {
                 try {
                     let _url = "";
                     //TS won't let me delete this bit
-                    //This is a typeguard BTW to separate the collections from the non-collections
-                    if (!(IsInstall(this.source_manager.data))) {
-                        //It is an install[] then
+                    //This is a function to separate the collections from the non-collections
+                    if (!(IsNotCollection(this.source_manager.data))) {
+                        //It is a Collection then
                         //Args is a string. Convert it to a number
                         let desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, args);
                         _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
@@ -167,8 +167,8 @@ class ModManager {
                     ElectronLog.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                     let result = await this.ModInstall(_url);
                     if(result){
-                        //This is a typeguard BTW to separate the collections from the non-collections
-                        if (!(IsInstall(this.source_manager.data))) {
+                        //This is a function to separate the collections from the non-collections
+                        if (!(IsNotCollection(this.source_manager.data))) {
                             await this.SetupNewModAsInstalled(args);
                         }
                         else {
@@ -210,7 +210,7 @@ class ModManager {
                     //Find the current mod version we want
                     let collectionVersionInstalled : string;
                     let desiredCollectionVersion : number;
-                    if (!(IsInstall(this.source_manager.data))) {
+                    if (!(IsNotCollection(this.source_manager.data))) {
                         //It is an install[] then
                         modList.forEach(element => {
                             if (element.name == this.source_manager.data[0].modname) {
@@ -412,15 +412,15 @@ class ModManager {
         await config.SaveConfig(Main.config);
         
         let setup_func: string = "";
-        if((typeof(collectionVersion) != "undefined") && (!(IsInstall(this.source_manager.data)))) {
+        if((typeof(collectionVersion) != "undefined") && (!(IsNotCollection(this.source_manager.data)))) {
             if (!(typeof (this.source_manager.data[FindCollectionNumber(this.source_manager.data, collectionVersion)].setupfunc) == "undefined")) {
                 setup_func = this.source_manager.data[FindCollectionNumber(this.source_manager.data, collectionVersion)].setupfunc;
             }
         }
         else {
-            if(IsInstall(this.source_manager.data)) {
-                if (!(typeof (this.source_manager.data.setupfunc) == "undefined")) {
-                    setup_func = this.source_manager.data.setupfunc;
+            if(IsNotCollection(this.source_manager.data)) {
+                if (!(typeof (this.source_manager.data[0].setupfunc) == "undefined")) {
+                    setup_func = this.source_manager.data[0].setupfunc;
                 }
             }
         }
@@ -537,7 +537,7 @@ class ModManager {
                 //Try to execute mod specific operations, like moving tf/user/cfg/class.cfg and tf/user/cfg/autoexec.cfg back to /tf/cfg/class.cfg
                 //and /tf/cfg/autoexec.cfg respectively for Mastercomfig
                 let setup_func: string = "";
-                if(!(IsInstall(this.source_manager.data))) {
+                if(!(IsNotCollection(this.source_manager.data))) {
                     if (typeof (this.source_manager.data[0]) != "undefined") {
                         if ((typeof (this.source_manager.data[0].setupfunc)) != "undefined")
                         setup_func = this.source_manager.data[0].setupfunc;
@@ -545,8 +545,8 @@ class ModManager {
                 }
                 else {
                     if (typeof (this.source_manager.data) != "undefined") {
-                        if (typeof(this.source_manager.data.setupfunc != "undefined")) {
-                            setup_func = this.source_manager.data.setupfunc;  
+                        if (typeof(this.source_manager.data[0].setupfunc != "undefined")) {
+                            setup_func = this.source_manager.data[0].setupfunc;  
                         }
                     }
                 }
@@ -1273,12 +1273,13 @@ function GetFileWriteFunction(extension){
 }
 
 //Uses a typeguard to check if an object is or is not of type Install
-function IsInstall(arg : Install | Install[]): arg is Install {
-    if (arg instanceof Install) {
-        return true;
+function IsNotCollection(arg: Install[]): Boolean {
+    if (arg.length > 1) {
+        //It is a collection
+        return false;
     }
     else {
-        return false;
+        return true
     }
 }
 

@@ -1,14 +1,14 @@
 import  ModInstallSource from "./mod_source_base.js";
-import CollectionSource from "./collection_source"
 import https from "https";
 import { Install } from "modules/mod_list_loader.js";
 import ElectronLog from "electron-log";
+import { GithubAsset } from "../mod_list_loader"
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 
 const github_api_url = "https://api.github.com/";
 
-class GithubCollectionSource extends CollectionSource {
+class GithubCollectionSource extends ModInstallSource {
     github_data = null;
     fileType = "FILE";
 
@@ -50,9 +50,9 @@ class GithubCollectionSource extends CollectionSource {
         return new Promise((resolve, reject) => {
             //Try to get the download url for the release asset.
             this._GetGithubData().then((data) => {
-                let releaseAssets : Asset[] = data[0].assets;
+                let releaseAssets : GithubAsset[] = data[0].assets;
                 if(releaseAssets != null && releaseAssets != []){
-                    let asset : Asset;
+                    let asset : GithubAsset;
                     
                     asset = releaseAssets[this.data[collection_version].asset_index];
 

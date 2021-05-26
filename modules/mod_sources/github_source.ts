@@ -1,5 +1,6 @@
 import  ModInstallSource from "./mod_source_base.js";
 import https from "https";
+import { Install } from "modules/mod_list_loader.js";
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 
@@ -9,7 +10,7 @@ class GithubSource extends ModInstallSource {
     github_data = null;
     fileType = "FILE";
 
-    constructor(install_data){
+    constructor(install_data: Install[]){
         super(install_data);
     }
 
@@ -51,7 +52,7 @@ class GithubSource extends ModInstallSource {
                 if(releaseAssets != null && releaseAssets != []){
                     let asset;
                     
-                    if(this.data.hasOwnProperty("asset_index")) asset = releaseAssets[this.data.asset_index];
+                    if(this.data[0].hasOwnProperty("asset_index")) asset = releaseAssets[this.data[0].asset_index];
                     else asset = releaseAssets[0];
 
                     if(asset != null){
@@ -68,7 +69,7 @@ class GithubSource extends ModInstallSource {
     _GetGitHubReleaseData(){
         return new Promise((resolve, reject) => {
             //Construct initial request url to github api
-            let url = github_api_url + `repos/${this.data.owner}/${this.data.name}/releases`;
+            let url = github_api_url + `repos/${this.data[0].owner}/${this.data[0].name}/releases`;
             var options = {
                 headers: {
                   'User-Agent': 'creators-tf-launcher'

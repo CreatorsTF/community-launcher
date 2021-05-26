@@ -170,6 +170,7 @@ class Install {
     modname: string;
     get_url: string;
     targetdirectory: string;
+    cloudflarebypass: Boolean;
     version_property_name: string;
     install_url_property_name: string;
     asset_index: number
@@ -204,4 +205,11 @@ class ModListEntry
     items: Install[]
 }
 
-export { ModListLoader, ModList, ModListEntry, Install }
+class GithubAsset {
+    url: string
+    browser_download_url: string
+    id: string
+    size: string
+}
+
+export { ModListLoader, ModList, ModListEntry, Install, GithubAsset }
