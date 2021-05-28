@@ -7,7 +7,6 @@
     "start": "electron .",
     "compileTs": "npx tsc",
     "compileSass": "sass styles/:styles/",
-    "compileBoth": "npx tsc && sass styles/:styles/",
     "compileTsAndStart": "npx tsc && electron .",
     "compileAndStart": "npx tsc && sass styles/:styles/ && electron .",
     "buildWindows": "electron-builder build --win --x64 --ia32 --publish never",
