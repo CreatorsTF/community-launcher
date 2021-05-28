@@ -161,7 +161,7 @@ class ModManager {
                     let result = await this.ModInstall(_url);
                     if(result){
                         //This is a function to separate the collections from the non-collections
-                        if (!(IsNotCollection(this.source_manager.data))) {
+                        if (IsCollection(this.source_manager.data)) {
                             await this.SetupNewModAsInstalled(args);
                         }
                         else {
@@ -203,7 +203,7 @@ class ModManager {
                     //Find the current mod version we want
                     let collectionVersionInstalled : string;
                     let desiredCollectionVersion : number;
-                    if (!(IsNotCollection(this.source_manager.data))) {
+                    if (IsCollection(this.source_manager.data)) {
                         //It is an install[] then
                         modList.forEach(element => {
                             if (element.name == this.source_manager.data[0].modname) {
@@ -1174,13 +1174,13 @@ function GetFileWriteFunction(extension){
 }
 
 //Uses a typeguard to check if an object is or is not of type Install
-function IsNotCollection(arg: Install[]): Boolean {
+function IsCollection(arg: Install[]): Boolean {
     if (arg.length > 1) {
         //It is a collection
-        return false;
+        return true;
     }
     else {
-        return true
+        return false
     }
 }
 
