@@ -19,7 +19,7 @@ abstract class ModInstallSource {
 
     PostInstall(collection_version?: string) {
         //Try to execute mod specific operations, like moving tf/cfg/class.cfg and tf/cfg/autoexec.cfg back to /tf/cfg/user/class.cfg
-        //and /tf/cfg/user/autoexec.cfg respectively for Mastercomfig
+        //and /tf/cfg/user/autoexec.cfg respectively for mastercomfig
 
         let setup_func: string = "";
         if (!(typeof (this.data[FindCollectionNumber(this.data, collection_version)].setupfunc) == "undefined")) {

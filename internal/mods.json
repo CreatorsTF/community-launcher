@@ -114,8 +114,8 @@
             }
         },
         {
-            "name": "Mastercomfig",
-            "blurb": "Mastercomfig",
+            "name": "mastercomfig",
+            "blurb": "mastercomfig",
             "icon": "images/logos/modcirclelogos/mastercomfig_logo_transparent.svg",
             "titleimage": "images/logos/modcirclelogos/mastercomfig_logo_transparent.svg",
             "backgroundimage": "images/backgrounds/cp_badlands01.jpg",
@@ -129,15 +129,15 @@
             "instagram": "",
             "discord": "",
             "serverlist": "",
-            "contenttext": "Several optimization scripts for modern hardware. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with Mastercomfig.",
+            "contenttext": "Several optimization scripts for modern hardware. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with mastercomfig.",
             "install": {
-                "modname": "Mastercomfig",
+                "modname": "mastercomfig",
                 "type": "githubcollection",
                 "targetdirectory": "{tf2_dir}/tf/custom/"
             },
             "items": [
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -148,7 +148,7 @@
                     "asset_index": 15
                 },
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -159,7 +159,7 @@
                     "asset_index": 4
                 },
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -170,7 +170,7 @@
                     "asset_index": 7
                 },
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -181,7 +181,7 @@
                     "asset_index": 8
                 },
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -193,7 +193,7 @@
                     "default": true
                 },
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",
@@ -204,7 +204,7 @@
                     "asset_index": 3
                 },
                 {
-                    "modname": "Mastercomfig",
+                    "modname": "mastercomfig",
                     "type": "github",
                     "owner": "mastercomfig",
                     "name": "mastercomfig",

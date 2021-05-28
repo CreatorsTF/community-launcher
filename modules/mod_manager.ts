@@ -482,7 +482,7 @@ class ModManager {
                     progressBar.value = i + 1;
                 }
                 //Try to execute mod specific operations, like moving tf/user/cfg/class.cfg and tf/user/cfg/autoexec.cfg back to /tf/cfg/class.cfg
-                //and /tf/cfg/autoexec.cfg respectively for Mastercomfig
+                //and /tf/cfg/autoexec.cfg respectively for mastercomfig
                 this.source_manager.PostUninstall()
                 await Delay(300);        
                 running = false;
