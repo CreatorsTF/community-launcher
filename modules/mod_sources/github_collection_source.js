@@ -54,7 +54,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var collection_source_1 = __importDefault(require("./collection_source"));
+var mod_source_base_js_1 = __importDefault(require("./mod_source_base.js"));
 var https_1 = __importDefault(require("https"));
 var electron_log_1 = __importDefault(require("electron-log"));
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
@@ -173,6 +173,6 @@ var GithubCollectionSource = /** @class */ (function (_super) {
         });
     };
     return GithubCollectionSource;
-}(collection_source_1.default));
+}(mod_source_base_js_1.default));
 exports.default = GithubCollectionSource;
 //# sourceMappingURL=github_collection_source.js.map
