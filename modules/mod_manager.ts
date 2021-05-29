@@ -19,6 +19,7 @@ import { Install, ModList, ModListEntry, ModListLoader } from "./mod_list_loader
 import Main from "../main";
 import ModInstallSource from "./mod_sources/mod_source_base";
 import ElectronLog from "electron-log";
+import { Utilities } from "./utilities";
 
 var functionMap = new Map();
 
@@ -153,7 +154,7 @@ class ModManager {
                     let _url = "";
                     //TS won't let me delete this bit
                     //Args is a string. Convert it to a number
-                    let desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, args);
+                    let desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, args);
 
                     _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
                     
@@ -211,7 +212,7 @@ class ModManager {
                                 collectionVersionInstalled = element.collectionversion;
                             }
                         });
-                        desiredCollectionVersion = FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
+                        desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
                         await this.UpdateCurrentMod(desiredCollectionVersion);
                     }
                 }
@@ -409,11 +410,14 @@ class ModManager {
         //Save the config changes.
         await config.SaveConfig(Main.config);
         
-        this.source_manager.PostInstall(collectionVersion)
+        let installoperation = this.source_manager.PostInstall(collectionVersion)
 
         this.currentModState = "INSTALLED";
 
         this.FakeClickMod();
+
+        //Wait until the file move operation is done
+        await installoperation
         
         await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
@@ -483,8 +487,10 @@ class ModManager {
                 }
                 //Try to execute mod specific operations, like moving tf/user/cfg/class.cfg and tf/user/cfg/autoexec.cfg back to /tf/cfg/class.cfg
                 //and /tf/cfg/autoexec.cfg respectively for mastercomfig
-                this.source_manager.PostUninstall()
-                await Delay(300);        
+                let uninstall = this.source_manager.PostUninstall()
+                //I only want to show complete when it is finished
+                await uninstall
+                await Delay(300);
                 running = false;
                 progressBar.setCompleted();
                 progressBar.close();
@@ -1184,25 +1190,6 @@ function IsCollection(arg: Install[]): Boolean {
     }
 }
 
-//Find which element in an Install[] has the desiredCollectionString as an argument
-function FindCollectionNumber(Installs: Install[], desiredCollectionString: string) : number {
-    
-    if(typeof(desiredCollectionString) == 'undefined') {
-        return 0
-    }
-
-    if(Installs.length < 2) {
-        //It has a single item
-        return 0
-    }
-    for (let i = 0; i < Installs.length; i++) {
-        const element = Installs[i];
-        if (element.itemname == desiredCollectionString) {
-            //We've found it!
-            return i;
-        }
-    }
-}
 
 functionMap.set("zip", WriteZIPsToDirectory);
 functionMap.set("vpk", WriteFilesToDirectory);
@@ -1211,5 +1198,3 @@ functionMap.set("vpk", WriteFilesToDirectory);
 functionMap.set("rar", async() => { await FatalError("Cannot handle .rar files currently. This should not happen. Exiting..."); });
 functionMap.set("7z", async() => { await FatalError("Cannot handle .7z files currently. This should not happen. Exiting..."); });
 functionMap.set("exe", async() => { await FatalError("Downloaded file was windows executable. This should not happen, exiting. File was not written."); });
-
-export { FindCollectionNumber };

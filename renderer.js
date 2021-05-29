@@ -22,6 +22,7 @@ var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
+var collectionselect = document.getElementById("collection-versions").style.display = "none";
 
 var hasClickedInstallButton = false;
 
@@ -101,7 +102,6 @@ function OnClick_Mod(data) {
         //Clear the select
         select.innerHTML = '';
         //Populate the select
-        let defaultItem
         data.items.forEach(element => {
             let opt = document.createElement("option");
             opt.value = element.itemname;
@@ -113,7 +113,7 @@ function OnClick_Mod(data) {
         });
     }
     else {
-        document.getElementById("collection-versions").style.display = "none";
+        collectionselect.style.display = "none";
     }
 
     hasClickedInstallButton = true;

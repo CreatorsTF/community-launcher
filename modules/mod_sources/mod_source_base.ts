@@ -3,7 +3,8 @@ import Main from '../../main';
 import path from 'path';
 import fs from "fs"
 import {Install, ModListEntry} from '../mod_list_loader'
-import {FindCollectionNumber} from '../mod_manager'
+import { Utilities } from 'modules/utilities';
+import electronIsDev from 'electron-is-dev';
 
 
 abstract class ModInstallSource {
@@ -17,13 +18,13 @@ abstract class ModInstallSource {
     abstract GetDisplayVersionNumber(): Promise<string>;
     abstract GetFileURL(asset_index? : number) : Promise<string>;
 
-    PostInstall(collection_version?: string) {
+    async PostInstall(collection_version?: string)  {
         //Try to execute mod specific operations, like moving tf/cfg/class.cfg and tf/cfg/autoexec.cfg back to /tf/cfg/user/class.cfg
         //and /tf/cfg/user/autoexec.cfg respectively for mastercomfig
 
         let setup_func: string = "";
-        if (!(typeof (this.data[FindCollectionNumber(this.data, collection_version)].setupfunc) == "undefined")) {
-            setup_func = this.data[FindCollectionNumber(this.data, collection_version)].setupfunc;
+        if (!(typeof (this.data[Utilities.FindCollectionNumber(this.data, collection_version)].setupfunc) == "undefined")) {
+            setup_func = this.data[Utilities.FindCollectionNumber(this.data, collection_version)].setupfunc;
         }
 
         switch (setup_func) {
@@ -44,7 +45,13 @@ abstract class ModInstallSource {
                 //Actually move them
                 fs.readdir(cfgpath, (err, files) => {
                     if (err) {
-                        ElectronLog.error("there was an error on mod_manager.ts, line 447 when trying to read the cfg directory to move cfg files. Trying to read directory: " + cfgpath + " , the error was:" + err)
+                        if (electronIsDev) {
+                            Utilities.ErrorDialog("There was an error while trying to read folder " + cfgpath + " to move cfg files. The error was " + err, "Error")    
+                        }
+                        else {
+                            Utilities.ErrorDialog("There was an error while trying to read cfg folder", "Error")
+                        }
+                        ElectronLog.error("there was an error on mod_source_base.ts, line 55 when trying to read the cfg directory to move cfg files. Trying to read directory: " + cfgpath + " , the error was:" + err)
                     }
                     else {
                         files.forEach(file => {
@@ -67,7 +74,7 @@ abstract class ModInstallSource {
         
     }
 
-    PostUninstall() {
+    async PostUninstall() {
         let setup_func: string = "";
         if (typeof (this.data[0]) != "undefined") {
             if ((typeof (this.data[0].setupfunc)) != "undefined")
@@ -87,8 +94,16 @@ abstract class ModInstallSource {
                 ElectronLog.log("user cfg path is: \"" + usercfgpath + "\"");
                 //Actually move them
                 fs.readdir(usercfgpath, (err, files) => {
-                    if (err)
-                        ElectronLog.error("there was an error on mod_manager.ts, line 566 when trying to read the cfg directory to move cfg files. Trying to read directory: " + cfgpath + "the error was:" + err)
+                    if (err) {
+                        if (electronIsDev) {
+                            Utilities.ErrorDialog("There was an error while trying to read folder " + cfgpath + " to move cfg files. The error was " + err, "Error")    
+                        }
+                        else {
+                            Utilities.ErrorDialog("There was an error while trying to read cfg folder", "Error")
+                        }
+                        ElectronLog.error("there was an error on mod_source_base.ts, line 55 when trying to read the cfg directory to move cfg files. Trying to read directory: " + cfgpath + " , the error was:" + err)
+                    }
+                    
                     else {
                         files.forEach(file => {
                             ElectronLog.log("Checking if should move file: " + file)
