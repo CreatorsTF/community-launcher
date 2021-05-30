@@ -3,7 +3,7 @@ import Main from '../../main';
 import path from 'path';
 import fs from "fs"
 import {Install, ModListEntry} from '../mod_list_loader'
-import { Utilities } from 'modules/utilities';
+import { Utilities } from '../utilities';
 import electronIsDev from 'electron-is-dev';
 
 
