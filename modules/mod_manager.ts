@@ -8,7 +8,6 @@ import url from "url";
 import ProgressBar from 'electron-progressbar';
 import log from 'electron-log';
 import fsPromises from './fs_extensions';
-import fs from "fs";
 import config from './config';
 import errors from './errors';
 import filemanager from "./file_manager";
