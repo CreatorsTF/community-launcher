@@ -5,6 +5,83 @@ body {
     background: linear-gradient(0deg, $black 0%, $black-3 100%);
     user-select: none;
     overflow: hidden;
+    flex-direction: column;
+}
+
+header {
+    width: -webkit-fill-available;
+    background-color: #111;
+    z-index: 9;
+    overflow: hidden;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    img {
+        width: 20px;
+        margin-right: 5px;
+    }
+    
+    h1 {
+        margin: 0;
+        font-size: 14px;
+        font-family: 'Roboto Light';
+        color: #777;
+        user-select: none;
+    }
+
+    #drag {
+        width: calc(100% - 105px);
+        height: -webkit-fill-available;
+        position: absolute;
+        top: 0;
+        left: 0;
+        -webkit-app-region: drag;
+        z-index: 9;
+        margin: 3px 3px 0 3px;
+    }
+
+    #control-buttons {
+        height: -webkit-fill-available;
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: flex;
+
+        button {
+            background-color: #222;
+            color: #CCC;
+            padding: 0px 10px;
+            transition: 0.2s;
+            cursor: default;
+
+            &:hover {
+                background-color: #333;
+            }
+        }
+        
+        // #minimize {
+
+        // }
+
+        // #maximize {
+            
+        // }
+
+        #close {
+
+            &:hover {
+                background-color: #FF5555;
+                color: #FFF;
+            }
+        }
+    }
+}
+
+main {
+    display: flex;
+    height: 100%;
 }
 
 #sidebar {

@@ -13,6 +13,14 @@ var updateButton_Downloading = document.getElementById("update-button-downloadin
 var updateButton_Update = document.getElementById("update-button-update");
 var updateButton_Updated = document.getElementById("update-button-updated");
 
+var settingsButton = document.getElementById("settings-button");
+var patchNotesButton = document.getElementById("patchnotes-button");
+var serverListButton = document.getElementById("server-list");
+
+var controlButtonMinimize = document.getElementById("minimize");
+var controlButtonMaximize = document.getElementById("maximize");
+var controlButtonClose = document.getElementById("close");
+
 var website = document.getElementById("socialMediaWebsite");
 var github = document.getElementById("socialMediaGithub");
 var twitter = document.getElementById("socialMediaTwitter");
@@ -136,15 +144,25 @@ window.ipcRenderer.on("update_downloaded", () => {
     window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
 
-document.getElementById("settings-button").addEventListener("click", (a,b) => {
+settingsButton.addEventListener("click", (a,b) => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
-document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
+patchNotesButton.addEventListener("click", (a,b) => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-document.getElementById("server-list").addEventListener("click", (a,b) => {
+serverListButton.addEventListener("click", (a,b) => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
+
+controlButtonMinimize.onclick = () => {
+    window.ipcRenderer.send("minimizeWindow");
+}
+controlButtonMaximize.onclick = () => {
+    window.ipcRenderer.send("maximizeWindow");
+}
+controlButtonClose.onclick = () => {
+    window.ipcRenderer.send("closeWindow");
+}
 
 installButton.addEventListener("click", (e) => {
     //Do NOT use e

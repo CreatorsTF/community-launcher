@@ -56,6 +56,7 @@ class Main {
                 resizable: true,
                 autoHideMenuBar: true,
                 darkTheme: true,
+                frame: false,
                 backgroundColor: "#2B2826"
             });
             //@ts-ignore
@@ -222,11 +223,6 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
     }
 });
 
-// ipcMain.on("app_version", (event) => {
-//     event.sender.send("app_version", {
-//         version: app.getVersion()
-//     });
-// });
 
 ipcMain.on("GetConfig", async (event, arg) => {
     event.reply("GetConfig-Reply", Main.config);
@@ -304,6 +300,16 @@ ipcMain.on("GetModData", async (event, args) => {
         log.verbose("Latest mod list was sent to renderer");
         event.reply("ShowMods", ModListLoader.GetModList());
     });
+});
+
+ipcMain.on("minimizeWindow", () => {
+    Main.mainWindow.minimize();
+});
+ipcMain.on("maximizeWindow", () => {
+    Main.mainWindow.isMaximized() ? Main.mainWindow.unmaximize() : Main.mainWindow.maximize();
+});
+ipcMain.on("closeWindow", () => {
+    app.quit();
 });
 
 //Quickplay
