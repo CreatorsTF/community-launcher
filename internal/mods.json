@@ -115,7 +115,7 @@
         },
         {
             "name": "mastercomfig",
-            "blurb": "Performance and optimization config",
+            "blurb": "Performance and customization config",
             "icon": "images/logos/modcirclelogos/mastercomfig_logo_transparent.svg",
             "titleimage": "images/logos/modcirclelogos/mastercomfig_logo_transparent.svg",
             "backgroundimage": "images/backgrounds/cp_badlands01.jpg",
