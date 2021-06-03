@@ -1,16 +1,18 @@
 import  ModInstallSource from "./mod_source_base.js";
 import https from "https";
 import { Install } from "modules/mod_list_loader.js";
+import ElectronLog from "electron-log";
+import { GithubAsset } from "../mod_list_loader"
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 
 const github_api_url = "https://api.github.com/";
 
-class GithubSource extends ModInstallSource {
+class GithubCollectionSource extends ModInstallSource {
     github_data = null;
     fileType = "FILE";
 
-    constructor(install_data: Install[]){
+    constructor(install_data : Install[]){
         super(install_data);
     }
 
@@ -44,22 +46,21 @@ class GithubSource extends ModInstallSource {
         return `${githubData[0].name} (${versionNumber})`;
     }
 
-    async GetFileURL() : Promise<string>{
+    async GetFileURL(collection_version: number) : Promise<string>{
         return new Promise((resolve, reject) => {
             //Try to get the download url for the release asset.
             this._GetGithubData().then((data) => {
-                let releaseAssets = data[0].assets;
+                let releaseAssets : GithubAsset[] = data[0].assets;
                 if(releaseAssets != null && releaseAssets != []){
-                    let asset;
+                    let asset : GithubAsset;
                     
-                    if(this.data[0].hasOwnProperty("asset_index")) asset = releaseAssets[this.data[0].asset_index];
-                    else asset = releaseAssets[0];
+                    asset = releaseAssets[this.data[collection_version].asset_index];
 
                     if(asset != null){
                         resolve(asset.browser_download_url);
                     }
 
-                    reject("This Github repositorys latest release was missing a usable asset.");
+                    reject("This Github repositories latest release was missing a usable asset.");
                 }
                 else reject("This Github repository has no releases avaliable.");
              }).catch(reject);
@@ -69,7 +70,9 @@ class GithubSource extends ModInstallSource {
     _GetGitHubReleaseData(){
         return new Promise((resolve, reject) => {
             //Construct initial request url to github api
+            //Use the first one
             let url = github_api_url + `repos/${this.data[0].owner}/${this.data[0].name}/releases`;
+            ElectronLog.log("Url for releases is: " + url)
             var options = {
                 headers: {
                   'User-Agent': 'creators-tf-launcher'
@@ -104,4 +107,5 @@ class GithubSource extends ModInstallSource {
         });
     }
 }
-export default GithubSource;
+
+export default GithubCollectionSource;

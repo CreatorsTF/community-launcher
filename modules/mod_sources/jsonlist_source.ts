@@ -2,6 +2,7 @@
 import https from "https";
 import ModInstallSource from "./mod_source_base";
 import ElectronLog from "electron-log";
+import { Install } from "modules/mod_list_loader";
 
 const cloudFlareMessage = "\nFailed to get this mods latest data due to Cloudflare rate limiting. \nPlease wait till normal web service resumes or report on our Discord.";
 
@@ -10,12 +11,12 @@ class JsonListSource extends ModInstallSource {
     fileType = "ARCHIVE";
     jsonlist_data = null;
 
-    constructor(install_data){
+    constructor(install_data: Install[]){
         super(install_data);
-        this.url = install_data.get_url;
+        this.url = install_data[0].get_url;
 
         //If this property is present, lets add a random query on the end of the URL to get an un cached version of this file.
-        if(install_data.cloudflarebypass != null){
+        if(install_data[0].cloudflarebypass != null){
             this.url += `?${Math.floor(Math.random() * 1000000000)}`;
         }
     }
@@ -32,7 +33,7 @@ class JsonListSource extends ModInstallSource {
     async GetLatestVersionNumber() : Promise<number> {
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data.version_property_name]);
+                resolve(json_data[this.data[0].version_property_name]);
             }).catch(reject);
         });
     }
@@ -44,7 +45,7 @@ class JsonListSource extends ModInstallSource {
     GetFileURL() : Promise<string>{
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data.install_url_property_name]);
+                resolve(json_data[this.data[0].install_url_property_name]);
             });
         });
     }

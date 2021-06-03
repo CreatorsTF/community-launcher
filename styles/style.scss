@@ -300,6 +300,7 @@ body {
 #title-image {
     width: 100% !important;
     pointer-events: none;
+    max-height: 20vh;
 }
 
 #title-header {
@@ -398,6 +399,22 @@ body {
 
 #mod-version-text {
     font-family: Roboto Thin, Arial, sans-serif;
+}
+
+#collection-versions {
+    width: 500;
+    position: absolute;
+    right: 27%;
+    bottom: 15%;
+    margin: 3vh;
+    padding: 2vh;
+    font-size: 3vh;
+    background-color: $dark-orange;
+    text-transform: uppercase;
+    font-family: Roboto Medium, Arial, sans-serif;
+    display: none;
+    border: none;
+    z-index: 1;
 }
 
 .hidden {

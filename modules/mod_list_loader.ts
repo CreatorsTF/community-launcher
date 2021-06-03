@@ -165,6 +165,22 @@ class ModList
     }
 }
 
+class Install {
+    type: string;
+    modname: string;
+    get_url: string;
+    targetdirectory: string;
+    cloudflarebypass: Boolean;
+    version_property_name: string;
+    install_url_property_name: string;
+    asset_index: number
+    itemname: string
+    owner?: string
+    name?: string
+	displayname?: string
+    setupfunc?: string
+}
+
 class ModListEntry
 {
     name: string;
@@ -185,13 +201,28 @@ class ModListEntry
     serverlistproviders: Array<number>;
     modid: string;
     contenttext: string;
-    install: {
-        type: string;
-        get_url: string;
-        targetdirectory: string;
-        version_property_name: string;
-        install_url_property_name: string;
-    };
+    install: Install
+    items: Install[]
 }
 
-export { ModListLoader, ModList, ModListEntry }
+class GithubAsset {
+    url: string
+    browser_download_url: string
+    id: string
+    size: string
+}
+
+class ConfigType {
+    steam_directory: string;
+    tf2_directory: string;
+    current_mod_versions: ModVersion[]
+}
+
+
+class ModVersion {
+    name: string;
+    version: any;
+    collectionversion?: string;
+}
+
+export { ModListLoader, ModList, ModListEntry, Install, GithubAsset, ConfigType }
