@@ -22,7 +22,7 @@ var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
-var collectionselect = document.getElementById("collection-versions").style.display = "none";
+var collectionSelect = document.getElementById("collection-versions");
 
 var hasClickedInstallButton = false;
 
@@ -113,7 +113,7 @@ function OnClick_Mod(data) {
         });
     }
     else {
-        collectionselect.style.display = "none";
+        collectionSelect.style.display = "none";
     }
 
     hasClickedInstallButton = true;
