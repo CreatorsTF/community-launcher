@@ -100,6 +100,7 @@ class ModListLoader {
                     try {
                         var buf = Buffer.concat(data);
                         if (res.statusCode != 200) {
+                            console.log("ERROR! Not parsing " + url);
                             return;
                         } else {
                             var parsed = JSON.parse(buf.toString());
@@ -108,7 +109,7 @@ class ModListLoader {
                     }
                     catch (error){
                         //Json parsing failed soo reject.
-                        ElectronLog.error(`Failed to parse json in TryGetModList request for ${url}, error: ${error.toString()}`);
+                        ElectronLog.error(`Failed to parse JSON in TryGetModList request for ${url}, error: ${error.toString()}`);
                         resolve(null);
                     }
                 });
