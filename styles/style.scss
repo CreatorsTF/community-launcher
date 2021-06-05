@@ -52,7 +52,7 @@ header {
         button {
             background-color: #222;
             color: #CCC;
-            padding: 0px 10px;
+            padding: 0px 11px;
             transition: 0.2s;
             cursor: default;
 
@@ -74,6 +74,11 @@ header {
             &:hover {
                 background-color: #FF5555;
                 color: #FFF;
+            }
+
+            &:active {
+                background-color: #FF2222;
+                transition: 0s;
             }
         }
     }
