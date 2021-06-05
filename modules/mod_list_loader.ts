@@ -3,7 +3,7 @@ import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
-import { remote } from "electron";
+//import { remote } from "electron";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -84,39 +84,43 @@ class ModListLoader {
 
     private static async TryGetModList(url : string) : Promise<ModList> {
         return new Promise((resolve, reject) => {
-        ElectronLog.log("Trying to get mod list from: " + url);
-        var data = new Array<any>();
-        let req = https.get(url, res => {
-            console.log(`statusCode: ${res.statusCode}`);
+            ElectronLog.log("Trying to get mod list from: " + url);
+            var data = new Array<any>();
+            let req = https.get(url, res => {
+                console.log(`statusCode: ${res.statusCode}`);
 
-            res.on('data', d => {
-                if(res.statusCode != 200){
-                    resolve(null);
-                }
-                
-                data.push(d);
-            });
+                res.on('data', d => {
+                    if(res.statusCode != 200){
+                        resolve(null);
+                    }
+                    data.push(d);
+                });
 
-            res.on("end",  () => {
-                try{
-                    var buf = Buffer.concat(data);
-                    let parsed = JSON.parse(buf.toString());
-                    resolve(parsed);
-                }
-                catch (error){
-                    //Json parsing failed soo reject.
-                    ElectronLog.error(`Failed to parse json in TryGetModList request for ${url}, error: ${error.toString()}`);
-                    resolve(null);
-                }
+                res.on("end", () => {
+                    try {
+                        var buf = Buffer.concat(data);
+                        if (res.statusCode != 200) {
+                            console.log("ERROR! Not parsing " + url);
+                            return;
+                        } else {
+                            var parsed = JSON.parse(buf.toString());
+                        }
+                        resolve(parsed);
+                    }
+                    catch (error){
+                        //Json parsing failed soo reject.
+                        ElectronLog.error(`Failed to parse JSON in TryGetModList request for ${url}, error: ${error.toString()}`);
+                        resolve(null);
+                    }
+                });
             });
-        });
-        
-        req.on('error', (error: string | undefined) => {
-            ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
-            resolve(null);
-        });
-        
-        req.end();
+            
+            req.on('error', (error: string | undefined) => {
+                ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
+                resolve(null);
+            });
+            
+            req.end();
         });
     }
 
