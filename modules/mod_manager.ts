@@ -16,7 +16,6 @@ import { ModList, ModListEntry, ModListLoader } from "./mod_list_loader";
 import Main from "../main";
 import ModInstallSource from "./mod_sources/mod_source_base";
 import ElectronLog from "electron-log";
-import { Utilities } from "./utilities";
 
 var functionMap = new Map();
 
@@ -680,9 +679,8 @@ function DownloadFiles_UI(urls){
 //Get all the files that exist in this zip file object and create them in the target directory.
 //Also supports multiple zips to install at once.
 async function WriteZIPsToDirectory(targetPath, zips : DownloadedFile[], currentModData){
-    let files_object = await filemanager.GetFileList(currentModData.name);
     for(let zip of zips){
-        await FileWriter.ExtractZip(targetPath, zip.buffer, files_object);
+        await FileWriter.ExtractZip(targetPath, zip.buffer, currentModData.name);
     }
 }
 

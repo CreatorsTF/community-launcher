@@ -20,7 +20,7 @@
             "type": "jsonlist",
             "get_url": "https://fastdl.creators.tf/launcher/testmod.json",
             "cloudflarebypass": true,
-            "targetdirectory": "{tf2_dir}/tf/download/",
+            "targetdirectory": "{tf2_dir}/tf/test/",
             "version_property_name": "Version",
             "install_url_property_name": "DownloadLink"
         }

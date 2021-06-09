@@ -4,7 +4,7 @@ import ProgressBar from 'electron-progressbar';
 import jszip from "jszip";
 import path from "path";
 import log from "electron-log";
-import { FILE } from "node:dns";
+import filemanager from "./file_manager";
 
 const loadingTextStyle = {
     color: "ghostwhite"
@@ -12,7 +12,9 @@ const loadingTextStyle = {
 
 class FileWriter
 {
-    public static async ExtractZip(targetPath : string, data : Buffer, fileManagerObject : any) : Promise<boolean> {
+    public static async ExtractZip(targetPath : string, data : Buffer, currentModName : string) : Promise<boolean> {
+        let fileListObject = await filemanager.GetFileList(currentModName);
+
         let active = true;
         var progressBar = new ProgressBar({
             indeterminate: false,
@@ -47,58 +49,43 @@ class FileWriter
             fs.mkdirSync(targetPath, {recursive: true});
         }
 
-        return new Promise(async (resolve, reject) => {
-            progressBar.on('aborted', function() {
-                active = false;
-                reject("Extraction aborted by user. You will need to re start the installation process to install this mod.");
-            });
-
-            try{
-            var zip = await jszip.loadAsync(data.buffer);
-            progressBar.maxValue = zip.length;
-            let filesWritten = 0;
-            zip.forEach(
-                async (relativePath: string, file: jszip.JSZipObject) => {
-                    try{
-                        if(!active) reject("Cancelled by the user.");
-
-                        let fullPath = path.join(targetPath, relativePath);
-                        if(file.dir){
-                            //Make missing directories syncronously as they MUST exist before we write.
-                            fs.mkdirSync(fullPath, {recursive: true});
-                            log.log("ExtractZip: Wrote directory: " + fullPath);
-                        }
-                        else {
-                            let data = await zip.file(file.name).async("uint8array");
-                            fs.writeFileSync(fullPath, data);
-                            progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
-                            log.log("ExtractZip: Wrote file: " + fullPath);
-                            
-                             //Add file that we wrote to the file list
-                            if(!fileManagerObject.files.includes(fullPath))
-                            fileManagerObject.files.push(fullPath);
-                            
-                            filesWritten++;
-                            progressBar.value = filesWritten;
-                        }
-                        
-                        if(filesWritten >= zip.length){
-                            active = false;
-                            progressBar.setCompleted();
-                            progressBar.close();
-                            resolve(true);
-                        }
-                    }
-                    catch(innerError){
-                        reject(innerError.toString());
-                    }
-                }
-            );
-            }
-            catch(e){
-                reject(e.toString());
-            }
+        progressBar.on('aborted', function() {
+            active = false;
+            throw new Error("Extraction aborted by user. You will need to re start the installation process to install this mod.");
         });
+
+        var zip = await jszip.loadAsync(data.buffer);
+        let allFiles = Object.values(zip.files);
+        progressBar.maxValue = allFiles.length;
+        let filesWritten = 0;
+        for(let i = 0; i < allFiles.length; i++){
+            if(!active) return false;
+            let file = allFiles[i];
+            let fullPath = path.join(targetPath, file.name);
+            if(file.dir){
+                //Make missing directories syncronously as they MUST exist before we write.
+                fs.mkdirSync(fullPath, {recursive: true});
+                log.log("ExtractZip: Wrote directory: " + fullPath);
+            }
+            else {
+                let data = await zip.file(file.name).async("uint8array");
+                fs.writeFileSync(fullPath, data);
+                progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
+                log.log("ExtractZip: Wrote file: " + fullPath);
+                
+                    //Add file that we wrote to the file list
+                if(!fileListObject.files.includes(fullPath))
+                fileListObject.files.push(fullPath);
+                
+                filesWritten++;
+                progressBar.value = filesWritten;
+            }
+        }
+        active = false;
+        progressBar.setCompleted();
+        progressBar.close();
+        filemanager.SaveFileList(fileListObject, currentModName);
+        return true;
     }
 }
 
