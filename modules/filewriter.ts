@@ -12,6 +12,13 @@ const loadingTextStyle = {
 
 class FileWriter
 {
+    /**
+     * Extract a ZIP file to the target directory.
+     * @param targetPath Path to write all contents
+     * @param data ZIP file as a buffer
+     * @param currentModName Current mod name for this operation.
+     * @returns If this was succcessful.
+     */
     public static async ExtractZip(targetPath : string, data : Buffer, currentModName : string) : Promise<boolean> {
         let fileListObject = await filemanager.GetFileList(currentModName);
 
@@ -80,7 +87,7 @@ class FileWriter
                 progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
                 log.log("ExtractZip: Wrote file: " + fullPath);
                 
-                    //Add file that we wrote to the file list
+                //Add file that we wrote to the file list
                 if(!fileListObject.files.includes(fullPath))
                 fileListObject.files.push(fullPath);
                 
