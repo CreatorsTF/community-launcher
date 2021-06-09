@@ -37,8 +37,9 @@ class JsonListSource extends ModInstallSource {
         });
     }
 
-    async GetDisplayVersionNumber(): Promise<string> {
-        return await this.GetLatestVersionNumber().toString();
+    async GetDisplayVersionNumber() : Promise<string> {
+        let version = await this.GetLatestVersionNumber();
+        return version.toString();
     }
 
     GetFileURL() : Promise<string>{
