@@ -1,7 +1,7 @@
 import Main from "../main";
 import fs from "fs";
 import ProgressBar from 'electron-progressbar';
-import jszip from "jszip";
+import jszip, { folder } from "jszip";
 import path from "path";
 import log from "electron-log";
 import filemanager from "./file_manager";
@@ -69,6 +69,13 @@ class FileWriter
             }
             else {
                 let data = await zip.file(file.name).async("uint8array");
+
+                //Check and make missing folder paths anyway as we cannot guarantee the order of the elements given from JSZip.
+                let folderPathOnly = path.dirname(fullPath);
+                if(!fs.existsSync(folderPathOnly)){
+                    fs.mkdirSync(folderPathOnly, {recursive: true});
+                }
+
                 fs.writeFileSync(fullPath, data);
                 progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
                 log.log("ExtractZip: Wrote file: " + fullPath);
