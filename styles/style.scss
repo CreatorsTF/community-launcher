@@ -1,0 +1,409 @@
+@use "general.scss" as *;
+
+body {
+    display: flex;
+    background: linear-gradient(0deg, $black 0%, $black-3 100%);
+    user-select: none;
+    overflow: hidden;
+}
+
+#sidebar {
+    min-width: 300px;
+    width: 27%;
+    max-width: 500px;
+    background-color: $black-2;
+    padding: 3vh;
+    z-index: 1;
+    overflow-x: hidden;
+    position: relative;
+}
+
+#modlist-updating {
+    margin: 0 auto;
+    width: fit-content;
+    padding: 3vh;
+    color: $white-2;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 3.8vh;
+    text-align: center;
+}
+
+.entry {
+    margin-bottom: 1.5vh;
+    height: 10vh;
+    border-radius: 11vh;
+    color: $white-2;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.1s;
+
+    &:last-child {
+        margin: 0px;
+    }
+    
+    img {
+        width: 10vh;
+        border-radius: 10vh;
+        pointer-events: none;
+    }
+    
+    &:hover {
+        img {
+            box-shadow: 0 0 3vh $subtle-shadow;
+        }
+        
+        .mod-info-sidebar {
+            text-shadow: 0 0 3vh $subtle-shadow;
+        }
+    }
+
+    &::before {
+        content: "";
+        background: $dark-orange;
+        position: absolute;
+        width: 0%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: -50px;
+        transition: 0.25s;
+        z-index: -1;
+        transform: skewX(-25deg);     
+    }
+    &:hover::before {
+        width: 135%;
+        z-index: -1;
+        color: $white;
+    }
+}
+
+.entrySelected {
+    background-color: $dark-orange;
+    color: $white;
+    transition: 0s;
+
+    & img {
+        box-shadow: 0px 0px 20px $subtle-shadow;
+    }
+}
+
+.mod-info-sidebar {
+    margin-left: 1.35vh;
+
+    & h2, p {
+        margin: 0;
+        line-height: 100%;
+    }
+    & h2 {
+        font-size: 3.2vh;
+        font-family: Roboto Light, Arial, sans-serif;
+    }
+    & p {
+        font-size: 2vh;
+        font-family: Open Sans Light, Arial, sans-serif;
+    }
+}
+
+// .updatealertnotification {
+//     -webkit-mask-image: url(images/circle.svg);
+//     -webkit-mask-size: 100%;
+//     -webkit-mask-repeat: no-repeat;
+//     text-align: center;
+//     position: absolute;
+//     right: 20px;
+//     width: 10px;
+//     height: 10px;
+// }
+
+#box-of-buttons {
+    width: 100%;
+    display: flex;
+    margin-bottom: 3vh;
+
+    button {
+        width: 100%;
+        font-size: 3.2vh;
+        padding: 0.55vh;
+        transition: 0.2s;
+        border-radius: $default-border-radius;
+        margin-left: 1.5vh;
+        border: 1px solid #1110;
+
+        &:first-child {
+            margin-left: 0px;
+        }
+    }
+
+    &.config-button:hover {
+        background-color: $black-3;
+        color: $white-2;
+        border: 1px solid $black-3;
+
+        &:active {
+            background-color: $black-3;
+        }
+    }
+}
+
+@include animation-rotate(0deg, 360deg);
+.mdi-loading::before {
+    animation: rotate 1s ease;
+    animation-iteration-count: infinite;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.02, 0.99);
+}
+
+.update-buttons:hover {
+    border: 1px solid $black-3 !important;
+}
+
+#update-button-download {
+    background-color: $button-update-download-color;
+}
+
+#update-button-downloading {
+    background-color: $button-update-downloading-color;
+    pointer-events: none;
+}
+
+@include animation-alert($button-update-update-color, $button-update-alert-secondary-color);
+#update-button-update {
+    background-color: $button-update-update-color;
+    animation: alert 2s ease-in;
+    animation-iteration-count: infinite;
+}
+
+#update-button-updated {
+    background-color: $button-update-updated-color;
+    cursor: default;
+}
+
+#update-button-fail {
+    background-color: $error;
+    cursor: not-allowed;
+}
+
+#launcher-version {
+    width: fit-content;
+    color: $white-2;
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 2vh;
+    text-shadow: 1px 1px 1px $black;
+    padding: 20px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+#content-dummy {
+    width: 75%;
+}
+
+.default-bg {
+    background-image: url(../images/logos/tf2logo_dark_fade.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    opacity: 0.2;
+}
+
+@include animation-fade(0, 1);
+#content {
+    min-width: 630px;
+    width: 73%;
+    height: 100%;
+    background-color: $default-bg-color;
+    background-size: cover;
+    background-position: center;
+    display: none;
+    overflow: hidden;
+    position: relative;
+    border-left: solid;
+    border-color: $black-2;
+    transition: 0.2s;
+    animation: fade 0.2s ease-in;
+    animation-fill-mode: both;
+    flex-direction: column;
+}
+
+#content-area {
+    height: 100%;
+    z-index: 1;
+    position: relative;
+}
+
+#content-area-mod {
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mod-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#box-of-mod-buttons {
+    display: inline-flex;
+    position: absolute;
+    padding: 20px;
+    top: 0;
+    right: 0;
+
+    button {
+        display: block;
+        margin-left: 1.5vh;
+        padding: 1.5vh;
+        text-shadow: 0px 0px 2vh $black;
+        font-size: 3.5vh;
+        color: $white-2;
+        border-radius: 10vh;
+        transition: 0.2s;
+        z-index: 1;
+        
+        &:hover {
+            filter: brightness(0.9);
+            transform: scale(0.9);
+        }
+
+        &:first-child {
+            margin-left: 0px;
+        }
+
+        &:active {
+            background-color: $black-3;
+            transform: scale(0.85);
+        }
+    }
+}
+
+#server-list {
+    background-color: $button-server-list;
+}
+
+#remove-mod {
+    background-color: $button-remove-mod;
+}
+
+#title-image-holder {
+    width: 67vh;
+    max-width: 72vh;
+}
+
+#title-image {
+    width: 100% !important;
+    pointer-events: none;
+}
+
+#title-header {
+    font-size: 55px;
+    font-family: Roboto Light, Arial, sans-serif;
+    color: $white-2;
+    line-height: 55px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#content-text {
+    margin: 0;
+    font-size: 2.5vh;
+    font-family: Roboto Thin, Arial, sans-serif;
+    text-align: center;
+    text-shadow: 0px 0px 2vh $black;
+    padding: 2vh;
+    color: $white;
+}
+
+#mod-info-box {
+    display: flex;
+    pointer-events: auto;
+    
+    button {
+        width: 7vh;
+        height: 7vh;
+        border-radius: 7vh;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: 0.2s;
+
+        &:hover {
+            transform: scale(0.9);
+            background-color: $not-so-subtle-shadow;
+            cursor: pointer;
+        }
+    }
+}
+
+/* SOCIAL MEDIA LOGOS */
+#socialMediaTwitter { background-image: url(../images/logos/social/twitter.svg); }
+#socialMediaInstagram { background-image: url(../images/logos/social/instagram.svg); background-size: 57%; }
+#socialMediaDiscord { background-image: url(../images/logos/social/discord.svg); background-size: 77%; }
+#socialMediaWebsite { background-image: url(../images/logos/social/websiteicon.svg); background-size: 73%;}
+#socialMediaGithub { background-image: url(../images/logos/social/github_light.svg); background-size: 65%;}
+
+#fadebehindbutton {
+    width: 100%;
+    height: 50%;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    background: linear-gradient(to top, $black-2 25%, transparent 75%);
+}
+
+#install-play-button {
+    width: -webkit-fill-available;
+    position: absolute;
+    bottom: 0;
+    margin: 3vh;
+    padding: 2vh;
+    font-size: 7vh;
+    letter-spacing: 0.35vh;
+    text-transform: uppercase;
+    font-family: Roboto Medium, Arial, sans-serif;
+    display: block;
+    border: none;
+    text-shadow: 0px 0px 3.5vh $black;
+    z-index: 1;
+
+    &:hover {
+        filter: brightness(0.9);
+    }
+}
+
+
+#mod-version {
+    background-color: $not-so-subtle-shadow;
+    color: $white-2;
+    position: absolute;
+    left: 2vh;
+    top: 2vh;
+    padding: 1vh 1.35vh;
+    border-radius: $default-border-radius;
+    display: flex;
+    align-items: center;
+    font-size: 2.35vh;
+    
+    i {
+        margin-right: 1vh;
+    }
+}
+
+#mod-version-text {
+    font-family: Roboto Thin, Arial, sans-serif;
+}
+
+.hidden {
+    display: none;
+}
+
+.invisible {
+    visibility: hidden;
+}

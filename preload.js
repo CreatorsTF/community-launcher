@@ -1,8 +1,8 @@
 var sidebar;
 const fs = require("fs");
 const path = require("path");
-const moddata = JSON.parse(fs.readFileSync(path.resolve(__dirname, "internal", "mods.json")));
 const { ipcRenderer } = require("electron");
+
 window.ipcRenderer = ipcRenderer;
 
 window.log = require("electron-log");
@@ -13,31 +13,16 @@ window.log.transports.file.maxSize = 10485760;
 window.log.transports.file.getFile();
 window.log.info("Main Window Preload Began.");
 
-var isDev = null;
-var eventsWaiting = 0;
-
-eventsWaiting++;
 window.addEventListener("DOMContentLoaded", () => {
-    eventsWaiting--;
-    CheckToSetup();
+    ipcRenderer.send("GetModData", "");
 });
 
-eventsWaiting++;
-ipcRenderer.on("isDev-response", (event, arg) => {
-    isDev = arg;
-    eventsWaiting--;
-    CheckToSetup();
-});
+ipcRenderer.on("ShowMods", (event, moddata) => {
+    document.getElementById("modlist-updating").remove();
 
-function CheckToSetup(){
-    if(eventsWaiting <= 0) Setup();
-}
-
-function Setup(){
     sidebar = document.getElementById("sidebar");
 
     moddata.mods.forEach(modentry => {
-        if(!modentry.hasOwnProperty("devOnly") || !modentry.devOnly || (modentry.devOnly && isDev)){
         let div = document.createElement("div");
         div.className = "entry";
         sidebar.appendChild(div);
@@ -47,7 +32,7 @@ function Setup(){
         div.appendChild(image);
 
         let divModInfoSidebar = document.createElement("div");
-        divModInfoSidebar.className = "modInfoSidebar";
+        divModInfoSidebar.className = "mod-info-sidebar";
         div.appendChild(divModInfoSidebar);
 
         let title = document.createElement("h2");
@@ -58,12 +43,6 @@ function Setup(){
         blurb.innerText = modentry.blurb;
         divModInfoSidebar.appendChild(blurb);
 
-        // TODO!!! IMPORTANT!!!
-        // let updatealert = document.createElement("span");
-        // updatealert.className = "updatealertnotification";
-        // updatealert.style.backgroundColor = "#FFF";
-        // div.appendChild(updatealert);
-
         div.addEventListener("click", function(e) {
             OnClick_Mod(modentry);
 
@@ -71,10 +50,9 @@ function Setup(){
             // Right now it's just a toggle event.
             // div.classList.toggle("entrySelected");
         }, false);
-        }
-    });
 
-    var launcherversionBox = document.getElementById("launcherversion");
+        var updateButton_Fail = document.getElementById("update-button-fail");
+        var launcherVersionBox = document.getElementById("launcher-version");
         const config = fs.readFileSync(path.join(__dirname, "package.json"));
         const currentClientVersion = JSON.parse(config).version;
         let request = new XMLHttpRequest();
@@ -83,16 +61,15 @@ function Setup(){
         request.onload = () => {
             if (request.status === 200) {
                 var answer = JSON.parse(request.response);
-                var version = answer.name;
+                var version = answer.tag_name;
                 if (currentClientVersion === version) {
-                    launcherversionBox.remove();
+                    launcherVersionBox.remove();
                 } else {
-                    launcherversionBox.innerText = "A new update is available for the launcher. Check the website to download the new version. If you are using the auto-updater version, download it automatically by clicking the yellow button!";
+                    launcherVersionBox.innerText = "A new update is available for the launcher.";
                 }
             } else {
-                launcherversionBox.innerText = "Can't check for updates. Either your internet or GitHub's API is down!";
+                updateButton_Fail.classList.remove("hidden");
             }
         }
-}
-
-setTimeout(() => { ipcRenderer.send("isDev", ""); }, 50);
+    });
+});

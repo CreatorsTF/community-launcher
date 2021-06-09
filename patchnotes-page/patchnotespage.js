@@ -1,16 +1,18 @@
 const { BrowserWindow } = require('electron');
 const path = require("path");
+const isDev = require("electron-is-dev");
 
 var patchNotesWindow;
 
 module.exports.OpenWindow = OpenWindow;
-function OpenWindow() {
+function OpenWindow(screenWidth, screenHeight) {
     global.log.info("Loading Patch Notes window...");
     patchNotesWindow = new BrowserWindow({
         parent: global.mainWindow,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
-            nodeIntegration: false
+            nodeIntegration: false,
+            contextIsolation: false
         },
         modal: true,
         show: false,
@@ -20,8 +22,8 @@ function OpenWindow() {
         resizable: true,
         autoHideMenuBar: true,
         minWidth: 960,
-        minHeight: 600,
-        width: screenWidth-350,
+        minHeight: 540,
+        width: screenWidth-250,
         height: screenHeight-100
     });
     if (!isDev) patchNotesWindow.removeMenu();

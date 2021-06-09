@@ -9,8 +9,10 @@ var container;
 var hasCreatedPageContent = false;
 var refreshButton;
 var refreshing = false;
+var serverCount = 0;
 const regionDOMData = new Map();
 const refreshTime = 10 * 1000;
+const maxServersForCollapsingAll = 15;
 
 //Simple way to make server names look better for now.
 //Country flags are appended automatically to each new region name, so
@@ -22,6 +24,22 @@ serverNames.set("us", "North America");
 serverNames.set("ru", "Russia");
 serverNames.set("au", "Australia");
 serverNames.set("sg", "Singapore");
+serverNames.set("no", "Norway");
+serverNames.set("br", "Brazil");
+serverNames.set("de", "Germany");
+serverNames.set("pl", "Poland");
+
+//Remove certain characters from remote data.
+String.prototype.escape = function() {
+    var tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+    };
+    return this.replace(/[&<>]/g, function(tag) {
+        return tagsToReplace[tag] || tag;
+    });
+};
 
 class ServerDOMData {
     _region = "";
@@ -38,13 +56,16 @@ class ServerDOMData {
     button = null;
     lock = null;
 }
-
+window.gotServerList = false;
 window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("serverpagea").addEventListener("click", (ev) => {
         shell.openExternal(creatorsServerListPage);
     });
 
-    ipcRenderer.send("GetServerList", "");
+    if(!window.gotServerList){
+        ipcRenderer.send("GetServerList", "");
+        window.gotServerList = true;
+    }
     container = document.getElementById("server-container");
     refreshButton = document.getElementById("refreshButton");
     refreshButton.addEventListener("click", Refresh);
@@ -54,77 +75,88 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     refreshing = false;
-    if (serverListData != null && serverListData.result == "SUCCESS") {
-        var servers = serverListData.servers;
+    try{
+        if (serverListData != null && serverListData.result != null && serverListData.result == "SUCCESS") {
+            var servers = serverListData.servers;
+            serverCount = servers.length;
+            var serverRegionMap = SortServersIntoRegions(servers);
 
-        var serverRegionMap = SortServersIntoRegions(servers);
-
-        //Create DOM elements for the servers if not created already.
-        if (!hasCreatedPageContent) {
-            CreateServerDOMElements(serverRegionMap);
-        }
-
-        //Update server DOM elements with the recieved information.
-        for (const region of serverRegionMap) {
-            var regionName = region[0].toLowerCase();
-            if (!regionDOMData.has(regionName)) {
-                continue;
+            //Create DOM elements for the servers if not created already.
+            if (!hasCreatedPageContent) {
+                CreateServerDOMElements(serverRegionMap);
             }
 
-            var regionDOMs = regionDOMData.get(regionName);
-
-            for (let server of region[1]) {
-                var serverDOMData = regionDOMs.get(parseInt(server.id));
-
-                serverDOMData.id.innerHTML = `<p>${server.id}</p>`;
-                serverDOMData.hostname.innerHTML = `<p>${server.hostname}</p>`;
-                serverDOMData.map.innerHTML = `<p>${server.map}</p>`;
-
-                let mapPic = document.createElement("div");
-                serverDOMData.map.appendChild(mapPic);
-                mapPic.className = "mapCover";
-                mapPic.style.backgroundImage = "url(" + mapThumb + `${server.map}` + ")";
-
-                serverDOMData.players.innerHTML = `<p>${server.online}/${server.maxplayers}</p>`;
-                serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
-
-                if (server.is_down === false) {
-                    serverDOMData.status.className = "mdi mdi-check-circle link-mini up";
-                    serverDOMData.status.title = "Server is up!"
-                    serverDOMData.tr.style.backgroundColor = null;
-                } else {
-                    serverDOMData.status.className = "mdi mdi-alert-circle link-mini down";
-                    serverDOMData.status.title = "Server is down!"
-                    serverDOMData.tr.style.backgroundColor = "#6B0F0F";
+            //Update server DOM elements with the recieved information.
+            for (const region of serverRegionMap) {
+                var regionName = region[0].toLowerCase();
+                if (!regionDOMData.has(regionName)) {
+                    continue;
                 }
 
-                if (server.passworded === true) {
-                    serverDOMData.button.innerText = `Connect (${server.online}/${server.maxplayers}) `;
-                    if (serverDOMData.lock == null) {
-                        serverDOMData.lock = document.createElement("i");
-                        serverDOMData.lock.className = "mdi mdi-lock link-mini";
-                        serverDOMData.lock.title = "This server requires a password to join";
+                var regionDOMs = regionDOMData.get(regionName);
+
+                for (let server of region[1]) {
+                    var serverDOMData = regionDOMs.get(parseInt(server.id));
+
+                    serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
+                    serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
+                    serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
+
+                    // let mapPic = document.createElement("div");
+                    // serverDOMData.map.appendChild(mapPic);
+                    // mapPic.className = "mapCover";
+                    // mapPic.style.backgroundImage = server.passworded ? "" : "url(" + mapThumb + `${server.map}` + ")";
+
+                    serverDOMData.players.innerHTML = server.passworded ? "<p>??/??</p>" : `<p>${server.online}/${server.maxplayers}</p>`;
+                    serverDOMData.heartbeat.innerText = `${server.since_heartbeat}` + "s ago";
+
+                    if (server.is_down === false) {
+                        serverDOMData.status.className = "mdi mdi-check-circle link-mini up";
+                        serverDOMData.status.title = "Server is up!"
+                        serverDOMData.tr.style.backgroundColor = null;
+                    } else {
+                        serverDOMData.status.className = "mdi mdi-alert-circle link-mini down";
+                        serverDOMData.status.title = "Server is down!"
+                        serverDOMData.tr.style.backgroundColor = "#6B0F0F";
                     }
-                    serverDOMData.lock.style.display = "inline";
-                    serverDOMData.button.appendChild(serverDOMData.lock);
-                } else {
-                    if (serverDOMData.lock != null) {
-                        serverDOMData.lock.style.display = "none";
+
+                    if (server.passworded === true) {
+                        serverDOMData.button.innerText = "Requires Password ";
+                        if (serverDOMData.lock == null) {
+                            serverDOMData.lock = document.createElement("i");
+                            serverDOMData.lock.className = "mdi mdi-lock link-mini";
+                            serverDOMData.lock.title = "This server requires a password to join";
+                        }
+                        serverDOMData.lock.style.display = "inline";
+                        serverDOMData.button.appendChild(serverDOMData.lock);
+                    } else {
+                        if (serverDOMData.lock != null) {
+                            serverDOMData.lock.style.display = "none";
+                        }
+                        serverDOMData.button.innerText = "Connect";
                     }
-                    serverDOMData.button.innerText = "Connect";
                 }
             }
         }
+        else if(serverListData == "503"){
+            loading.remove();
+            document.getElementById("cloudflare-error").style.display = "flex";
+        }
+        else {
+            ShowFailMessage();
+        }
     }
-    else if(serverListData == "503"){
-        loading.remove();
-        document.getElementById("cloudflare-error").style.display = "block";
-    }
-    else {
-        loading.remove();
-        document.getElementById("failMessage").style.display = "block";
+    catch (e) {
+        console.error(e.toString());
+        ShowFailMessage();
     }
 });
+
+function ShowFailMessage(){
+    loading.remove();
+    document.getElementById("failMessage").style.display = "block";
+    console.error("Server list failed to show.");
+}
 
 function CreateServerDOMElements(serverRegionMap){
     loading.remove();
@@ -133,10 +165,11 @@ function CreateServerDOMElements(serverRegionMap){
     for (const region of serverRegionMap) {
         var heading = document.createElement("span");
         var headingFlag = document.createElement("i");
+        var regionName = region[0].toLowerCase();
 
         container.appendChild(heading);
         heading.className = "serverRegions";
-        var regionName = region[0].toLowerCase();
+    
         if (serverNames.has(regionName)) {
             heading.innerText = serverNames.get(regionName);
             headingFlag.className = "flag-icon flag-icon-" + regionName;
@@ -144,6 +177,7 @@ function CreateServerDOMElements(serverRegionMap){
         else {
             heading.innerText = regionName.toUpperCase();
         }
+
         heading.appendChild(headingFlag);
         heading.innerHTML += arrowDownHTML;
 
@@ -216,7 +250,8 @@ function CreateServerDOMElements(serverRegionMap){
             SetButtonEventListener(button, server.ip, server.port);
             table.appendChild(tr);
         }
-        table.style.display = "none";
+
+        if(serverCount > maxServersForCollapsingAll) table.style.display = "none";
     }
 
     hasCreatedPageContent = true;

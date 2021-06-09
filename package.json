@@ -1,13 +1,16 @@
 {
   "name": "creators-tf-launcher",
-  "version": "0.1.32",
+  "version": "0.2.3",
   "description": "An easier way to install, update and play TF2 content.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "buildwindows": "electron-builder build --win --x64 --ia32 --publish never",
-    "buildlinux": "electron-builder build --linux deb tar.gz --publish never",
-    "deploy": "electron-builder build --win --x64 --ia32 --publish always"
+    "compileTs": "npx tsc",
+    "compileSass": "sass styles/:styles/",
+    "compileTsAndStart": "npx tsc && electron .",
+    "compileAndStart": "npx tsc && sass styles/:styles/ && electron .",
+    "buildWindows": "electron-builder build --win --x64 --ia32 --publish never",
+    "buildLinux": "electron-builder build --linux AppImage deb tar.gz --publish never"
   },
   "keywords": [
     "TF2",
@@ -25,17 +28,21 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "electron": "^10.1.5",
-    "electron-builder": "^22.8.0"
+    "electron": "12.0.5",
+    "electron-builder": "22.10.5",
+    "sass": "^1.32.12",
+    "typescript": "^4.2.4"
   },
   "dependencies": {
-    "@mdi/font": "^5.7.55",
+    "@mdi/font": "^5.9.55",
+    "@types/node": "^14.14.40",
     "electron-is-dev": "^1.2.0",
-    "electron-log": "^4.2.2",
+    "electron-log": "^4.3.4",
     "electron-progressbar": "^1.2.0",
-    "electron-updater": "^4.3.4",
+    "electron-updater": "^4.3.8",
     "flag-icon-css": "^3.5.0",
-    "jszip": "^3.5.0",
-    "marked": "^1.2.0"
+    "jszip": "^3.6.0",
+    "marked": "^2.0.3",
+    "string-format": "^2.0.0"
   }
 }

@@ -1,0 +1,161 @@
+@use "general.scss" as *;
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: $branding-orange;
+    background-image: url(../images/engineer_fix.svg);
+    background-size: 25%;
+    background-position: bottom right;
+    background-repeat: no-repeat;
+    user-select: none;
+}
+
+#coglabel {
+    background-color: $black;
+    width: 35vh;
+    height: 35vh;
+    position: absolute;
+    top: -22vh;
+    left: -22vh;
+    transform: rotate(45deg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 3vh;
+    
+    i {
+        color: $white-2;
+        font-size: 10vh;
+        transform: rotate(-45deg);
+    }
+}
+
+
+h1, p {
+    color: $black-3;
+}
+
+h1 {
+    font-family: Roboto Black, Arial, sans-serif;
+    font-size: 80px;
+    margin: 0px auto 10px auto;
+    text-shadow: 0px 0px 2px $black;
+    color: $white-2;
+}
+
+p {
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 20px;
+    margin: 0;
+    color: $white-2;
+}
+
+button {
+    border-radius: $default-border-radius;
+    margin-left: 2vh;
+    transition: 0.2s;
+    font-size: 2.65vh !important;
+}
+
+button:first-child {
+    margin-left: 0px;
+}
+
+.inputLabelRow {
+    margin: 0 auto;
+    text-align: center;
+    text-shadow: 0px 0px 10vh $not-so-subtle-shadow;
+    font-family: Roboto Medium, Arial, sans-serif;
+    font-size: 5vh;
+    color: $white-2;
+}
+
+.inputRow {
+    width: 55%;
+    margin-bottom: 3vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    
+    &:nth-last-of-type(3) {
+        margin-bottom: 0px !important;
+    }
+}
+
+#reload-button {
+    padding: 1vh 2vh;
+}
+
+#config-debug {
+    background: radial-gradient(ellipse at bottom left, $dark-gray, $black-3);
+    width: 70%;
+    margin: 3vh 0 0 0;
+    padding: 2vh;
+    border-radius: 1vh;
+    display: none;
+    text-align: center;
+}
+
+#config-debug textarea {
+    margin: 0 auto;
+    width: 100%;
+    height: 6em;
+    font-family: monospace;
+    color: $black-3;
+    background-color: $white-2;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 15px;
+    text-align: center;
+    word-break: break-all;
+    outline: 0;
+    border: 0;
+    user-select: none;
+    resize: none;
+}
+
+#config-dontshow-button, #config-copycontents-button {
+    padding: 5px 8px !important;
+    font-size: 16px;
+    
+    &:hover {
+        border-color: $down;
+    }
+    &:hover::before {
+        background: $down;
+    }
+}
+
+#config-copycontents-button:active {
+    border-color: $up;
+    
+    &::before {
+        background: $up;
+    }
+}
+
+.inputRowConfig {
+    width: 100%;
+    display: flex;
+    padding-bottom: 10px;
+    justify-content: space-between;
+}
+
+#version-box {
+    background-color: $black;
+    padding: 1vh 1.5vh;
+    text-align: center;
+    border-radius: 0 1.5vh 0 0;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    
+    p {
+        font-size: 2.5vh;
+    }
+}

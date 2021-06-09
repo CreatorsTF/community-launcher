@@ -1,8 +1,12 @@
 const marked = require("marked");
+
 marked.setOptions({
     breaks: true,
     gfm: true,
-    headerIds: false
+    headerIds: false,
+    baseUrl: "https://creators.tf/",
+    smartypants: true,
+    sanitize: false
 });
 
 window.addEventListener("DOMContentLoaded", () => {

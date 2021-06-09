@@ -1,14 +1,11 @@
-"use strict";
-const https = global.https;
-const { ModInstallSource } = require("./mod_source_base.js");
+import  ModInstallSource from "./mod_source_base.js";
+import https from "https";
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
-// Test GET url: https://api.github.com/repos/agrastiOs/Ultimate-TF2-Visual-Fix-Pack/releases
 
 const github_api_url = "https://api.github.com/";
 
-module.exports.GithubSource = class GithubSource extends ModInstallSource {
-
+class GithubSource extends ModInstallSource {
     github_data = null;
     fileType = "FILE";
 
@@ -17,7 +14,7 @@ module.exports.GithubSource = class GithubSource extends ModInstallSource {
     }
 
     //Function to get the latest github data from memory or request.
-    _GetGithubData(){
+    async _GetGithubData(): Promise<any>{
         return new Promise((resolve, reject) => {
             if(this.github_data != null) resolve(this.github_data);
             else {
@@ -26,7 +23,7 @@ module.exports.GithubSource = class GithubSource extends ModInstallSource {
         });
     }
 
-    GetLatestVersionNumber(){
+    async GetLatestVersionNumber() : Promise<number>{
         return new Promise((resolve, reject) => {
             this._GetGithubData().then((data) => {
                 if(data.length == null || data.length == 0) reject("No releases avaliable to download");
@@ -40,7 +37,13 @@ module.exports.GithubSource = class GithubSource extends ModInstallSource {
         });
     }
 
-    GetFileURL() {
+    async GetDisplayVersionNumber(): Promise<string> {
+        let versionNumber = await this.GetLatestVersionNumber();
+        let githubData = await this._GetGithubData();
+        return `${githubData[0].name} (${versionNumber})`;
+    }
+
+    async GetFileURL() : Promise<string>{
         return new Promise((resolve, reject) => {
             //Try to get the download url for the release asset.
             this._GetGithubData().then((data) => {
@@ -100,3 +103,4 @@ module.exports.GithubSource = class GithubSource extends ModInstallSource {
         });
     }
 }
+export default GithubSource;
