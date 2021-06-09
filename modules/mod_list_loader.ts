@@ -3,7 +3,6 @@ import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
-//import { remote } from "electron";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -30,6 +29,11 @@ class ModListLoader {
         return this.localModList;
     }
 
+    public static InjectDevMods() {
+        let devModsPath = path.join(this.GetInternalFolderPath(), "devmods.json");
+        this.localModList.mods = this.localModList.mods.concat(JSON.parse(fs.readFileSync(devModsPath, "utf-8")).mods);
+    }
+
     /**
      * Update the local mod list file on disk to contain the latest data we found.
      */
@@ -37,6 +41,7 @@ class ModListLoader {
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
             let configPath = path.join(Utilities.GetDataFolder(), localModListName);
             fs.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
+            this.localModList = this.lastDownloaded;
             return true;
         }
         return false;
@@ -126,7 +131,7 @@ class ModListLoader {
 
     public static GetLocalModList() : ModList {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
-        var internalModListJSON = fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json"), {encoding:"utf-8"});
+        var internalModListJSON = fs.readFileSync(path.resolve(this.GetInternalFolderPath(), "mods.json"), {encoding:"utf-8"});
         var internalModList = <ModList>JSON.parse(internalModListJSON);
         let configPath = path.join(Utilities.GetDataFolder(), localModListName);
 
@@ -150,6 +155,10 @@ class ModListLoader {
             return true;
         }
         return false;
+    }
+
+    private static GetInternalFolderPath() : string {
+        return path.resolve(__dirname, "..", "internal");
     }
 }
 

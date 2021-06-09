@@ -22,7 +22,7 @@ ipcRenderer.on("ShowMods", (event, data) => {
 
     sidebar = document.getElementById("sidebar");
 
-    data.mods.mods.forEach(modentry => {
+    data.mods.forEach(modentry => {
         if(!modentry.hasOwnProperty("devOnly") || !modentry.devOnly || (modentry.devOnly && data.isDev)){
             let div = document.createElement("div");
             div.className = "entry";

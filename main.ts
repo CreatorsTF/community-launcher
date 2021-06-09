@@ -11,9 +11,9 @@ import { ModListLoader, ModList } from "./modules/mod_list_loader";
 import path from "path";
 import os from "os";
 const _config = require("./modules/config");
-
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 import log from "electron-log";
+
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "main.log";
@@ -301,8 +301,15 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
 ipcMain.on("GetModData", async (event, args) => {
     ModListLoader.CheckForUpdates().then(() => {
         ModListLoader.UpdateLocalModList();
+
+        if(isDev){
+            ModListLoader.InjectDevMods();
+        }
+
         log.verbose("Latest mod list was sent to renderer");
-        event.reply("ShowMods", {isDev: isDev, mods: ModListLoader.GetModList()});
+        let modList = ModListLoader.GetModList();
+
+        event.reply("ShowMods", {mods: modList.mods});
     });
 });
 
