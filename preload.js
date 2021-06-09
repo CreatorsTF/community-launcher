@@ -17,59 +17,60 @@ window.addEventListener("DOMContentLoaded", () => {
     ipcRenderer.send("GetModData", "");
 });
 
-ipcRenderer.on("ShowMods", (event, moddata) => {
+ipcRenderer.on("ShowMods", (event, data) => {
     document.getElementById("modlist-updating").remove();
 
     sidebar = document.getElementById("sidebar");
 
-    moddata.mods.forEach(modentry => {
-        let div = document.createElement("div");
-        div.className = "entry";
-        sidebar.appendChild(div);
+    data.mods.mods.forEach(modentry => {
+        if(!modentry.hasOwnProperty("devOnly") || !modentry.devOnly || (modentry.devOnly && data.isDev)){
+            let div = document.createElement("div");
+            div.className = "entry";
+            sidebar.appendChild(div);
 
-        let image = document.createElement("img");
-        image.src = modentry.icon;
-        div.appendChild(image);
+            let image = document.createElement("img");
+            image.src = modentry.icon;
+            div.appendChild(image);
 
-        let divModInfoSidebar = document.createElement("div");
-        divModInfoSidebar.className = "mod-info-sidebar";
-        div.appendChild(divModInfoSidebar);
+            let divModInfoSidebar = document.createElement("div");
+            divModInfoSidebar.className = "mod-info-sidebar";
+            div.appendChild(divModInfoSidebar);
 
-        let title = document.createElement("h2");
-        title.innerText = modentry.name;
-        divModInfoSidebar.appendChild(title);
+            let title = document.createElement("h2");
+            title.innerText = modentry.name;
+            divModInfoSidebar.appendChild(title);
 
-        let blurb = document.createElement("p");
-        blurb.innerText = modentry.blurb;
-        divModInfoSidebar.appendChild(blurb);
+            let blurb = document.createElement("p");
+            blurb.innerText = modentry.blurb;
+            divModInfoSidebar.appendChild(blurb);
 
-        div.addEventListener("click", function(e) {
-            OnClick_Mod(modentry);
+            div.addEventListener("click", function(e) {
+                OnClick_Mod(modentry);
 
-            // TODO: Check if other element is selected to avoid 2 selected elements.
-            // Right now it's just a toggle event.
-            // div.classList.toggle("entrySelected");
-        }, false);
-
-        var updateButton_Fail = document.getElementById("update-button-fail");
-        var launcherVersionBox = document.getElementById("launcher-version");
-        const config = fs.readFileSync(path.join(__dirname, "package.json"));
-        const currentClientVersion = JSON.parse(config).version;
-        let request = new XMLHttpRequest();
-        request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
-        request.send();
-        request.onload = () => {
-            if (request.status === 200) {
-                var answer = JSON.parse(request.response);
-                var version = answer.tag_name;
-                if (currentClientVersion === version) {
-                    launcherVersionBox.remove();
-                } else {
-                    launcherVersionBox.innerText = "A new update is available for the launcher.";
-                }
-            } else {
-                updateButton_Fail.classList.remove("hidden");
-            }
+                // TODO: Check if other element is selected to avoid 2 selected elements.
+                // Right now it's just a toggle event.
+                // div.classList.toggle("entrySelected");
+            }, false);
         }
     });
+    var updateButton_Fail = document.getElementById("update-button-fail");
+    var launcherVersionBox = document.getElementById("launcher-version");
+    const config = fs.readFileSync(path.join(__dirname, "package.json"));
+    const currentClientVersion = JSON.parse(config).version;
+    let request = new XMLHttpRequest();
+    request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
+    request.send();
+    request.onload = () => {
+        if (request.status === 200) {
+            var answer = JSON.parse(request.response);
+            var version = answer.tag_name;
+            if (currentClientVersion === version) {
+                launcherVersionBox.remove();
+            } else {
+                launcherVersionBox.innerText = "A new update is available for the launcher.";
+            }
+        } else {
+            updateButton_Fail.classList.remove("hidden");
+        }
+    }
 });

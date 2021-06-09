@@ -302,7 +302,7 @@ ipcMain.on("GetModData", async (event, args) => {
     ModListLoader.CheckForUpdates().then(() => {
         ModListLoader.UpdateLocalModList();
         log.verbose("Latest mod list was sent to renderer");
-        event.reply("ShowMods", ModListLoader.GetModList());
+        event.reply("ShowMods", {isDev: isDev, mods: ModListLoader.GetModList()});
     });
 });
 
