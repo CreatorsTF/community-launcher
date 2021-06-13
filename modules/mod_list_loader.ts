@@ -3,7 +3,6 @@ import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
-import { remote } from "electron";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -30,6 +29,11 @@ class ModListLoader {
         return this.localModList;
     }
 
+    public static InjectDevMods() {
+        let devModsPath = path.join(this.GetInternalFolderPath(), "devmods.json");
+        this.localModList.mods = this.localModList.mods.concat(JSON.parse(fs.readFileSync(devModsPath, "utf-8")).mods);
+    }
+
     /**
      * Update the local mod list file on disk to contain the latest data we found.
      */
@@ -37,6 +41,7 @@ class ModListLoader {
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
             let configPath = path.join(Utilities.GetDataFolder(), localModListName);
             fs.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
+            this.localModList = this.lastDownloaded;
             return true;
         }
         return false;
@@ -84,45 +89,49 @@ class ModListLoader {
 
     private static async TryGetModList(url : string) : Promise<ModList> {
         return new Promise((resolve, reject) => {
-        ElectronLog.log("Trying to get mod list from: " + url);
-        var data = new Array<any>();
-        let req = https.get(url, res => {
-            console.log(`statusCode: ${res.statusCode}`);
+            ElectronLog.log("Trying to get mod list from: " + url);
+            var data = new Array<any>();
+            let req = https.get(url, res => {
+                console.log(`statusCode: ${res.statusCode}`);
 
-            res.on('data', d => {
-                if(res.statusCode != 200){
-                    resolve(null);
-                }
-                
-                data.push(d);
-            });
+                res.on('data', d => {
+                    if(res.statusCode != 200){
+                        resolve(null);
+                    }
+                    data.push(d);
+                });
 
-            res.on("end",  () => {
-                try{
-                    var buf = Buffer.concat(data);
-                    let parsed = JSON.parse(buf.toString());
-                    resolve(parsed);
-                }
-                catch (error){
-                    //Json parsing failed soo reject.
-                    ElectronLog.error(`Failed to parse json in TryGetModList request for ${url}, error: ${error.toString()}`);
-                    resolve(null);
-                }
+                res.on("end", () => {
+                    try {
+                        var buf = Buffer.concat(data);
+                        if (res.statusCode != 200) {
+                            console.log("ERROR! Not parsing " + url);
+                            return;
+                        } else {
+                            var parsed = JSON.parse(buf.toString());
+                        }
+                        resolve(parsed);
+                    }
+                    catch (error){
+                        //Json parsing failed soo reject.
+                        ElectronLog.error(`Failed to parse JSON in TryGetModList request for ${url}, error: ${error.toString()}`);
+                        resolve(null);
+                    }
+                });
             });
-        });
-        
-        req.on('error', (error: string | undefined) => {
-            ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
-            resolve(null);
-        });
-        
-        req.end();
+            
+            req.on('error', (error: string | undefined) => {
+                ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
+                resolve(null);
+            });
+            
+            req.end();
         });
     }
 
     public static GetLocalModList() : ModList {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
-        var internalModListJSON = fs.readFileSync(path.resolve(__dirname, "..", "internal", "mods.json"), {encoding:"utf-8"});
+        var internalModListJSON = fs.readFileSync(path.resolve(this.GetInternalFolderPath(), "mods.json"), {encoding:"utf-8"});
         var internalModList = <ModList>JSON.parse(internalModListJSON);
         let configPath = path.join(Utilities.GetDataFolder(), localModListName);
 
@@ -146,6 +155,10 @@ class ModListLoader {
             return true;
         }
         return false;
+    }
+
+    private static GetInternalFolderPath() : string {
+        return path.resolve(__dirname, "..", "internal");
     }
 }
 
