@@ -73,9 +73,9 @@ class Utilities {
         return progressBar;
     }
 
-    static currentLauncherVersion = null;
+    static currentLauncherVersion : string = null;
 
-    static GetCurrentVersion() {
+    static GetCurrentVersion() : string {
         if (this.currentLauncherVersion == null) {
             try {
                 let packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));

@@ -3,6 +3,7 @@ import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
+import semver from "semver";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -38,13 +39,25 @@ class ModListLoader {
      * Update the local mod list file on disk to contain the latest data we found.
      */
     public static UpdateLocalModList() : Boolean {
+        let modlistUpdated;
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
             let configPath = path.join(Utilities.GetDataFolder(), localModListName);
             fs.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
             this.localModList = this.lastDownloaded;
-            return true;
+            modlistUpdated = true;
         }
-        return false;
+        modlistUpdated = false;
+
+        //Filter out mods that do not meet the min version requirement
+        let currentVersion = Utilities.GetCurrentVersion();
+            this.localModList.mods = this.localModList.mods.filter(
+                (value) => {
+                    return (value.minLauncherVersion == undefined || 
+                    (semver.valid(value.minLauncherVersion) != null && semver.gte(currentVersion, value.minLauncherVersion)))
+                }
+            );
+
+        return modlistUpdated;
     }
 
     /**Check if there is a newer mod list online.
@@ -214,8 +227,9 @@ class ModListEntry
     serverlistproviders: Array<number>;
     modid: string;
     contenttext: string;
-    install: Install
-    items: Install[]
+    install: Install;
+    items: Install[];
+    minLauncherVersion: string;
 }
 
 class GithubAsset {

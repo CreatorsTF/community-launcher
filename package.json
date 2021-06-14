@@ -43,6 +43,7 @@
     "flag-icon-css": "^3.5.0",
     "jszip": "^3.6.0",
     "marked": "^2.0.3",
+    "semver": "^7.3.5",
     "string-format": "^2.0.0"
   }
 }
