@@ -95,6 +95,7 @@ function OnClick_Mod(data) {
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
+    collectionSelect.disabled = true;
     if ((data.install.type == "githubcollection") || (data.install.type == "jsonlistcollection")) {
         //Do stuff for collections
         let select = document.getElementById("collection-versions");
@@ -197,22 +198,27 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
             removeButton.style.display = "block";
+            collectionSelect.disabled = true;
             break;
         case "install":
             installButton.style.background = "#FF850A";
             removeButton.style.display = "none";
+            collectionSelect.disabled = false;
             break;
         case "update":
             installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
             removeButton.style.display = "block";
+            collectionSelect.disabled = true;
             break;
         case "internal error":
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
             removeButton.style.display = "none";
+            collectionSelect.disabled = true;
             break;
         default:
             installButton.style.background = "grey";
             removeButton.style.display = "none";
+            collectionSelect.disabled = true;
             break;
     }
 });

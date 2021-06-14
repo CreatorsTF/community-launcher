@@ -393,7 +393,7 @@ body {
 }
 
 #collection-versions {
-    width: 200px;
+    width: 300px;
     margin: 2vh;
     padding: 1vh;
     font-size: 3vh;
@@ -411,6 +411,11 @@ body {
     &:hover {
         background-color: #B75C22;
         cursor: pointer;
+    }
+
+    &:disabled{
+        background-color: $dark-orange;
+        color: #EEE;
     }
 }
 
