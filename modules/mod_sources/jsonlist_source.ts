@@ -78,9 +78,14 @@ class JsonListSource extends ModInstallSource {
                             reject(cloudFlareMessage);
                             return;
                         }
+                        else if(res.statusCode == 403){
+                            reject("File was missing/not found.");
+                        }
+                        else if(res.statusCode == 503){
+                            reject("HTTP 503, The server is busy/unable to handle the request at the current time. Try again later.");
+                        }
                         else if(res.statusCode != 200){
-                            reject(`Failed accessing ${this.url}: ${res.statusCode}.`);
-                            ElectronLog.error(buf.toString());
+                            reject(`Could not properly access "${this.url}". HTTP code was:${res.statusCode}.`);
                             return;
                         }
                         else{
@@ -89,15 +94,15 @@ class JsonListSource extends ModInstallSource {
                         }
                     }
                     catch (error){
-                        //Json parsing failed soo reject.
-                        ElectronLog.error("Json parse failed. Endpoint is probably not returning valid JSON. Site may be down!");
+                        //Json parsing failed, reject.
+                        ElectronLog.error("Json parse failed. Website is not returning valid JSON. Site may be down!");
                         reject(error.toString());
                     }
                 });
             });
             
             req.on('error', error => {
-                reject(error);
+                reject("Request Error: " + error);
             });
             
             req.end();
