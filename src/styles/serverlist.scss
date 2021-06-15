@@ -1,0 +1,198 @@
+@use "general.scss" as *;
+
+body {
+    background-color: $black-2;
+    background-image: url(../images/backgrounds/servers.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-blend-mode: multiply;
+    user-select: none;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+h1, h2, p {
+    margin: 0;
+    text-align: center;
+    color: $white-2;
+}
+
+h1 {
+    font-family: Roboto Black, Arial, sans-serif;
+    font-size: 10vh;
+    padding-top: 3vh;
+}
+
+#loading {
+    text-align: center;
+    font-family: Roboto Black, Arial, sans-serif;
+    font-size: 40px;
+    padding: 100px 0px;
+    color: $white-2;
+}
+
+.error {
+    margin: 5vh auto;
+    display: none;
+    flex-direction: column;
+
+    p, i, a {
+        font-size: 3vh;
+        color: lightcoral;
+        text-align: center;
+        transition: 0.2s;
+    }
+    
+    a:hover {
+        color: lightskyblue;
+    }
+
+    i {
+        font-size: 2vh;
+    }
+}
+
+#refreshHolder {
+    margin: 2vh auto;
+    text-align: center;
+}
+
+#refreshButton {
+    border-radius: 10vh;
+    padding: 1vh;
+    transition: 0.2s;
+
+    &:hover {
+        transform: rotate(180deg);
+    }
+
+    i {
+        font-size: 5vh;
+        color: $blue;
+    }
+}
+
+.serverRegions {
+    margin: 2vh auto;
+    font-size: 3.2vh;
+    color: $white-2;
+    font-family: Open Sans Light, Arial, sans-serif;
+    cursor: pointer;
+    display: table;
+    
+    &:first-child {
+        margin-top: 0px;
+    }
+    
+    i {
+        margin: 0px 1vh;
+        border-radius: 0.5vh;
+        
+        &:last-child {
+            margin: 0px;
+        }
+    }
+}
+
+p {
+    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 2.3vh;
+    padding: 0px 1vh;
+}
+
+table {
+    margin: 0 auto;
+    width: 90%;
+}
+
+tr {
+    background-color: $black-2;
+    width: 100%;
+    text-align: center;
+    transition: 0.2s;
+    
+    &:nth-child(even) {
+        background-color: $black-3;
+    }
+    
+    &:hover {
+        background-color: $dark-gray;
+    }
+}
+
+.id {
+    min-width: 43px;
+    width: 5%;
+    border-radius: 1vh 0 0 1vh;
+}
+
+.name {
+    min-width: 328px;
+    width: 38%;
+}
+
+.map {
+    width: 25%;
+    position: relative;
+    
+    &:hover .mapCover {
+        opacity: 1;
+    }
+}
+
+.mapCover {
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 999;
+}
+
+.players {
+    min-width: 56px;
+    width: 8%;
+}
+
+.connect {
+    width: 14%;
+    
+    button {
+        padding: 1.35vh;
+        font-family: Roboto Light, Arial, sans-serif;
+        font-size: 2.5vh;
+        width: 100%;
+        
+        &:hover {
+            background-color: $white-2;
+        }
+    }
+}
+
+.hb {
+    min-width: 75px;
+    max-width: 100px;
+    width: 10%;
+    font-family: Roboto Thin, Arial, sans-serif;
+    font-size: 15px;
+    color: $white-2;
+    overflow: hidden;
+    cursor: help;
+}
+
+.status {
+    min-width: 35px;
+    width: 5%;
+    border-radius: 0 1vh 1vh 0;
+    padding: 1vh;
+}
+
+.link-mini {
+    font-size: 3vh;
+}
