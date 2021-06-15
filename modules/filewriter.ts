@@ -31,7 +31,7 @@ class FileWriter
             closeOnComplete: false,
             browserWindow: {
                 webPreferences: {
-                    nodeIntegration: true,
+                    nodeIntegration: false,
                     contextIsolation: false
                 },
                 parent: Main.mainWindow,
@@ -58,7 +58,7 @@ class FileWriter
 
         progressBar.on('aborted', function() {
             active = false;
-            throw new Error("Extraction aborted by user. You will need to re start the installation process to install this mod.");
+            throw new Error("Extraction aborted by the user. You will need to restart the installation process to install this mod.");
         });
 
         var zip = await jszip.loadAsync(data.buffer);
@@ -88,8 +88,9 @@ class FileWriter
                 log.log("ExtractZip: Wrote file: " + fullPath);
                 
                 //Add file that we wrote to the file list
-                if(!fileListObject.files.includes(fullPath))
-                fileListObject.files.push(fullPath);
+                if (!fileListObject.files.includes(fullPath)) {
+                    fileListObject.files.push(fullPath);
+                }
                 
                 filesWritten++;
                 progressBar.value = filesWritten;
