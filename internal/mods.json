@@ -1,5 +1,5 @@
 {
-    "version": 1.34,
+    "version": 1.35,
     "mods":
     [
         {
@@ -130,7 +130,7 @@
             "discord": "",
             "serverlist": "",
             "contenttext": "A modern Team Fortress 2 performance and customization config. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with mastercomfig.",
-            "minLauncherVersion": "0.3.0",
+            "minLauncherVersion": "0.2.4",
             "install": {
                 "modname": "mastercomfig",
                 "type": "githubcollection",
@@ -216,8 +216,6 @@
                     "asset_index": 14
                 }
             ]
-
         }
-        
     ]
 }
