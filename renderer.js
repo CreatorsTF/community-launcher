@@ -179,9 +179,12 @@ installButton.addEventListener("click", (e) => {
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
     if (arg == "?") {
+        // TODO: Proper function
         modVersion.style.display = "none";
+        collectionSelect.style.display = "none";
     } else {
         modVersion.style.display = "block";
+        collectionSelect.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg;
     }
 });
