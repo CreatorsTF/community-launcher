@@ -79,7 +79,7 @@ class ModManager {
                 break;
             default:
                 this.source_manager = null;
-                throw new Error("Mod install type was not recognised: " + this.currentModData.install.type);
+                throw new Error(`Mod install type was not recognised: ${this.currentModData.install.type}. It may be new? Update to the latest version.`);
         }
 
         //We do not have a version for this mod. Method to use is install.
