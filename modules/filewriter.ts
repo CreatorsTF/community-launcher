@@ -31,7 +31,7 @@ class FileWriter
             closeOnComplete: false,
             browserWindow: {
                 webPreferences: {
-                    nodeIntegration: false,
+                    nodeIntegration: true,
                     contextIsolation: false
                 },
                 parent: Main.mainWindow,
