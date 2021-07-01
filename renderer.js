@@ -96,18 +96,22 @@ function OnClick_Mod(data) {
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
     collectionSelect.disabled = true;
+
     if ((data.install.type == "githubcollection") || (data.install.type == "jsonlistcollection")) {
         //Do stuff for collections
-        let select = document.getElementById("collection-versions");
-        select.style.display = "block";
+        if (data.items != "") {
+            collectionSelect.style.display = "block";
+        } else {
+            collectionSelect.style.display = "none";
+        }
         //Clear the select
-        select.innerHTML = '';
+        collectionSelect.innerHTML = '';
         //Populate the select
         data.items.forEach(element => {
             let opt = document.createElement("option");
             opt.value = element.itemname;
             opt.innerHTML = element.displayname;
-            select.appendChild(opt);
+            collectionSelect.appendChild(opt);
             if (element.default == true) {
                 opt.selected = true;
             }
@@ -116,7 +120,6 @@ function OnClick_Mod(data) {
     else {
         collectionSelect.style.display = "none";
     }
-
     hasClickedInstallButton = true;
 }
 
@@ -178,14 +181,12 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    if (arg == "?") {
-        // TODO: Proper function
+    if (arg != "") {
+        modVersion.style.display = "block";
+        modVersionText.innerText = "Mod version: " + arg;
+    } else {
         modVersion.style.display = "none";
         collectionSelect.style.display = "none";
-    } else {
-        modVersion.style.display = "block";
-        collectionSelect.style.display = "block";
-        modVersionText.innerText = "Mod version: " + arg;
     }
 });
 
@@ -201,27 +202,22 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
             removeButton.style.display = "block";
-            collectionSelect.disabled = true;
             break;
         case "install":
             installButton.style.background = "#FF850A";
             removeButton.style.display = "none";
-            collectionSelect.disabled = false;
             break;
         case "update":
             installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
             removeButton.style.display = "block";
-            collectionSelect.disabled = true;
             break;
         case "internal error":
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
             removeButton.style.display = "none";
-            collectionSelect.disabled = true;
             break;
         default:
             installButton.style.background = "grey";
             removeButton.style.display = "none";
-            collectionSelect.disabled = true;
             break;
     }
 });

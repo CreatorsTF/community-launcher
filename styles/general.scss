@@ -29,6 +29,11 @@ $down: #D62828;
 $up: #008F00;
 $blue: #2963A9;
 
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: $black-3; }
+::-webkit-scrollbar-thumb { background: $dark-gray; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: $gray; }
+
 .down { color: $down; }
 .up { color: $up; }
 .blue { color: $blue; }
@@ -149,7 +154,28 @@ input {
     justify-content: center;
 }
 
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: $black-3; }
-::-webkit-scrollbar-thumb { background: $dark-gray; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: $gray; }
+select {
+    margin: 2vh;
+    padding: 1vh;
+    font-size: 3vh;
+    background-color: $black-3;
+    text-transform: uppercase;
+    font-family: 'Roboto Regular', Arial, sans-serif;
+    color: #EEE;
+    border-radius: 0.5vh;
+    border: 0;
+    outline: 0;
+    z-index: 1;
+    pointer-events: all;
+    transition: 0.2s;
+
+    &:hover {
+        background-color: $black-2;
+        cursor: pointer;
+
+        &:disabled{
+            background-color: $black-3;
+            cursor: default;
+        }
+    }
+}

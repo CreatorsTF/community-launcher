@@ -259,11 +259,10 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
         if (version == null) {
-            version = "?";
+            version = "";
         }
-    }
-    catch {
-        version = "?";
+    } catch {
+        version = "";
     }
     event.reply("GetCurrentModVersion-Reply", version);
 });

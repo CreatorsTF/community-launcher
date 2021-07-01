@@ -392,33 +392,6 @@ body {
     font-family: Roboto Thin, Arial, sans-serif;
 }
 
-#collection-versions {
-    width: 300px;
-    margin: 2vh;
-    padding: 1vh;
-    font-size: 3vh;
-    background-color: $dark-orange;
-    text-transform: uppercase;
-    font-family: 'Roboto Regular', Arial, sans-serif;
-    color: #EEE;
-    border-radius: 0.5vh;
-    border: 0;
-    outline: 0;
-    z-index: 1;
-    pointer-events: all;
-    transition: 0.2s;
-
-    &:hover {
-        background-color: #B75C22;
-        cursor: pointer;
-    }
-
-    &:disabled{
-        background-color: $dark-orange;
-        color: #EEE;
-    }
-}
-
 .hidden {
     display: none;
 }
