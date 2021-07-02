@@ -958,7 +958,7 @@ async function WriteFilesToDirectory(targetPath, files, currentModData){
         throw new Error("User aborted file writing. You will need to restart the installation process to install this mod.");
     });
     
-    ElectronLog.log("Waiting for File writing to complete...")
+    ElectronLog.log("Waiting for file writing to complete...")
 
     for (let index = 0; index < files.length; index++) {
         if(!active){
@@ -1102,7 +1102,7 @@ function DownloadFile(_url, progressFunc, responseHeadersFunc, shouldStop){
                                 var matches = filenameRegex.exec(contentDispositionHeader);
                                 if (matches != null && matches[1]) { 
                                     filename = matches[1].replace(/['"]/g, '');
-                                    ElectronLog.info("Got filename for download fron content-disposition header: " + filename);
+                                    ElectronLog.info("Got filename for download from content-disposition header: " + filename);
                                 }
                             }
 

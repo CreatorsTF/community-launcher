@@ -116,6 +116,7 @@ function OnClick_Mod(data) {
                 opt.selected = true;
             }
         });
+        collectionSelect.disabled = false;
     }
     else {
         collectionSelect.style.display = "none";
@@ -181,12 +182,14 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    if (arg != "") {
+    if (arg != "" || arg == null) {
         modVersion.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg;
+        removeButton.style.display = "block";
     } else {
         modVersion.style.display = "none";
         collectionSelect.style.display = "none";
+        removeButton.style.display = "none";
     }
 });
 
@@ -201,23 +204,18 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     switch(arg) {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
-            removeButton.style.display = "block";
             break;
         case "install":
             installButton.style.background = "#FF850A";
-            removeButton.style.display = "none";
             break;
         case "update":
             installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
-            removeButton.style.display = "block";
             break;
         case "internal error":
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
-            removeButton.style.display = "none";
             break;
         default:
             installButton.style.background = "grey";
-            removeButton.style.display = "none";
             break;
     }
 });

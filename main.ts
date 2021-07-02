@@ -271,7 +271,7 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
     if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
-            title: "Remove Mod",
+            title: `Remove Mod - ${mod_manager.currentModData.name}?`,
             message: `Would you like to uninstall the mod ${mod_manager.currentModData.name}?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
