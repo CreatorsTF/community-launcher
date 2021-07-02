@@ -399,3 +399,13 @@ body {
 .invisible {
     visibility: hidden;
 }
+
+#collection-menu {
+    margin: 2vh;
+
+    label {
+        font-size: 2.5vh;
+        color: #EEE;
+        font-family: 'Open Sans Regular';
+    }
+}

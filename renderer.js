@@ -22,6 +22,7 @@ var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
+var collectionMenu = document.getElementById("collection-menu");
 var collectionSelect = document.getElementById("collection-versions");
 
 var hasClickedInstallButton = false;
@@ -100,9 +101,9 @@ function OnClick_Mod(data) {
     if ((data.install.type == "githubcollection") || (data.install.type == "jsonlistcollection")) {
         //Do stuff for collections
         if (data.items != "") {
-            collectionSelect.style.display = "block";
+            collectionMenu.style.display = "block";
         } else {
-            collectionSelect.style.display = "none";
+            collectionMenu.style.display = "none";
         }
         //Clear the select
         collectionSelect.innerHTML = '';
@@ -119,7 +120,7 @@ function OnClick_Mod(data) {
         collectionSelect.disabled = false;
     }
     else {
-        collectionSelect.style.display = "none";
+        collectionMenu.style.display = "none";
     }
     hasClickedInstallButton = true;
 }
@@ -182,14 +183,15 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    if (arg != "" || arg != null) {
+    if (arg != "" && arg != null) {
         modVersion.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg;
         removeButton.style.display = "block";
     } else {
         modVersion.style.display = "none";
-        collectionSelect.style.display = "none";
+        modVersionText.innerText = "";
         removeButton.style.display = "none";
+        collectionMenu.style.display = "none";
     }
 });
 
