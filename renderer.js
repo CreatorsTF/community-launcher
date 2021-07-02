@@ -182,7 +182,7 @@ installButton.addEventListener("click", (e) => {
 });
 
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    if (arg != "" || arg == null) {
+    if (arg != "" || arg != null) {
         modVersion.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg;
         removeButton.style.display = "block";
