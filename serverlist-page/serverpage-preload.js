@@ -44,7 +44,6 @@ String.prototype.escape = function() {
 class ServerDOMData {
     _region = "";
     _id = "";
-
     id = null;
     hostname = null;
     map = null;
@@ -97,7 +96,13 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
 
                 for (let server of region[1]) {
                     var serverDOMData = regionDOMs.get(parseInt(server.id));
-
+                    //Skip a server that has a long time since its last heartbeat.
+                    if(server.since_heartbeat > 60 * 60){
+                        serverDOMData.tr.style.display = "none";
+                    }
+                    else{
+                        serverDOMData.tr.style.display = "table-row";
+                    }
                     serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
                     serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
                     serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
