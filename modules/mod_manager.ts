@@ -3,10 +3,9 @@ import path from "path";
 import os from "os";
 import { BrowserWindow, dialog } from 'electron';
 import https from 'https';
-import JSZip from 'jszip';
+import FileWriter from "./filewriter";
 import url from "url";
 import ProgressBar from 'electron-progressbar';
-import log from 'electron-log';
 import fsPromises from './fs_extensions';
 import config from './config';
 import errors from './errors';
@@ -87,7 +86,7 @@ class ModManager {
                 break;
             default:
                 this.source_manager = null;
-                throw new Error("Mod install type was not recognised: " + this.currentModData.install.type);
+                throw new Error(`Mod install type was not recognised: ${this.currentModData.install.type}. It may be new? Update to the latest version.`);
         }
 
         //We do not have a version for this mod. Method to use is install.
@@ -214,6 +213,9 @@ class ModManager {
                         desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
                         await this.UpdateCurrentMod(desiredCollectionVersion);
                     }
+                }
+                else{
+                    this.FakeClickMod();
                 }
                 break;
             default:
@@ -626,8 +628,14 @@ class ModManager {
             }
         };
 
-        //Call to process the first entry
-        await entryProcess();
+        try{
+            //Call to process the first entry
+            await entryProcess();
+        }
+        catch(e){
+            ElectronLog.error("Failed to install mod files: " + e.toString());
+            throw e;
+        }
     }
 
     static FakeClickMod(){
@@ -747,174 +755,10 @@ function DownloadFiles_UI(urls){
 
 //Get all the files that exist in this zip file object and create them in the target directory.
 //Also supports multiple zips to install at once.
-async function WriteZIPsToDirectory(targetPath, zips, currentModData){
-    var inProgress = 0;
-    var written = 0;
-    var currentZip;
-    var currentIndex = 0;
-    var multipleZips = false;
-    var active = true;
-
-    //Load file list object
-    let files_object = await filemanager.GetFileList(currentModData.name);
-
-    var progressBar = new ProgressBar({
-        text: 'Extracting data',
-        detail: 'Starting data extraction...',
-        browserWindow: {
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false
-            },
-            parent: Main.mainWindow,
-            modal: true,
-            title: "Extracting files...",
-            backgroundColor: "#2b2826",
-            closable: true
-        },
-        style: {
-            text: loadingTextStyle,
-            detail: loadingTextStyle,
-            value: loadingTextStyle
-        }
-    });
-
-    //Make JSZip object from each of the zips given
-    let zipConvertsInProgress = 0;
-
-    for(let i = 0; i < zips.length; i++){
-        zipConvertsInProgress++;
-        let index = i;
-        const jszip = await JSZip.loadAsync(zips[index].buffer);
-        zips[index] = jszip;
-        zipConvertsInProgress--;
+async function WriteZIPsToDirectory(targetPath, zips : DownloadedFile[], currentModData){
+    for(let zip of zips){
+        await FileWriter.ExtractZip(targetPath, zip.buffer, currentModData.name);
     }
-
-    await fsPromises.ensureDirectoryExists(targetPath);
-
-    const Write = async (name, d) => {
-        let fullFilePath = path.join(targetPath, name);
-        await fsPromises.writeFile(fullFilePath, d);
-        written++;
-
-        progressBar.detail = `Wrote ${name}. Total Files Written: ${written}.`;
-
-        //Add file that we wrote to the file list
-        if(!files_object.files.includes(fullFilePath)) files_object.files.push(fullFilePath);
-
-        ElectronLog.log(`ZIP extract for "${name}" was successful.`);
-        inProgress--;
-    };
-
-    const HandleFile = async (relativePath, file) => {
-        if(!active){
-            return;
-        }
-
-        inProgress++;
-        if(file.dir){
-            let directory = path.join(targetPath, file.name);
-
-            await fsPromises.ensureDirectoryExists(directory);
-            inProgress--;
-        }
-        else{
-            try {
-                const d = await currentZip.file(file.name).async("uint8array");
-                await Write(file.name, d);
-            } catch (err) {
-                log.error(err);
-                throw err;
-            }
-        }
-    };
-
-    progressBar
-    .on('completed', function() {
-        progressBar.detail = 'Extraction completed. Exiting...';
-    })
-    .on('aborted', function() {
-        active = false;
-        throw new Error("Extraction aborted by user. You will need to re start the installation process to install this mod.");
-    });
-
-    const HandleZips = async (zips) => {
-        const promises = [];
-        zips.forEach((rf, f) => {
-            const promise = HandleFile(rf, f);
-            promises.push(promise);
-        })
-        return Promise.all(promises);
-    }
-
-    const DoExtract = async () => {
-        ElectronLog.log("Waiting for ZIP exraction to complete...")
-        await HandleZips(currentZip);
-        
-        let checkFunc = async () => {
-            if(inProgress <= 0){
-                inProgress = 0;
-
-                if(multipleZips){
-                    currentIndex++;
-                    //If we have another zip to install.
-                    if(currentIndex < zips.length){
-                        //Assign the new zip and repeat the processess to handle and write the files.
-                        currentZip = zips[currentIndex];
-                        await HandleZips(currentZip);
-
-                        //Make sure we set a timeout for the checking function again!!
-                        await Delay(200);
-                        await checkFunc();
-                    }
-                    else {
-                        progressBar.setCompleted();
-                        await filemanager.SaveFileList(files_object, currentModData.name);
-                        return;
-                    }
-                }
-                else{
-                    //Resolve now as we only had one zip to install.
-                    progressBar.setCompleted();
-                    await filemanager.SaveFileList(files_object, currentModData.name);
-                    return;
-                }
-                
-            }
-            else {
-                await Delay(200);
-                await checkFunc();
-                return;
-            };
-        };
-
-        await Delay(1000);
-        await checkFunc();
-    }
-
-    const CheckZipCreateDone = async() => {
-        if(zipConvertsInProgress <= 0){
-
-            //Get the target zip.
-            if(!Array.isArray(zips)){
-                currentZip = zips;
-                multipleZips = false;
-            }
-            else{
-                currentZip = zips[0];
-                multipleZips = true;
-            }
-
-            await DoExtract();
-        }
-        else{
-            await Delay(50);
-            await CheckZipCreateDone();
-        }
-    };
-
-    await Delay(50);
-    await CheckZipCreateDone();
 }
 
 //Writes files to disk that are not in a zip but are just a buffer.

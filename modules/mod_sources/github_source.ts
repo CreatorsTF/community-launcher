@@ -27,13 +27,18 @@ class GithubSource extends ModInstallSource {
     async GetLatestVersionNumber() : Promise<number>{
         return new Promise((resolve, reject) => {
             this._GetGithubData().then((data) => {
-                if(data.length == null || data.length == 0) reject("No releases avaliable to download");
+                try{
+                    if(data.length == null || data.length == 0) reject("No releases avaliable to download");
 
-                let date = data[0].published_at;
-                date = date.split("T")[0];
-                date = date.replace(/-/g, "");
-                
-                resolve(date);
+                    let date = data[0].published_at;
+                    date = date.split("T")[0];
+                    date = date.replace(/-/g, "");
+                    
+                    resolve(date);
+                }
+                catch(error){
+                    reject("Failed to correctly parse the latest release publish date. Cause: " + error.toString());
+                }
             }).catch(reject);
         });
     }
@@ -90,9 +95,14 @@ class GithubSource extends ModInstallSource {
                 });
 
                 res.on("end", function () {
-                    var buf = Buffer.concat(data);
-                    let parsed = JSON.parse(buf.toString());
-                    resolve(parsed);
+                    try{
+                        var buf = Buffer.concat(data);
+                        let parsed = JSON.parse(buf.toString());
+                        resolve(parsed);
+                    }
+                    catch(error){
+                        reject("Failed to parse the GitHub release api response. Cause: " + error);
+                    }
                 });
             });
 

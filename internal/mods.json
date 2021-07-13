@@ -32,8 +32,8 @@
             }
         },
         {
-            "name": "Creators.TF Events Servers",
-            "blurb": "Content for the Events & Silly Servers",
+            "name": "Creators.TF Silly Events Servers",
+            "blurb": "Content for the Silly Events Servers",
             "icon": "images/logos/modcirclelogos/ctf_events.svg",
             "titleimage": "images/logos/modlogos/eventsbanner.png",
             "backgroundimage": "images/backgrounds/events.png",
@@ -48,7 +48,7 @@
             "discord": "https://creators.tf/discord",
             "serverlistproviders": [11919],
             "modid": "",
-            "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
+            "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Silly Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
             "install": {
                 "modname": "Creators.TF Events Servers",
                 "type": "jsonlist",
