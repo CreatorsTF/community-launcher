@@ -4,6 +4,7 @@ import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
 import semver from "semver";
+import electronIsDev from "electron-is-dev";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -39,7 +40,7 @@ class ModListLoader {
      * Update the local mod list file on disk to contain the latest data we found.
      */
     public static UpdateLocalModList() : Boolean {
-        let modlistUpdated;
+        let modlistUpdated : Boolean;
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
             let configPath = path.join(Utilities.GetDataFolder(), localModListName);
             fs.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
@@ -48,14 +49,24 @@ class ModListLoader {
         }
         modlistUpdated = false;
 
+        let oldMods = this.localModList.mods.slice();
         //Filter out mods that do not meet the min version requirement
         let currentVersion = Utilities.GetCurrentVersion();
-            this.localModList.mods = this.localModList.mods.filter(
-                (value) => {
-                    return (value.minLauncherVersion == undefined || 
-                    (semver.valid(value.minLauncherVersion) != null && semver.gte(currentVersion, value.minLauncherVersion)))
+        this.localModList.mods = this.localModList.mods.filter(
+            (value) => {
+                return (value.minLauncherVersion == undefined || 
+                (semver.valid(value.minLauncherVersion) != null && semver.gte(currentVersion, value.minLauncherVersion)))
+            }
+        );
+
+        //Log removed mods in development environments
+        if(electronIsDev){
+            oldMods.forEach(element => {
+                if(this.localModList.mods.find((x) => x.name == element.name) == undefined){
+                    ElectronLog.verbose(`The mod '${element.name}' was filtered out. Version requirement: ${element.minLauncherVersion}`);
                 }
-            );
+            });
+        }
 
         return modlistUpdated;
     }

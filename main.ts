@@ -303,6 +303,7 @@ ipcMain.on("GetModData", async (event, args) => {
         ModListLoader.UpdateLocalModList();
 
         if(isDev){
+            log.verbose("Development only mods were added.");
             ModListLoader.InjectDevMods();
         }
 
