@@ -9,6 +9,7 @@ import { autoUpdater } from "electron-updater";
 import { Utilities } from "./modules/utilities";
 import { ModListLoader, ModList } from "./modules/mod_list_loader";
 import path from "path";
+import { ConfigType } from "modules/mod_list_loader";
 import os from "os";
 const _config = require("./modules/config");
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
@@ -27,7 +28,7 @@ const majorErrorMessageEnd = "\nIf this error persists, please report it on our 
 class Main {
     static mainWindow: BrowserWindow;
     static app: App;
-    static config: any;
+    static config: ConfigType;
     static screenWidth: number;
     static screenHeight: number;
     static minWindowWidth: number;
@@ -243,7 +244,7 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
 });
 
 ipcMain.on("install-play-click", async (event, args) => {
-    await mod_manager.ModInstallPlayButtonClick();
+    await mod_manager.ModInstallPlayButtonClick(args);
 });
 
 ipcMain.on("Visit-Mod-Social", async(event, arg) => {
@@ -258,11 +259,10 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
         if (version == null) {
-            version = "?";
+            version = "";
         }
-    }
-    catch {
-        version = "?";
+    } catch {
+        version = "";
     }
     event.reply("GetCurrentModVersion-Reply", version);
 });
@@ -271,7 +271,7 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
     if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
-            title: "Remove Mod",
+            title: `Remove Mod - ${mod_manager.currentModData.name}?`,
             message: `Would you like to uninstall the mod ${mod_manager.currentModData.name}?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
@@ -303,6 +303,7 @@ ipcMain.on("GetModData", async (event, args) => {
         ModListLoader.UpdateLocalModList();
 
         if(isDev){
+            log.verbose("Development only mods were added.");
             ModListLoader.InjectDevMods();
         }
 
@@ -312,6 +313,12 @@ ipcMain.on("GetModData", async (event, args) => {
         event.reply("ShowMods", {mods: modList.mods});
     });
 });
+
+ipcMain.on("get-config", async (event, arg) => {
+    let res = await _config.GetConfig();
+    event.reply(res);
+})
+
 
 //Quickplay
 //ipcMain.on("")

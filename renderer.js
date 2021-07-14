@@ -1,3 +1,5 @@
+//const { ipcRenderer } = require("electron");
+
 var content = document.getElementById("content");
 var contentDummy = document.getElementById("content-dummy");
 var titleImage = document.getElementById("title-image");
@@ -20,6 +22,8 @@ var discord = document.getElementById("socialMediaDiscord");
 var instagram = document.getElementById("socialMediaInstagram");
 var serverlist = document.getElementById("server-list");
 var titleheader = document.getElementById("title-header");
+var collectionMenu = document.getElementById("collection-menu");
+var collectionSelect = document.getElementById("collection-versions");
 
 var hasClickedInstallButton = false;
 
@@ -56,8 +60,8 @@ function OnClick_Mod(data) {
     }
 
     if (data.titleimage == "") {
-        titleheader.style.display = "block";
         titleheader.innerText = data.name;
+        titleheader.style.display = "block";
         titleImage.style.display = "none";
     }
     else {
@@ -86,13 +90,40 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
-    serverlist.style.display = data.serverlistproviders != null ? "block" : "none";
+    serverlist.style.display = data.serverlistproviders != "" ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
+    collectionSelect.disabled = true;
 
+    if ((data.install.type == "githubcollection") || (data.install.type == "jsonlistcollection")) {
+        //Do stuff for collections
+        if (data.items != "") {
+            collectionMenu.style.display = "block";
+            collectionSelect.disabled = true;
+        }
+        else {
+            collectionMenu.style.display = "none";
+            collectionSelect.disabled = true;
+        }
+        //Clear the select
+        collectionSelect.innerHTML = '';
+        //Populate the select
+        data.items.forEach(element => {
+            let opt = document.createElement("option");
+            opt.value = element.itemname;
+            opt.innerHTML = element.displayname;
+            collectionSelect.appendChild(opt);
+            if (element.default == true) {
+                opt.selected = true;
+            }
+        });
+    }
+    else {
+        collectionMenu.style.display = "none";
+    }
     hasClickedInstallButton = true;
 }
 
@@ -150,15 +181,20 @@ installButton.addEventListener("click", (e) => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
-    window.ipcRenderer.send("install-play-click", "");
+    window.ipcRenderer.send("install-play-click", collectionSelect.value);
 });
 
+// Disabling stuff based on if the mod is installed or not
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    if (arg == "?") {
-        modVersion.style.display = "none";
-    } else {
+    if (arg != "" && arg != null) {
         modVersion.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg;
+        removeButton.style.display = "block";
+    }
+    else {
+        modVersion.style.display = "none";
+        modVersionText.innerText = "";
+        removeButton.style.display = "none";
     }
 });
 
@@ -173,23 +209,23 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     switch(arg) {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
-            removeButton.style.display = "block";
+            collectionSelect.disabled = true;
             break;
         case "install":
             installButton.style.background = "#FF850A";
-            removeButton.style.display = "none";
+            collectionSelect.disabled = false;
             break;
         case "update":
             installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
-            removeButton.style.display = "block";
+            collectionSelect.disabled = true;
             break;
         case "internal error":
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
-            removeButton.style.display = "none";
+            collectionSelect.disabled = true;
             break;
         default:
             installButton.style.background = "grey";
-            removeButton.style.display = "none";
+            collectionSelect.disabled = true;
             break;
     }
 });

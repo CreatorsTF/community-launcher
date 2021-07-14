@@ -3,6 +3,8 @@ import path from "path";
 import https from "https";
 import {Utilities} from "./utilities";
 import ElectronLog from "electron-log";
+import semver from "semver";
+import electronIsDev from "electron-is-dev";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -38,13 +40,35 @@ class ModListLoader {
      * Update the local mod list file on disk to contain the latest data we found.
      */
     public static UpdateLocalModList() : Boolean {
+        let modlistUpdated : Boolean;
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
             let configPath = path.join(Utilities.GetDataFolder(), localModListName);
             fs.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
             this.localModList = this.lastDownloaded;
-            return true;
+            modlistUpdated = true;
         }
-        return false;
+        modlistUpdated = false;
+
+        let oldMods = this.localModList.mods.slice();
+        //Filter out mods that do not meet the min version requirement
+        let currentVersion = Utilities.GetCurrentVersion();
+        this.localModList.mods = this.localModList.mods.filter(
+            (value) => {
+                return (value.minLauncherVersion == undefined || 
+                (semver.valid(value.minLauncherVersion) != null && semver.gte(currentVersion, value.minLauncherVersion)))
+            }
+        );
+
+        //Log removed mods in development environments
+        if(electronIsDev){
+            oldMods.forEach(element => {
+                if(this.localModList.mods.find((x) => x.name == element.name) == undefined){
+                    ElectronLog.verbose(`The mod '${element.name}' was filtered out. Version requirement: ${element.minLauncherVersion}`);
+                }
+            });
+        }
+
+        return modlistUpdated;
     }
 
     /**Check if there is a newer mod list online.
@@ -178,6 +202,22 @@ class ModList
     }
 }
 
+class Install {
+    type: string;
+    modname: string;
+    get_url: string;
+    targetdirectory: string;
+    cloudflarebypass: Boolean;
+    version_property_name: string;
+    install_url_property_name: string;
+    asset_index: number
+    itemname: string
+    owner?: string
+    name?: string
+	displayname?: string
+    setupfunc?: string
+}
+
 class ModListEntry
 {
     name: string;
@@ -198,13 +238,29 @@ class ModListEntry
     serverlistproviders: Array<number>;
     modid: string;
     contenttext: string;
-    install: {
-        type: string;
-        get_url: string;
-        targetdirectory: string;
-        version_property_name: string;
-        install_url_property_name: string;
-    };
+    install: Install;
+    items: Install[];
+    minLauncherVersion: string;
 }
 
-export { ModListLoader, ModList, ModListEntry }
+class GithubAsset {
+    url: string
+    browser_download_url: string
+    id: string
+    size: string
+}
+
+class ConfigType {
+    steam_directory: string;
+    tf2_directory: string;
+    current_mod_versions: ModVersion[]
+}
+
+
+class ModVersion {
+    name: string;
+    version: any;
+    collectionversion?: string;
+}
+
+export { ModListLoader, ModList, ModListEntry, Install, GithubAsset, ConfigType }

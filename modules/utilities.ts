@@ -5,6 +5,7 @@ import path from "path";
 const ProgressBar = require('electron-progressbar');
 const {app} = require("electron");
 import log from "electron-log";
+import { Install } from "./mod_list_loader";
 
 const loadingTextStyle = {
     color: "ghostwhite"
@@ -72,9 +73,9 @@ class Utilities {
         return progressBar;
     }
 
-    static currentLauncherVersion = null;
+    static currentLauncherVersion : string = null;
 
-    static GetCurrentVersion() {
+    static GetCurrentVersion() : string {
         if (this.currentLauncherVersion == null) {
             try {
                 let packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));
@@ -85,6 +86,26 @@ class Utilities {
             }
         }
         return this.currentLauncherVersion;
+    }
+
+    //Find which element in an Install[] has the desiredCollectionString as an argument
+    static FindCollectionNumber(Installs: Install[], desiredCollectionString: string) : number {
+    
+        if(typeof(desiredCollectionString) == 'undefined') {
+            return 0
+        }
+
+        if(Installs.length < 2) {
+            //It has a single item
+            return 0
+        }
+        for (let i = 0; i < Installs.length; i++) {
+            const element = Installs[i];
+            if (element.itemname == desiredCollectionString) {
+                //We've found it!
+                return i;
+            }
+        }
     }
 }
 
