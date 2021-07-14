@@ -131,7 +131,7 @@
             "serverlistproviders": [],
             "modid": "",
             "contenttext": "A modern Team Fortress 2 performance and customization config. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with mastercomfig.",
-            "minLauncherVersion": "0.2.3",
+            "minLauncherVersion": "0.2.4",
             "install": {
                 "modname": "mastercomfig",
                 "type": "githubcollection",
