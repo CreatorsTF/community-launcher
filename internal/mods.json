@@ -73,6 +73,7 @@
             "twitter": "",
             "instagram": "",
             "discord": "",
+            "serverlistproviders": [],
             "modid": "",
             "contenttext": "Custom Creators.TF G-Man Announcer Pack",
             "install": {
@@ -100,6 +101,8 @@
             "twitter": "",
             "instagram": "",
             "discord": "",
+            "serverlistproviders": [],
+            "modid": "",
             "contenttext": "Community made Visual Fixes for various issues with cosmetics, weapons, particles, visual effects,\n plus fixing Dragon’s Fury lag, opaque and glitchy Flamethrower flames, worse looking stock weapons, and more!",
             "install": {
                 "modname": "Ultimate TF2 Visual Fix Pack",
@@ -125,8 +128,10 @@
             "twitter": "",
             "instagram": "",
             "discord": "",
+            "serverlistproviders": [],
+            "modid": "",
             "contenttext": "A modern Team Fortress 2 performance and customization config. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with mastercomfig.",
-            "minLauncherVersion": "0.2.4",
+            "minLauncherVersion": "0.2.3",
             "install": {
                 "modname": "mastercomfig",
                 "type": "githubcollection",

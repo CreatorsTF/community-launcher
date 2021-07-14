@@ -90,7 +90,7 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
-    serverlist.style.display = data.serverlistproviders != "" ? "block" : "none";
+    serverlist.style.display = data.serverlistproviders != null ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
