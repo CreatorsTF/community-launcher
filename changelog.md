@@ -1,3 +1,11 @@
+## Version 0.2.4 - (ALPHA)
+### 14/07/2021 - 21:35 (GMT)
+- Added mastercomfig support to the launcher (thanks BernardoGomesNegri!)
+- Servers that are down for more than 1h will now be hidden from the server list
+- Added new method for ZIP extraction
+- Added SCSS support
+- A red button is now displayed when the launcher's auto-update information can't be received due to either internet or GitHub problems.
+
 ## Version 0.2.3 - (ALPHA)
 ### 26/04/2021 - 20:45 (GMT)
 - Linux users are now able to get auto updates for the launcher by downloading the AppImage format, removing the need to manually download new versions.
