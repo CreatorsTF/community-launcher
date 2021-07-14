@@ -147,7 +147,7 @@
                     "displayname": "Very Low",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
                     "setupfunc": "movecfgs",
-                    "asset_index": 15
+                    "asset_index": 16
                 },
                 {
                     "modname": "mastercomfig",
@@ -214,7 +214,7 @@
                     "displayname": "Ultra",
                     "targetdirectory": "{tf2_dir}/tf/custom/",
                     "setupfunc": "movecfgs",
-                    "asset_index": 14
+                    "asset_index": 15
                 }
             ]
         }
