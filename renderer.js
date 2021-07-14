@@ -90,7 +90,7 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
-    serverlist.style.display = data.serverlistproviders != null ? "block" : "none";
+    serverlist.style.display = data.serverlistproviders != "" ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
@@ -102,7 +102,7 @@ function OnClick_Mod(data) {
         //Do stuff for collections
         if (data.items != "") {
             collectionMenu.style.display = "block";
-            collectionSelect.disabled = false;
+            collectionSelect.disabled = true;
         }
         else {
             collectionMenu.style.display = "none";
@@ -195,7 +195,6 @@ window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
         modVersion.style.display = "none";
         modVersionText.innerText = "";
         removeButton.style.display = "none";
-        collectionMenu.style.display = "none";
     }
 });
 
@@ -210,18 +209,23 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     switch(arg) {
         case "installed":
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
+            collectionSelect.disabled = true;
             break;
         case "install":
             installButton.style.background = "#FF850A";
+            collectionSelect.disabled = false;
             break;
         case "update":
             installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
+            collectionSelect.disabled = true;
             break;
         case "internal error":
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
+            collectionSelect.disabled = true;
             break;
         default:
             installButton.style.background = "grey";
+            collectionSelect.disabled = true;
             break;
     }
 });
