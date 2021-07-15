@@ -8,7 +8,6 @@ import url from "url";
 import ProgressBar from 'electron-progressbar';
 import fsPromises from './fs_extensions';
 import config from './config';
-import errors from './errors';
 import filemanager from "./file_manager";
 import GithubSource from "./mod_sources/github_source.js";
 import GithubCollectionSource from "./mod_sources/github_collection_source"
@@ -97,7 +96,7 @@ class ModManager {
                 this.currentModVersionRemote = version;
                 return "Install";
             } catch (e) {
-                throw new errors.InnerError("Failed to get mod version: " + e.toString(), e)
+                throw new Error("Failed to get mod version: " + e.toString());
             }
         }
         else {

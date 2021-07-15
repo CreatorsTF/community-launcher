@@ -23,7 +23,7 @@ class FileWriter
         let fileListObject = await filemanager.GetFileList(currentModName);
 
         let active = true;
-        var progressBar = new ProgressBar({
+        let progressBar = new ProgressBar({
             indeterminate: false,
             text: 'Extracting data',
             detail: 'Starting data extraction...',
@@ -47,7 +47,7 @@ class FileWriter
             }
         });
 
-        progressBar.on('completed', function() {
+        progressBar.on('completed', () => {
             progressBar.detail = 'Extraction completed. Exiting...';
         });
 
@@ -56,7 +56,7 @@ class FileWriter
             fs.mkdirSync(targetPath, {recursive: true});
         }
 
-        progressBar.on('aborted', function() {
+        progressBar.on('aborted', () => {
             active = false;
             throw new Error("Extraction aborted by the user. You will need to restart the installation process to install this mod.");
         });
@@ -78,28 +78,33 @@ class FileWriter
                 let data = await zip.file(file.name).async("uint8array");
 
                 //Check and make missing folder paths anyway as we cannot guarantee the order of the elements given from JSZip.
+                //Check for the directory and write the file synchronously, otherwise missing path errors can happen. Do NOT change.
                 let folderPathOnly = path.dirname(fullPath);
                 if(!fs.existsSync(folderPathOnly)){
                     fs.mkdirSync(folderPathOnly, {recursive: true});
                 }
-
                 fs.writeFileSync(fullPath, data);
-                progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
-                log.log("ExtractZip: Wrote file: " + fullPath);
-                
+
                 //Add file that we wrote to the file list
                 if (!fileListObject.files.includes(fullPath)) {
                     fileListObject.files.push(fullPath);
                 }
-                
                 filesWritten++;
-                progressBar.value = filesWritten;
+                log.log("ExtractZip: Wrote file: " + fullPath);
+                try {
+                    progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
+                    progressBar.value = filesWritten;
+                }
+                catch(e){
+                    log.error("Error when trying to set progressbar data: " + e.toString());
+                }
             }
         }
         active = false;
         progressBar.setCompleted();
         progressBar.close();
         filemanager.SaveFileList(fileListObject, currentModName);
+        log.log("Update mod file list successfully.");
         return true;
     }
 }

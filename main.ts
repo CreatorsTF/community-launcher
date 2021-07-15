@@ -239,7 +239,7 @@ ipcMain.on("SetCurrentMod", async (event, arg) => {
         event.reply("InstallButtonName-Reply", result);
     } catch (error) {
         event.reply("InstallButtonName-Reply", "Internal Error");
-        Utilities.ErrorDialog(`Failed to check if mod "${arg}" has updates. Reason:\n${error}`, "Mod Update Check Error");
+        Utilities.ErrorDialog(`Failed to check if mod "${arg}" has updates.\n${error}`, "Mod Update Check Error");
     }
 });
 

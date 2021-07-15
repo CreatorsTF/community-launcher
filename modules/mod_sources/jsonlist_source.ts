@@ -104,7 +104,7 @@ class JsonListSource extends ModInstallSource {
             });
             
             req.on('error', error => {
-                reject("Request Error: " + error);
+                reject("(GetJsonReleaseData) " + error.toString());
             });
             
             req.end();
