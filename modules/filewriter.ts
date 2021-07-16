@@ -44,7 +44,8 @@ class FileWriter
                 text: loadingTextStyle,
                 detail: loadingTextStyle,
                 value: loadingTextStyle
-            }
+            },
+            maxValue: 1
         });
 
         progressBar.on('completed', () => {
@@ -63,7 +64,6 @@ class FileWriter
 
         var zip = await jszip.loadAsync(data.buffer);
         let allFiles = Object.values(zip.files);
-        progressBar.maxValue = allFiles.length;
         let filesWritten = 0;
         for(let i = 0; i < allFiles.length; i++){
             if(!active) return false;
@@ -90,10 +90,10 @@ class FileWriter
                     fileListObject.files.push(fullPath);
                 }
                 filesWritten++;
-                log.log("ExtractZip: Wrote file: " + fullPath);
+                log.log(`ExtractZip: Wrote file: ${fullPath} (${i}/${allFiles.length})`);
                 try {
                     progressBar.detail = `Wrote ${file.name}. Total Files Written: ${filesWritten}.`;
-                    progressBar.value = filesWritten;
+                    progressBar.value = i / allFiles.length;
                 }
                 catch(e){
                     log.error("Error when trying to set progressbar data: " + e.toString());
