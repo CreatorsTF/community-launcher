@@ -1,3 +1,9 @@
+## Version 0.2.5 - (ALPHA)
+### 16/07/2021 - 18:49 (GMT)
+- Fixed mod install error relating to the progress bar.
+- Updated error messages for the server page to include the Status twitter handle.
+- Fixed more detailed errors not properly being displayed from mod installation.
+
 ## Version 0.2.4 - (ALPHA)
 ### 14/07/2021 - 21:35 (GMT)
 - Added mastercomfig support to the launcher (thanks BernardoGomesNegri!)
