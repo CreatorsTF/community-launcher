@@ -57,20 +57,22 @@ ipcRenderer.on("ShowMods", (event, data) => {
     var launcherVersionBox = document.getElementById("launcher-version");
     const config = fs.readFileSync(path.join(__dirname, "package.json"));
     const currentClientVersion = JSON.parse(config).version;
-    let request = new XMLHttpRequest();
-    request.open("GET", "https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest");
-    request.send();
-    request.onload = () => {
-        if (request.status === 200) {
-            var answer = JSON.parse(request.response);
-            var version = answer.tag_name;
-            if (currentClientVersion === version) {
-                launcherVersionBox.remove();
-            } else {
-                launcherVersionBox.innerText = "A new update is available for the launcher.";
-            }
+    fetch("https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest").then((res) => {
+        if (res.status === 200) {
+            res.json().then((data) => {
+                var version = data.tag_name;
+                if (currentClientVersion === version) {
+                    launcherVersionBox.remove();
+                } else {
+                    launcherVersionBox.innerText = "A new update is available for the launcher.";
+                }
+            });
         } else {
             updateButton_Fail.classList.remove("hidden");
+            console.log("There was a problem! Status Code: " + res.status);
+            return;
         }
-    }
+    }).catch((err) => {
+        console.log("Error!", err);
+    });
 });

@@ -57,7 +57,8 @@ class Main {
                 resizable: true,
                 autoHideMenuBar: true,
                 darkTheme: true,
-                backgroundColor: "#2B2826"
+                backgroundColor: "#2B2826",
+                icon: path.join(__dirname, "images/installer/256x256.png")
             });
             //@ts-ignore
             global.mainWindow = Main.mainWindow;
@@ -189,6 +190,7 @@ autoUpdater.on("update-downloaded", () => {
 });
 
 autoUpdater.on("error", (err) => {
+    Main.mainWindow.webContents.send("update_error");
     log.error("Error in auto-updater: " + err);
 });
 
@@ -222,12 +224,6 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
         }
     }
 });
-
-// ipcMain.on("app_version", (event) => {
-//     event.sender.send("app_version", {
-//         version: app.getVersion()
-//     });
-// });
 
 ipcMain.on("GetConfig", async (event, arg) => {
     event.reply("GetConfig-Reply", Main.config);
@@ -317,8 +313,7 @@ ipcMain.on("GetModData", async (event, args) => {
 ipcMain.on("get-config", async (event, arg) => {
     let res = await _config.GetConfig();
     event.reply(res);
-})
-
+});
 
 //Quickplay
 //ipcMain.on("")

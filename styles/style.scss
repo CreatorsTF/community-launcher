@@ -8,9 +8,9 @@ body {
 }
 
 #sidebar {
-    min-width: 300px;
-    width: 27%;
-    max-width: 500px;
+    min-width: 28%;
+    width: 43%;
+    max-width: 770px;
     background-color: $black-2;
     padding: 3vh;
     z-index: 1;
@@ -99,11 +99,11 @@ body {
         line-height: 100%;
     }
     & h2 {
-        font-size: 3.2vh;
+        font-size: 3vh;
         font-family: Roboto Light, Arial, sans-serif;
     }
     & p {
-        font-size: 2vh;
+        font-size: 1.9vh;
         font-family: Open Sans Light, Arial, sans-serif;
     }
 }
@@ -188,7 +188,7 @@ body {
 }
 
 #content-dummy {
-    width: 75%;
+    width: -webkit-fill-available;
 }
 
 .default-bg {
@@ -201,8 +201,8 @@ body {
 
 @include animation-fade(0, 1);
 #content {
-    min-width: 630px;
-    width: 73%;
+    min-width: 580px;
+    width: -webkit-fill-available;
     height: 100%;
     background-color: $default-bg-color;
     background-size: cover;
@@ -244,7 +244,7 @@ body {
 #box-of-mod-buttons {
     display: inline-flex;
     position: absolute;
-    padding: 20px;
+    padding: 2vh;
     top: 0;
     right: 0;
 
@@ -253,7 +253,7 @@ body {
         margin-left: 1.5vh;
         padding: 1.5vh;
         text-shadow: 0px 0px 2vh $black;
-        font-size: 3.5vh;
+        font-size: 3vh;
         color: $white-2;
         border-radius: 10vh;
         transition: 0.2s;
@@ -362,7 +362,7 @@ body {
     font-family: Roboto Medium, Arial, sans-serif;
     display: block;
     border: none;
-    text-shadow: 0px 0px 5vh $black;
+    text-shadow: 0px 0px 3.5vh $black;
     z-index: 1;
 
     &:hover {

@@ -1,5 +1,3 @@
-//const { ipcRenderer } = require("electron");
-
 var content = document.getElementById("content");
 var contentDummy = document.getElementById("content-dummy");
 var titleImage = document.getElementById("title-image");
@@ -14,6 +12,7 @@ var updateButton_Download = document.getElementById("update-button-download");
 var updateButton_Downloading = document.getElementById("update-button-downloading");
 var updateButton_Update = document.getElementById("update-button-update");
 var updateButton_Updated = document.getElementById("update-button-updated");
+var updateButton_Fail = document.getElementById("update-button-fail");
 
 var website = document.getElementById("socialMediaWebsite");
 var github = document.getElementById("socialMediaGithub");
@@ -140,9 +139,6 @@ updateButton_Update.onclick = (closeProgramAndUpdate) => {
 window.ipcRenderer.on("update_not_available", () => {
     window.ipcRenderer.removeAllListeners("update_not_available");
     updateButton_Updated.classList.remove("hidden");
-    updateButton_Download.remove();
-    updateButton_Downloading.remove();
-    updateButton_Update.remove();
     window.log.info("No update available... Sad!");
 });
 
@@ -165,6 +161,12 @@ window.ipcRenderer.on("update_downloaded", () => {
     updateButton_Downloading.remove();
     updateButton_Update.classList.remove("hidden");
     window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
+});
+
+window.ipcRenderer.on("update_error", () => {
+    window.ipcRenderer.removeAllListeners("update_error");
+    updateButton_Fail.classList.remove("hidden");
+    window.log.info("An error occurred while trying to get update info");
 });
 
 document.getElementById("settings-button").addEventListener("click", (a,b) => {

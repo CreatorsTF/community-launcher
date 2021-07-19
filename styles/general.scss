@@ -29,9 +29,9 @@ $down: #D62828;
 $up: #008F00;
 $blue: #2963A9;
 
-::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar { width: 1.25vh; }
 ::-webkit-scrollbar-track { background: $black-3; }
-::-webkit-scrollbar-thumb { background: $dark-gray; border-radius: 5px; }
+::-webkit-scrollbar-thumb { background: $dark-gray; border-radius: 1vh; }
 ::-webkit-scrollbar-thumb:hover { background: $gray; }
 
 .down { color: $down; }
