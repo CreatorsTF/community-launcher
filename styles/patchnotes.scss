@@ -2,7 +2,7 @@
 
 body {
     background-color: $black-3;
-    background-image: url(../images/backgrounds/creatorstf_patchnotes.png);
+    background-image: url($images + "/backgrounds/creatorstf_patchnotes.png");
     background-blend-mode: soft-light;
     background-position: center;
     background-size: cover;
@@ -58,7 +58,7 @@ p {
 }
 
 ul {
-    list-style-image: url(../images/thatarrowfromthetfblog.svg);
+    list-style-image: url($images + "/thatarrowfromthetfblog.svg");
     font-size: 2.7vh;
     font-family: Roboto Thin, Arial, sans-serif;
     padding: 0vh 5vh;
@@ -71,7 +71,6 @@ li {
         margin-bottom: 0;
     }
 }
-
 
 code {
     background-color: $not-so-subtle-gray-shadow;

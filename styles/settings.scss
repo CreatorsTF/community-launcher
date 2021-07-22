@@ -6,7 +6,7 @@ body {
     align-items: center;
     flex-direction: column;
     background: $branding-orange;
-    background-image: url(../images/engineer_fix.svg);
+    background-image: url($images + "/engineer_fix.svg");
     background-size: 25%;
     background-position: bottom right;
     background-repeat: no-repeat;

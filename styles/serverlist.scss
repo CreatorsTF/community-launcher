@@ -2,7 +2,7 @@
 
 body {
     background-color: $black-2;
-    background-image: url(../images/backgrounds/servers.jpg);
+    background-image: url($images + "/backgrounds/servers.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

@@ -55,7 +55,7 @@ ipcRenderer.on("GetConfig-Reply", (event, config_arg) => {
 });
 
 ipcRenderer.on("GetNewSettings", (event, arg) => {
-    log.info("GetNewSettings event recieved. Sending data back");
+    log.info("GetNewSettings event received. Sending data back");
     arg.tf2_directory = document.getElementById("tf2_directory").value;
     arg.steam_directory = document.getElementById("steam_directory").value;
     ipcRenderer.send("GetNewSettings-Reply", arg);

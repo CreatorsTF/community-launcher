@@ -1,7 +1,7 @@
 import Main from "../main";
 import fs from "fs";
-import ProgressBar from 'electron-progressbar';
-import jszip, { folder } from "jszip";
+import ProgressBar from "electron-progressbar";
+import jszip from "jszip";
 import path from "path";
 import log from "electron-log";
 import filemanager from "./file_manager";
@@ -19,14 +19,14 @@ class FileWriter
      * @param currentModName Current mod name for this operation.
      * @returns If this was succcessful.
      */
-    public static async ExtractZip(targetPath : string, data : Buffer, currentModName : string) : Promise<boolean> {
+    public static async ExtractZip(targetPath: string, data: Buffer, currentModName: string): Promise<boolean> {
         let fileListObject = await filemanager.GetFileList(currentModName);
 
         let active = true;
         let progressBar = new ProgressBar({
             indeterminate: false,
-            text: 'Extracting data',
-            detail: 'Starting data extraction...',
+            text: "Extracting data",
+            detail: "Starting data extraction...",
             abortOnError: true,
             closeOnComplete: false,
             browserWindow: {
@@ -48,8 +48,8 @@ class FileWriter
             maxValue: 1
         });
 
-        progressBar.on('completed', () => {
-            progressBar.detail = 'Extraction completed. Exiting...';
+        progressBar.on("completed", () => {
+            progressBar.detail = "Extraction completed. Exiting...";
         });
 
         //Create the target directory if it doesnt exist somehow.
@@ -57,7 +57,7 @@ class FileWriter
             fs.mkdirSync(targetPath, {recursive: true});
         }
 
-        progressBar.on('aborted', () => {
+        progressBar.on("aborted", () => {
             active = false;
             throw new Error("Extraction aborted by the user. You will need to restart the installation process to install this mod.");
         });

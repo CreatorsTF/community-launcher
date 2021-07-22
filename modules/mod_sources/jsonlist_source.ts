@@ -1,13 +1,12 @@
-"use strict";
 import https from "https";
+import log from "electron-log";
 import ModInstallSource from "./mod_source_base";
-import ElectronLog from "electron-log";
-import { Install } from "modules/mod_list_loader";
+import { Install } from "../mod_list_loader";
 
 const cloudFlareMessage = "\nFailed to get this mods latest data due to Cloudflare rate limiting. \nPlease wait till normal web service resumes or report on our Discord.";
 
 class JsonListSource extends ModInstallSource {
-    url: string = "";
+    url: string;
     fileType = "ARCHIVE";
     jsonlist_data = null;
 
@@ -39,7 +38,7 @@ class JsonListSource extends ModInstallSource {
     }
 
     async GetDisplayVersionNumber() : Promise<string> {
-        let version = await this.GetLatestVersionNumber();
+        const version = await this.GetLatestVersionNumber();
         return version.toString();
     }
 
@@ -53,29 +52,29 @@ class JsonListSource extends ModInstallSource {
 
     GetJsonReleaseData(){
         return new Promise((resolve, reject) => {
-            var data = [];
+            let data = [];
 
-            var options = {
+            const options = {
                 headers: {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
                 }
             };
 
-            let req = https.get(this.url, options, res => {
+            const req = https.get(this.url, options, res => {
                 console.log(`statusCode: ${res.statusCode}`);
 
-                res.on('data', d => {
+                res.on("data", (d) => {
                     if(res.statusCode == 503){
                         reject(cloudFlareMessage);
                         return;
                     }
-
                     data.push(d);
                 });
 
-                res.on("end",  () => {
-                    try{
-                        var buf = Buffer.concat(data);
+                res.on("end", () => {
+                    try {
+                        const buf = Buffer.concat(data);
+
                         if(res.statusCode == 503){
                             reject(cloudFlareMessage);
                             return;
@@ -90,20 +89,20 @@ class JsonListSource extends ModInstallSource {
                             reject(`Could not properly access "${this.url}". HTTP code was:${res.statusCode}.`);
                             return;
                         }
-                        else{
-                            let parsed = JSON.parse(buf.toString());
+                        else {
+                            const parsed = JSON.parse(buf.toString());
                             resolve(parsed);
                         }
                     }
                     catch (error){
                         //Json parsing failed, reject.
-                        ElectronLog.error("Json parse failed. Website is not returning valid JSON. Site may be down!");
+                        log.error("Json parse failed. Website is not returning valid JSON. Site may be down!");
                         reject(error.toString());
                     }
                 });
             });
             
-            req.on('error', error => {
+            req.on("error", (error) => {
                 reject("(GetJsonReleaseData) " + error.toString());
             });
             

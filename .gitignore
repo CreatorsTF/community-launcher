@@ -8,19 +8,7 @@ build.js
 .bat
 dev-app-update.yml
 *.map
+# We use SASS
 *.css
-
-# list of .js files that are just compiled versions of .ts
-main.js
-
-serverlist-page/serverlistpage.js
-
-modules/mod_list_loader.js
-modules/mod_manager.js
-modules/utilities.js
-
-modules/mod_sources/github_source.js
-modules/mod_sources/jsonlist_source.js
-modules/mod_sources/mod_source_base.js
-modules/mod_sources/github_collection_source.js
-modules/filewriter.js
+# We use TypeScript
+*.js

@@ -1,0 +1,17 @@
+/.github/**
+/.vscode/**
+/.vs/**
+/build/**
+/fonts/**
+/images/**
+/node_modules/**
+/tools/**
+**/*.js
+**/*.css
+**/*.d.ts
+**/*.map
+**/*.yml
+**/*.md
+**/*.json
+.eslintrc
+.eslintignore
