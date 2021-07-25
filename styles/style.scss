@@ -194,7 +194,7 @@ body {
 }
 
 .default-bg {
-    background-image: url($images + "/logos/tf2logo_dark_fade.svg");
+    background-image: url($images + "logos/tf2logo_dark_fade.svg");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -336,11 +336,11 @@ body {
 }
 
 /* SOCIAL MEDIA LOGOS */
-#socialMediaTwitter { background-image: url($images + "/logos/social/twitter.svg"); }
-#socialMediaInstagram { background-image: url($images + "/logos/social/instagram.svg"); background-size: 57%; }
-#socialMediaDiscord { background-image: url($images + "/logos/social/discord.svg"); background-size: 77%; }
-#socialMediaWebsite { background-image: url($images + "/logos/social/websiteicon.svg"); background-size: 73%;}
-#socialMediaGithub { background-image: url($images + "/logos/social/github_light.svg"); background-size: 65%;}
+#socialMediaTwitter { background-image: url($images + "logos/social/twitter.svg"); }
+#socialMediaInstagram { background-image: url($images + "logos/social/instagram.svg"); background-size: 57%; }
+#socialMediaDiscord { background-image: url($images + "logos/social/discord.svg"); background-size: 77%; }
+#socialMediaWebsite { background-image: url($images + "logos/social/websiteicon.svg"); background-size: 73%;}
+#socialMediaGithub { background-image: url($images + "logos/social/github_light.svg"); background-size: 65%;}
 
 #fadebehindbutton {
     width: 100%;
@@ -407,6 +407,6 @@ body {
     label {
         font-size: 2.5vh;
         color: #EEE;
-        font-family: 'Open Sans Regular';
+        font-family: Open Sans Regular;
     }
 }

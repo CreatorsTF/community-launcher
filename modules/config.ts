@@ -12,7 +12,7 @@ class Config {
     public static config: any | null
 
     //Save the config given.
-    public static async SaveConfig(_config: any) {
+    public static async SaveConfig(_config: any): Promise<any> {
         const filePathFull = await this.GetConfigFullPath();
 
         await promises.writeFile(filePathFull, JSON.stringify(_config), { encoding: "utf8" });
@@ -20,7 +20,7 @@ class Config {
     }
 
     //Get the config from disk.
-    public static async GetConfig() {
+    public static async GetConfig(): Promise<any> {
         //If config is null, load it.
         const filePathFull = await this.GetConfigFullPath();
 
@@ -29,14 +29,15 @@ class Config {
             this.config = JSON.parse(await promises.readFile(filePathFull, "utf8"));
             log.log("Loaded pre existing config");
             return this.config;
-        } else {
+        }
+        else {
             log.log("User does not have a config file, creating one");
             //Create default config
             this.config = {
                 steam_directory: "",
                 tf2_directory: "",
                 current_mod_versions: []
-            }
+            };
 
             //Try to populate the default values of the steam directory and tf2 directory automatically.
             this.config.steam_directory = await Config.GetSteamDirectory();
@@ -61,7 +62,7 @@ class Config {
     }
 
     //This attempts to find the users tf2 directory automatically.
-    public static async GetTF2Directory(steamdir: string) {
+    public static async GetTF2Directory(steamdir: string): Promise<string> {
         let tf2Path = "steamapps/common/Team Fortress 2/";
 
         //Check if tf2 is installed in the steam installation steamapps.
@@ -99,7 +100,7 @@ class Config {
         }
     }
 
-    public static async GetConfigFullPath() {
+    public static async GetConfigFullPath(): Promise<string> {
         const _path = (process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
 
         await FsExtensions.ensureDirectoryExists(_path);
@@ -120,7 +121,7 @@ class Config {
          * @returns First existing path in steamPaths or null if none of the paths exist, with prefix added
          */
 
-        async function getExistingPath(steamPaths: Array<string>, pathPrefix: string) {
+        async function getExistingPath(steamPaths: Array<string>, pathPrefix: string): Promise<string> {
             for (let steamPath of steamPaths) {
                 steamPath = path.join(pathPrefix, steamPath);
                 if (await FsExtensions.pathExists(steamPath)) {
@@ -134,14 +135,14 @@ class Config {
         //Not using the registry for Windows installations
         //We check the most likely install paths.
         if (os.platform() == "win32") {
-            let steamPaths = ["C:/Program Files (x86)/Steam", "C:/Program Files/Steam"];
+            const steamPaths = ["C:/Program Files (x86)/Steam", "C:/Program Files/Steam"];
             //@ts-ignore
             basedir = await getExistingPath(steamPaths);
         }
         else if (os.platform() == "linux" || "freebsd" || "openbsd") {
             //Linux solution is untested
-            var homedir = process.env.HOME;
-            let steamPaths = [
+            const homedir = process.env.HOME;
+            const steamPaths = [
                 {
                     "paths": [".steam/steam"],
                     "prefix": homedir
@@ -165,4 +166,4 @@ class Config {
     }
 }
 
-export default Config
+export default Config;

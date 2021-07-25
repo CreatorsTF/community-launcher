@@ -1,0 +1,57 @@
+name: Feature request
+title: "[enhancement] ..."
+description: Suggest an idea for this project
+labels: enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a feature request issue.
+        Make sure to give the issue a short, but descriptive name.
+        Further in-depth details must go in the description.
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      description: Please verify and check the options below.
+      options:
+        - label: I verified that this is already not a feature in the launcher.
+          required: true
+        - label: This is not a bug report.
+          required: true
+        - label: I checked recent issues and verified that this is not a duplicate.
+          required: true
+
+  - type: textarea
+    attributes:
+      label: Is your feature request related to a problem? Please describe.
+      description: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Is your feature request graphical or mechanical in nature?
+      description: Please describe if this request is related to the UI, or to the inner workings of the application.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Would you like to work on this yourself, or leave it to the team and the community?
+      description: Yes or no.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Extra information (optional)
+      description: Any extra information should go here.
+    validations:
+      required: false

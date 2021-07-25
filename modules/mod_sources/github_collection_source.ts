@@ -18,8 +18,9 @@ class GithubCollectionSource extends ModInstallSource {
     //Function to get the latest github data from memory or request.
     async _GetGithubData(): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (this.github_data != null) resolve(this.github_data);
-            else {
+            if (this.github_data != null) {
+                resolve(this.github_data);
+            } else {
                 this._GetGitHubReleaseData().then(resolve).catch(reject);
             }
         });
@@ -28,7 +29,9 @@ class GithubCollectionSource extends ModInstallSource {
     async GetLatestVersionNumber(): Promise<number> {
         return new Promise((resolve, reject) => {
             this._GetGithubData().then((data) => {
-                if (data.length == null || data.length == 0) reject("No releases avaliable to download");
+                if (data.length == null || data.length == 0) {
+                    reject("No releases avaliable to download");
+                }
 
                 let date = data[0].published_at;
                 date = date.split("T")[0];
@@ -66,7 +69,7 @@ class GithubCollectionSource extends ModInstallSource {
         });
     }
 
-    _GetGitHubReleaseData() {
+    _GetGitHubReleaseData(): Promise<string> {
         return new Promise((resolve, reject) => {
             //Construct initial request url to github api
             //Use the first one
@@ -78,7 +81,7 @@ class GithubCollectionSource extends ModInstallSource {
                 }
             };
 
-            let data = [];
+            const data = [];
             //var dataLen = 0;
 
             const req = https.get(url, options, res => {

@@ -13,5 +13,8 @@
 **/*.yml
 **/*.md
 **/*.json
+**/*.scss
+**/*.html
 .eslintrc
 .eslintignore
+LICENSE

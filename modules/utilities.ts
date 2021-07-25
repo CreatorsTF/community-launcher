@@ -16,9 +16,8 @@ class Utilities {
      * @param error The error object/message.
      * @param title Title for the error dialog.
      */
-    public static ErrorDialog(error: any, title: string){
-        //@ts-ignore
-        global.log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
+    public static ErrorDialog(error: any, title: string): any {
+        log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
         //@ts-ignore
         dialog.showMessageBox(global.mainWindow, {
             type: "error",
@@ -71,7 +70,7 @@ class Utilities {
         return progressBar;
     }
 
-    public static currentLauncherVersion: string = null;
+    public static currentLauncherVersion: string;
 
     public static GetCurrentVersion(): string {
         if (this.currentLauncherVersion == null) {

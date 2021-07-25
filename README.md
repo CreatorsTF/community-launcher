@@ -30,7 +30,7 @@ If you have a bug report or a suggestion, open an issue! Try to use the template
 The launcher is currently in an alpha state so any help is appreciated.
 
 ## Launching and Building from Source
-If you want to build the launcher yourself, you need to have [Node.JS](https://nodejs.org/en/download/) installed, which should also include [npm](https://www.npmjs.com/get-npm).
+If you want to build the launcher yourself, you need to have [Node.js](https://nodejs.org/en/download/) installed, which should also include [npm](https://www.npmjs.com/get-npm).
 Clone the repository using git *(or download from this page)* and do `npm install` in the main repository using your system's CLI to download the required packages.
 
 You can start the launcher for testing purposes without building via `npm run compileAndStart`.

@@ -21,7 +21,7 @@ const discord = document.getElementById("socialMediaDiscord");
 const instagram = document.getElementById("socialMediaInstagram");
 const serverlist = document.getElementById("server-list");
 const titleHeader = document.getElementById("title-header");
-const collectionMenu = document.getElementById("collection-menu") as HTMLButtonElement;
+const collectionMenu = document.getElementById("collection-menu");
 const collectionSelect = document.getElementById("collection-versions") as HTMLButtonElement;
 
 const settingsButton = document.getElementById("settings-button");
@@ -30,11 +30,11 @@ const serverListButton = document.getElementById("server-list");
 
 let hasClickedInstallButton = false;
 
-website.onclick = (e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
-github.onclick = (e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
-twitter.onclick = (e) => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
-instagram.onclick = (e) => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
-discord.onclick = (e) => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
+website.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
+github.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
+twitter.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
+instagram.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
+discord.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
 
 document.onload = () => {
     installButton.disabled = true;
@@ -172,17 +172,17 @@ window.ipcRenderer.on("update_error", () => {
     window.log.info("An error occurred while trying to get update info");
 });
 
-settingsButton.addEventListener("click", (e) => {
+settingsButton.addEventListener("click", () => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
-patchnotesButton.addEventListener("click", (e) => {
+patchnotesButton.addEventListener("click", () => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-serverListButton.addEventListener("click", (e) => {
+serverListButton.addEventListener("click", () => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
-installButton.addEventListener("click", (e) => {
+installButton.addEventListener("click", () => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;

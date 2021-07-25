@@ -8,7 +8,7 @@ import log from "electron-log";
 
 class SettingsPage {
     public static settingsWindow: BrowserWindow;
-    public static waitingForSettings: Boolean = true;
+    public static waitingForSettings: boolean = true;
 
     public static OpenWindow(mainWindow: any, screenWidth: number, screenHeight: number, minWindowWidth: number, minWindowHeight: number, configObject: any, icon: string) {
         log.info("Loading Settings window...");

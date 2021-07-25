@@ -17,8 +17,9 @@ class GithubSource extends ModInstallSource {
     //Function to get the latest github data from memory or request.
     async _GetGithubData(): Promise<any> {
         return new Promise((resolve, reject) => {
-            if (this.github_data != null) resolve(this.github_data);
-            else {
+            if (this.github_data != null) {
+                resolve(this.github_data);
+            } else {
                 this._GetGitHubReleaseData().then(resolve).catch(reject);
             }
         });
@@ -28,7 +29,9 @@ class GithubSource extends ModInstallSource {
         return new Promise((resolve, reject) => {
             this._GetGithubData().then((data) => {
                 try {
-                    if (data.length == null || data.length == 0) reject("No releases avaliable to download");
+                    if (data.length == null || data.length == 0) {
+                        reject("No releases avaliable to download");
+                    }
 
                     let date = data[0].published_at;
                     date = date.split("T")[0];
@@ -57,8 +60,11 @@ class GithubSource extends ModInstallSource {
                 if (releaseAssets != null && releaseAssets != []) {
                     let asset;
 
-                    if (this.data[0].hasOwnProperty("asset_index")) asset = releaseAssets[this.data[0].asset_index];
-                    else asset = releaseAssets[0];
+                    if (this.data[0].hasOwnProperty("asset_index")) {
+                        asset = releaseAssets[this.data[0].asset_index];
+                    } else {
+                        asset = releaseAssets[0];
+                    }
 
                     if (asset != null) {
                         resolve(asset.browser_download_url);
@@ -66,7 +72,9 @@ class GithubSource extends ModInstallSource {
 
                     reject("This Github repositorys latest release was missing a usable asset.");
                 }
-                else reject("This Github repository has no releases avaliable.");
+                else {
+                    reject("This Github repository has no releases avaliable.");
+                }
             }).catch(reject);
         });
     }
@@ -81,7 +89,7 @@ class GithubSource extends ModInstallSource {
                 }
             };
 
-            let data = [];
+            const data = [];
             //var dataLen = 0;
 
             const req = https.get(url, options, res => {

@@ -29,7 +29,7 @@ abstract class ModInstallSource {
         switch (setup_func) {
             case "movecfgs":
                 log.log("Executing movecfgs install operation");
-                let filesToMove = [
+                const filesToMove = [
                     "autoexec.cfg", "scout.cfg",
                     "soldier.cfg", "pyro.cfg",
                     "demoman.cfg", "heavyweapons.cfg",
@@ -37,8 +37,8 @@ abstract class ModInstallSource {
                     "sniper.cfg", "spy.cfg"
                 ];
                 //Move cfgs
-                let cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
-                let usercfgpath = path.join(cfgpath, "user");
+                const cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
+                const usercfgpath = path.join(cfgpath, "user");
                 log.log("cfg path is: " + cfgpath);
                 log.log("user cfg path is: \"" + usercfgpath + "\"");
                 if (!(fs.existsSync(usercfgpath))) {
@@ -74,7 +74,6 @@ abstract class ModInstallSource {
             default:
                 break;
         }
-
     }
 
     async PostUninstall() {
@@ -89,7 +88,7 @@ abstract class ModInstallSource {
             case "movecfgs":
                 //Move them back
                 log.log("Executing movecfgs uninstall operation");
-                let filesToMove = [
+                const filesToMove = [
                     "autoexec.cfg", "scout.cfg",
                     "soldier.cfg", "pyro.cfg",
                     "demoman.cfg", "heavyweapons.cfg",
@@ -97,8 +96,8 @@ abstract class ModInstallSource {
                     "sniper.cfg", "spy.cfg"
                 ];
                 //Move cfgs
-                let cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
-                let usercfgpath = path.join(cfgpath, "user");
+                const cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
+                const usercfgpath = path.join(cfgpath, "user");
                 log.log("cfg path is: " + cfgpath);
                 log.log("user cfg path is: \"" + usercfgpath + "\"");
                 //Actually move them

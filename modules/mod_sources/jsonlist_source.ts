@@ -43,7 +43,7 @@ class JsonListSource extends ModInstallSource {
     }
 
     GetFileURL() : Promise<string>{
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.GetJsonData().then((json_data) => {
                 resolve(json_data[this.data[0].install_url_property_name]);
             });
@@ -52,7 +52,7 @@ class JsonListSource extends ModInstallSource {
 
     GetJsonReleaseData(){
         return new Promise((resolve, reject) => {
-            let data = [];
+            const data = [];
 
             const options = {
                 headers: {

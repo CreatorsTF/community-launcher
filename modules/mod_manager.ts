@@ -19,7 +19,7 @@ import { Install, ModList, ModListEntry, ModListLoader } from "./mod_list_loader
 import ModInstallSource from "./mod_sources/mod_source_base";
 import Utilities from "./utilities";
 
-let functionMap = new Map();
+const functionMap = new Map();
 
 //Shared by all loading bar uis to set text colour.
 const loadingTextStyle = {
@@ -45,11 +45,11 @@ class DownloadedFile {
 class ModManager {
 
     //Export variables.
-    public static all_mods_data: ModList
-    public static currentModData: ModListEntry
-    public static currentModVersion = 0
+    public static all_mods_data: ModList;
+    public static currentModData: ModListEntry;
+    public static currentModVersion = 0;
     public static currentModState: State;
-    public static currentModVersionRemote = 0
+    public static currentModVersionRemote = 0;
     public static downloadWindow: BrowserWindow = null;
     public static files_object: any;
     public static source_manager: ModInstallSource;
@@ -106,10 +106,12 @@ class ModManager {
             //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
             this.currentModVersionRemote = version;
 
-            if(version > this.currentModVersion) 
+            if (version > this.currentModVersion) {
                 this.currentModState = "UPDATE";
-            else 
+            }
+            else {
                 this.currentModState = "INSTALLED";
+            }
 
             //Time to resolve with the text to show on the button
             switch(this.currentModState){
@@ -148,15 +150,14 @@ class ModManager {
                     
                 //Perform mod download and install.
                 try {
-                    let _url: string;
                     //TS won't let me delete this bit
                     //Args is a string. Convert it to a number
-                    let desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, args);
+                    const desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, args);
 
-                    _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
+                    const _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
                     
                     log.log("Successfuly got mod install file urls. Will proceed to try to download them.");
-                    let result = await this.ModInstall(_url);
+                    const result = await this.ModInstall(_url);
                     if(result){
                         //This is a function to separate the collections from the non-collections
                         if (IsCollection(this.source_manager.data)) {
@@ -198,7 +199,7 @@ class ModManager {
                     log.log("Starting update process...");
                     
                     const configObj = await config.GetConfig();
-                    let modList = configObj.current_mod_versions;
+                    const modList = configObj.current_mod_versions;
                     //Find the current mod version we want
                     let collectionVersionInstalled: string;
                     let desiredCollectionVersion: number;
@@ -248,7 +249,7 @@ class ModManager {
                     const jsonSourceManager = <JsonListSource>this.source_manager;
                     const data = await jsonSourceManager.GetJsonData();
                     
-                    var urls;
+                    let urls;
                     if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
                         //There should be urls to patch zips for each update.
                         const patchObjects = data.PatchUpdates;
@@ -280,7 +281,7 @@ class ModManager {
                         
                     if(urls.length > 0) {
                         log.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
-                        let result = await this.ModInstall(urls);
+                        const result = await this.ModInstall(urls);
                         if(result){
                             //Update the version for the mod.
                             
@@ -303,7 +304,7 @@ class ModManager {
                         //We need to update using the main zip. Not ideal but works.
                         log.warn("Update source does not have patch data! Will have to download again fully.");
                         const _url = await this.source_manager.GetFileURL();
-                        let result = await this.ModInstall(_url);
+                        const result = await this.ModInstall(_url);
                         if(result){
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
@@ -325,7 +326,7 @@ class ModManager {
                     //Current mod is not a jsonlist type. Just get and install the latest.
                     const _url = await this.source_manager.GetFileURL();
                     log.log("Mod is type GitHub, will update using the most recent release url: " + _url);
-                    let result = await this.ModInstall(_url);
+                    const result = await this.ModInstall(_url);
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
@@ -345,7 +346,7 @@ class ModManager {
                     //Current mod is not a jsonlist type. Just get and install the latest.
                     const _url = await this.source_manager.GetFileURL(collectionVersion);
                     log.log("Mod is type GitHub Collection, will update using the most recent release url: " + _url);
-                    let result = await this.ModInstall(_url);
+                    const result = await this.ModInstall(_url);
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
@@ -366,7 +367,6 @@ class ModManager {
                     await ErrorDialog("Unknown mod type found during update attempt.", "Error");
                 }
             }
-            
         } catch (e) {
             await ErrorDialog(e, "Mod Update Error"); 
         }
@@ -374,8 +374,9 @@ class ModManager {
 
     public static async ModInstall(contentURL: string): Promise<boolean>{
         let urlArray;
-        if(Array.isArray(contentURL)) urlArray = contentURL;
-        else{
+        if (Array.isArray(contentURL)) {
+            urlArray = contentURL;
+        } else {
             urlArray = [];
             urlArray.push(contentURL);
         }
@@ -424,14 +425,14 @@ class ModManager {
         //Save the config changes.
         await config.SaveConfig(Main.config);
         
-        const installOperation = this.source_manager.PostInstall(collectionVersion)
+        const installOperation = this.source_manager.PostInstall(collectionVersion);
 
         this.currentModState = "INSTALLED";
 
         this.FakeClickMod();
 
         //Wait until the file move operation is done
-        await installOperation
+        await installOperation;
         
         await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
@@ -443,12 +444,14 @@ class ModManager {
 
     public static async RemoveCurrentMod() {
         //Do nothing if this mod is not installed or if there is no mod data.
-        if(this.currentModData == null || this.currentModState == "NOT_INSTALLED") return;
-        var progressBar;
+        if (this.currentModData == null || this.currentModState == "NOT_INSTALLED") {
+            return;
+        }
+        let progressBar;
         try {
             //Load file list object
-            let files_object = await filemanager.GetFileList(this.currentModData.name);
-            var running = true;
+            const files_object = await filemanager.GetFileList(this.currentModData.name);
+            let running = true;
 
             if(files_object.files != null && files_object.files.length > 0){
                 progressBar = new ProgressBar({
@@ -481,7 +484,7 @@ class ModManager {
                     progressBar.on("completed", () => {
                         progressBar.detail = "Removal Done.";
                     })
-                    .on("aborted", (value) => {
+                    .on("aborted", () => {
                         running = false;
                         ErrorDialog(`Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.`, "Removal Canceled!");
                         this.FakeClickMod();
@@ -490,19 +493,23 @@ class ModManager {
                         progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
                     });
 
-                for(var i = 0; i < files_object.files.length; i++){
-                    if(!running) return;
+                for(let i = 0; i < files_object.files.length; i++){
+                    if (!running) {
+                        return;
+                    }
 
                     log.log("Deleting file: " + files_object.files[i]);
                     //If the file exists, delete it.
-                    if(await FsExtensions.fileExists(files_object.files[i])) await promises.unlink(files_object.files[i]);
+                    if (await FsExtensions.fileExists(files_object.files[i])) {
+                        await promises.unlink(files_object.files[i]);
+                    }
                     progressBar.value = i + 1;
                 }
                 //Try to execute mod specific operations, like moving tf/user/cfg/class.cfg and tf/user/cfg/autoexec.cfg back to /tf/cfg/class.cfg
                 //and /tf/cfg/autoexec.cfg respectively for mastercomfig
-                let uninstall = this.source_manager.PostUninstall()
+                const uninstall = this.source_manager.PostUninstall();
                 //I only want to show complete when it is finished
-                await uninstall
+                await uninstall;
                 await Delay(300);
                 running = false;
                 progressBar.setCompleted();
@@ -519,8 +526,8 @@ class ModManager {
 
                 //Remove mod from current config
                 for(let i = 0; i < Main.config.current_mod_versions.length; i++){
-                    let element = Main.config.current_mod_versions[i];
-                    if(element.name && element.name == this.currentModData.name){
+                    const element = Main.config.current_mod_versions[i];
+                    if (element.name && element.name == this.currentModData.name) {
                         Main.config.current_mod_versions.splice(i, 1);
                     }
                 }
@@ -577,7 +584,7 @@ class ModManager {
     public static GetCurrentModVersionFromConfig(name: string) {
         let toReturn = null;
         for (let i = 0; i < Main.config.current_mod_versions.length; i++) {
-            let element = Main.config.current_mod_versions[i];
+            const element = Main.config.current_mod_versions[i];
             if (element.name && element.name == name) {
                 toReturn = element;
                 break;
@@ -591,7 +598,7 @@ class ModManager {
         }
     }
     ///Only use the argument if using collections
-    public static GetRealInstallPath(asset_name?){
+    public static GetRealInstallPath() {
 
         let realPath = this.currentModData.install.targetdirectory;
 
@@ -607,7 +614,7 @@ class ModManager {
 
     public static async InstallFiles(files){
         //Sort files based on their handle function.
-        let sortedFiles = new Map();
+        const sortedFiles = new Map();
         for(let i = 0; i < files.length; i++){
             const f = files[i];
             const handleF = GetFileWriteFunction(f.extension);
@@ -660,21 +667,21 @@ class ModManager {
 
 export default ModManager;
 
-async function Delay(ms: number)
-{
+async function Delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
 function DownloadFiles_UI(urls){
-    var currentIndex = 0;
-    var files = [];
+    let currentIndex = 0;
+    const files = [];
 
     return new Promise((resolve, reject) => {
-        var progressBar;
-        var shouldStop = {value: false};
+        let progressBar;
+        const shouldStop = {value: false};
 
         let maxProgressVal = 0;
 
-        var progressFunction = (dataLength) => {
+        const progressFunction = (dataLength) => {
             if(progressBar && !progressBar.isCompleted()){
                 try{
                     progressBar.value = dataLength;
@@ -685,7 +692,7 @@ function DownloadFiles_UI(urls){
             }
         };
 
-        var headersFunction = (headers) => {
+        const headersFunction = (headers) => {
             const contentLength = headers["content-length"];
 
             progressBar = new ProgressBar({
@@ -718,7 +725,7 @@ function DownloadFiles_UI(urls){
             progressBar.on("completed", () => {
                 //progressBar.detail = 'Download Finished!';
             })
-            .on("aborted", (value) => { 
+            .on("aborted", () => { 
                 shouldStop.value = true;
                 reject("Download Cancelled by User!");
             })
@@ -732,7 +739,7 @@ function DownloadFiles_UI(urls){
             });
 
             maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;           
-        }
+        };
 
         //Setup download sequence for all files
         const downloadFunc = () => {
@@ -755,7 +762,7 @@ function DownloadFiles_UI(urls){
                 log.error(error);
                 reject(error);
             });
-        }
+        };
 
         //Call the local function to download the first zip.
         downloadFunc();
@@ -772,15 +779,15 @@ async function WriteZIPsToDirectory(targetPath: any, zips: DownloadedFile[], cur
 
 //Writes files to disk that are not in a zip but are just a buffer.
 async function WriteFilesToDirectory(targetPath: any, files: any, currentModData: any){
-    var written = 0;
+    let written = 0;
 
     //Load file list object
-    let files_object = await filemanager.GetFileList(currentModData.name);
-    var active = true;
+    const files_object = await filemanager.GetFileList(currentModData.name);
+    let active = true;
 
     await FsExtensions.ensureDirectoryExists(targetPath);
 
-    var progressBar = new ProgressBar({
+    const progressBar = new ProgressBar({
         text: "Extracting data",
         detail: "Starting data extraction...",
         browserWindow: {
@@ -810,7 +817,7 @@ async function WriteFilesToDirectory(targetPath: any, files: any, currentModData
         throw new Error("User aborted file writing. You will need to restart the installation process to install this mod.");
     });
     
-    log.log("Waiting for file writing to complete...")
+    log.log("Waiting for file writing to complete...");
 
     for (let index = 0; index < files.length; index++) {
         if(!active){
@@ -895,27 +902,27 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
         //     }
         // };
 
-        var DoRequest = (__url: string, retries: number) => {
+        const DoRequest = (__url: string, retries: number) => {
             if(retries <= 0){
-               let error = `Endpoint ${_url} redirected too many times. Aborted!`;
+               const error = `Endpoint ${_url} redirected too many times. Aborted!`;
                log.error(error);
                reject(error);
             } 
 
             log.log("Starting GET for file data at: " + __url);
-            var req = https.get(__url, function (res) {
+            const req = https.get(__url, function (res) {
                 if(res.statusCode == 302){
                     log.log("Got a 302, re trying on new location.");
                     DoRequest(res.headers.location, retries--);
                 }
                 else if (res.statusCode == 404){
-                    let error = `Remote Mod file was not able to be found. Try again later.\nIf this persists please report this error.`;
+                    const error = `Remote Mod file was not able to be found. Try again later.\nIf this persists please report this error.`;
                     log.error(error);
                     log.error("404 for: " + _url);
                     reject(error);
                 }
                 else if (res.statusCode !== 200) {
-                    let error = `Download File Request failed, response code was: ${res.statusCode}.\nPlease report this error.`;
+                    const error = `Download File Request failed, response code was: ${res.statusCode}.\nPlease report this error.`;
                     log.error(error);
                     reject(error);
                 }
@@ -925,7 +932,8 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                         responseHeadersFunc(res.headers);
                     }
     
-                    var data = [], dataLen = 0;
+                    const data = [];
+                    let dataLen = 0;
     
                     // don't set the encoding, it will break everything !
                     // or, if you must, set it to null. In that case the chunk will be a string.
@@ -954,11 +962,11 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                             log.log("File download finished. Returning raw data.");
                             //This approach to get the file name only works for direct file urls.
                             //A better solution for later would be via the content-disposition header if this is missing.
-                            var filename: string;
-                            var contentDispositionHeader = res.headers["content-disposition"];
-                            if(contentDispositionHeader != undefined){
+                            let filename: string;
+                            const contentDispositionHeader = res.headers["content-disposition"];
+                            if (contentDispositionHeader != undefined) {
                                 const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                                var matches = filenameRegex.exec(contentDispositionHeader);
+                                const matches = filenameRegex.exec(contentDispositionHeader);
                                 if (matches != null && matches[1]) { 
                                     filename = matches[1].replace(/['"]/g, "");
                                     log.info("Got filename for download from content-disposition header: " + filename);
@@ -982,7 +990,7 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                 log.error(`File download request for ${_url} errored out: ` + err);
                 reject(err);
             });
-        }
+        };
 
         //Do initial request.
         DoRequest(_url, 5);
@@ -997,8 +1005,8 @@ function GetFileName(_url: string) {
 function SetNewModVersion(version: number, currentModName: string) {
     //Try to update the version of the mod if its already in the array.
     for(let i = 0; i < Main.config.current_mod_versions.length; i++){
-        let modVersionObject = Main.config.current_mod_versions[i];
-        if(modVersionObject.name == currentModName){
+        const modVersionObject = Main.config.current_mod_versions[i];
+        if (modVersionObject.name == currentModName) {
             log.log(`Mod ${currentModName} version was updated from ${modVersionObject.version} to ${version}`);
             modVersionObject.version = version;
             return true;
@@ -1040,13 +1048,13 @@ function GetFileWriteFunction(extension: any){
 }
 
 //Uses a typeguard to check if an object is or is not of type Install
-function IsCollection(arg: Install[]): Boolean {
+function IsCollection(arg: Install[]): boolean {
     if (arg.length > 1) {
         //It is a collection
         return true;
     }
     else {
-        return false
+        return false;
     }
 }
 

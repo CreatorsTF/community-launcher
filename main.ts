@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, dialog, screen, App, Menu } from "electron";
+import { app, BrowserWindow, ipcMain, shell, dialog, screen, App } from "electron";
 import { autoUpdater } from "electron-updater";
 import isDev from "electron-is-dev";
 import path from "path";
@@ -82,7 +82,7 @@ class Main {
                         title: "Startup Error - Main Window Load",
                         message: e.toString() + majorErrorMessageEnd,
                         buttons: ["OK"]
-                    }).then((button) => {
+                    }).then(() => {
                         app.quit();
                     });
                 }
@@ -94,7 +94,7 @@ class Main {
                         title: "Startup Error - Config Load",
                         message: e.toString() + majorErrorMessageEnd,
                         buttons: ["OK"]
-                    }).then((button) => {
+                    }).then(() => {
                         app.quit();
                     });
                 });
@@ -106,7 +106,7 @@ class Main {
                 title: "Startup Error - Major Initial Error",
                 message: majorE.toString() + majorErrorMessageEnd,
                 buttons: ["OK"]
-            }).then((button) => {
+            }).then(() => {
                 app.quit();
             });
         }
@@ -124,7 +124,7 @@ class Main {
     }
 
     public static getClientCurrentVersion() {
-        var lVer = Utilities.GetCurrentVersion();
+        let lVer = Utilities.GetCurrentVersion();
         if (lVer != null) {
             log.info("Current launcher version: " + lVer);
         }
@@ -152,7 +152,7 @@ app.on("ready", () => {
             title: "App Ready Error - Major Initial Error",
             message: error.toString() + majorErrorMessageEnd,
             buttons: ["OK"]
-        }).then((button) => {
+        }).then(() => {
             app.quit();
         });
     }
@@ -202,13 +202,13 @@ ipcMain.on("restart_app", () => {
     log.info("Restarting program to install an update");
 });
 
-ipcMain.on("SettingsWindow", async (event, arg) => {
+ipcMain.on("SettingsWindow", async () => {
     settingsPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, Main.config, Main.icon);
 });
-ipcMain.on("PatchNotesWindow", async (event, arg) => {
+ipcMain.on("PatchNotesWindow", async () => {
     patchnotesPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, Main.icon);
 });
-ipcMain.on("ServerListWindow", async (event, arg) => {
+ipcMain.on("ServerListWindow", async () => {
     //Get the mod list data so we can get the server providers for the current mod.
 
     const modList = ModListLoader.GetModList();
@@ -229,7 +229,7 @@ ipcMain.on("ServerListWindow", async (event, arg) => {
     }
 });
 
-ipcMain.on("GetConfig", async (event, arg) => {
+ipcMain.on("GetConfig", async (event) => {
     event.reply("GetConfig-Reply", Main.config);
 });
 
@@ -254,7 +254,7 @@ ipcMain.on("Visit-Mod-Social", async (event, arg) => {
     }
 });
 
-ipcMain.on("GetCurrentModVersion", async (event, arg) => {
+ipcMain.on("GetCurrentModVersion", async (event) => {
     let version: string;
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
@@ -267,7 +267,7 @@ ipcMain.on("GetCurrentModVersion", async (event, arg) => {
     event.reply("GetCurrentModVersion-Reply", version);
 });
 
-ipcMain.on("Remove-Mod", async (event, arg) => {
+ipcMain.on("Remove-Mod", async () => {
     if (mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE")) {
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
@@ -299,7 +299,7 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
     }
 });
 
-ipcMain.on("GetModData", async (event, args) => {
+ipcMain.on("GetModData", async (event) => {
     ModListLoader.CheckForUpdates().then(() => {
         ModListLoader.UpdateLocalModList();
 
@@ -317,7 +317,7 @@ ipcMain.on("GetModData", async (event, args) => {
     });
 });
 
-ipcMain.on("get-config", async (event, arg) => {
+ipcMain.on("get-config", async (event) => {
     const res = await Config.GetConfig();
     event.reply(res);
 });

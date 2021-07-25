@@ -15,7 +15,7 @@
     },
     "plugins": ["@typescript-eslint"],
     "rules": {
-        "indent": ["error", 4],
+        "indent": ["warn", 4],
         "linebreak-style": ["warn", "windows"],
         "quotes": ["warn", "double", {
             "avoidEscape": true

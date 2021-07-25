@@ -33,13 +33,13 @@ class FsExtensions {
      * @param {string} oldPath origin path
      * @param {string} newPath destination path
      */
-    public static async move(oldPath: string, newPath: string) {
+    public static async move(oldPath: string, newPath: string): Promise<string> {
         if (!await this.fileExists(oldPath)) {
             return;
         }
-        let newDirectory = path.dirname(newPath);
+        const newDirectory = path.dirname(newPath);
         await this.ensureDirectoryExists(newDirectory);
-    
+
         await promises.rename(oldPath, newPath);
     }
 
@@ -84,4 +84,4 @@ class FsExtensions {
     }
 }
 
-export default FsExtensions
+export default FsExtensions;
