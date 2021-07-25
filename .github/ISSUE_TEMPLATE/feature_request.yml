@@ -28,7 +28,7 @@ body:
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     attributes:
       label: Is your feature request graphical or mechanical in nature?
       description: Please describe if this request is related to the UI, or to the inner workings of the application.
@@ -42,14 +42,14 @@ body:
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     attributes:
       label: Would you like to work on this yourself, or leave it to the team and the community?
       description: Yes or no.
     validations:
       required: true
 
-  - type: input
+  - type: textarea
     attributes:
       label: Extra information (optional)
       description: Any extra information should go here.

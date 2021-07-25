@@ -68,9 +68,9 @@ body:
     attributes:
       label: Launcher logs (optional)
       description: |
-      Please upload the logs from your launcher either here or on a site such as pastebin.
-      You can find the logs in the "logs" folder in the "Config/Log Folder".
-      Use the button in the Settings menu in the launcher to find the folder.
+        Please upload the logs from your launcher either here or on a site such as pastebin.
+        You can find the logs in the "logs" folder in the "Config/Log Folder".
+        Use the button in the Settings menu in the launcher to find the folder.
     validations:
       required: false
 
