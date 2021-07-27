@@ -10,5 +10,7 @@ dev-app-update.yml
 *.map
 # We use SASS
 *.css
-# We use TypeScript
+# We use TypeScript... Sometimes
 *.js
+!settings-page/settingspage-preload.js
+!serverlist-page/serverlistpage-preload.js

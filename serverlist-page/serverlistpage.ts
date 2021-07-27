@@ -15,7 +15,7 @@ class ServerListPage {
         this.serverlistWindow = new BrowserWindow({
             parent: mainWindow,
             webPreferences: {
-                preload: path.join(__dirname, "serverpage-preload.js"),
+                preload: path.join(__dirname, "serverlistpage-preload.js"),
                 nodeIntegration: false,
                 contextIsolation: false
             },
@@ -131,7 +131,7 @@ class ServerListPage {
     }
 }
 
-ipcMain.on("GetServerList", async (event, arg) => {
+ipcMain.on("GetServerList", async (event) => {
     try {
         const serverList = await ServerListPage.GetServerList();
         event.reply("GetServerList-Reply", serverList);

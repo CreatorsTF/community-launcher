@@ -84,9 +84,7 @@ body:
   - type: input
     attributes:
       label: Operating system and version
-      placeholder: |
-        - OS: [e.g.: Windows]
-        - Version [e.g.: 10]
+      placeholder: Windows 10 -- Ubuntu 20.04
     validations:
       required: true
 
