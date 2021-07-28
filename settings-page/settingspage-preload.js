@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", () => {
         copyCfgContentsToClipboard();
     }
     btn_reload.onclick = () => {
-        document.getElementById("steam-directory").value;
+        const steamdir = document.getElementById("steam-directory").value;
         ipcRenderer.send("config-reload-tf2directory", steamdir);
     };
     
