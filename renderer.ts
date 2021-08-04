@@ -1,78 +1,83 @@
-var content = document.getElementById("content");
-var contentDummy = document.getElementById("content-dummy");
-var titleImage = document.getElementById("title-image");
-var text = document.getElementById("content-text");
-var modVersion = document.getElementById("mod-version");
-var modVersionText = document.getElementById("mod-version-text");
+const content = document.getElementById("content");
+const contentDummy = document.getElementById("content-dummy");
+const titleImage = document.getElementById("title-image") as HTMLImageElement;
+const text = document.getElementById("content-text");
+const modVersion = document.getElementById("mod-version");
+const modVersionText = document.getElementById("mod-version-text");
 
-var installButton = document.getElementById("install-play-button");
-var removeButton = document.getElementById("remove-mod");
+const installButton = document.getElementById("install-play-button") as HTMLButtonElement;
+const removeButton = document.getElementById("remove-mod") as HTMLButtonElement;
 
-var updateButton_Download = document.getElementById("update-button-download");
-var updateButton_Downloading = document.getElementById("update-button-downloading");
-var updateButton_Update = document.getElementById("update-button-update");
-var updateButton_Updated = document.getElementById("update-button-updated");
-var updateButton_Fail = document.getElementById("update-button-fail");
+const updateButton_Download = document.getElementById("update-button-download");
+const updateButton_Downloading = document.getElementById("update-button-downloading");
+const updateButton_Update = document.getElementById("update-button-update");
+const updateButton_Updated = document.getElementById("update-button-updated");
+const updateButton_Fail = document.getElementById("update-button-fail");
 
-var website = document.getElementById("socialMediaWebsite");
-var github = document.getElementById("socialMediaGithub");
-var twitter = document.getElementById("socialMediaTwitter");
-var discord = document.getElementById("socialMediaDiscord");
-var instagram = document.getElementById("socialMediaInstagram");
-var serverlist = document.getElementById("server-list");
-var titleheader = document.getElementById("title-header");
-var collectionMenu = document.getElementById("collection-menu");
-var collectionSelect = document.getElementById("collection-versions");
+const website = document.getElementById("socialMediaWebsite");
+const github = document.getElementById("socialMediaGithub");
+const twitter = document.getElementById("socialMediaTwitter");
+const discord = document.getElementById("socialMediaDiscord");
+const instagram = document.getElementById("socialMediaInstagram");
+const serverlist = document.getElementById("server-list");
+const titleHeader = document.getElementById("title-header");
+const collectionMenu = document.getElementById("collection-menu");
+const collectionSelect = document.getElementById("collection-versions") as HTMLButtonElement;
 
-var hasClickedInstallButton = false;
+const settingsButton = document.getElementById("settings-button");
+const patchnotesButton = document.getElementById("patchnotes-button");
+const serverListButton = document.getElementById("server-list");
 
-website.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
-github.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
-twitter.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
-instagram.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
-discord.onclick = (handle, e) => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
+let hasClickedInstallButton = false;
+
+website.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
+github.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
+twitter.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
+instagram.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
+discord.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
 
 document.onload = () => {
     installButton.disabled = true;
-}
+};
 
 const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 
 function OnClick_Mod(data) {
-    if(hasClickedInstallButton) return;
+    if (hasClickedInstallButton) {
+        return;
+    }
 
     window.log.info("Mod entry clicked: " + data.name);
-    
-    var bgImg;
+
+    let bgImg: string;
     if (data.backgroundimage != "") {
         bgImg = data.backgroundimage;
-    }
-    else {
+    } else {
         bgImg = defaultBackgroundImage;
     }
 
-    if(bgImg.includes("https")){
+    if (bgImg.includes("https")) {
         content.style.backgroundImage = `url("${bgImg}")`;
-    }
-    else{
+    } else {
         content.style.backgroundImage = `url("${"./" + bgImg}")`;
     }
 
     if (data.titleimage == "") {
-        titleheader.innerText = data.name;
-        titleheader.style.display = "block";
+        titleHeader.innerText = data.name;
+        titleHeader.style.display = "block";
         titleImage.style.display = "none";
-    }
-    else {
+    } else {
         titleImage.src = data.titleimage;
         titleImage.style.display = "block";
-        titleheader.style.display = "none";
+        titleHeader.style.display = "none";
     }
 
     text.innerText = data.contenttext;
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
     content.style.backgroundPositionY = data.backgroundposY;
+    // TypeScript does not have "backgroundBlendMode" on "CSSStyleDeclaration"...
+    // @ts-ignore
     content.style.backgroundBlendMode = data.backgroundBlendMode;
 
     contentDummy.remove();
@@ -97,21 +102,20 @@ function OnClick_Mod(data) {
     window.ipcRenderer.send("GetCurrentModVersion", "");
     collectionSelect.disabled = true;
 
-    if ((data.install.type == "githubcollection") || (data.install.type == "jsonlistcollection")) {
+    if (data.install.type == "githubcollection" || data.install.type == "jsonlistcollection") {
         //Do stuff for collections
         if (data.items != "") {
             collectionMenu.style.display = "block";
             collectionSelect.disabled = true;
-        }
-        else {
+        } else {
             collectionMenu.style.display = "none";
             collectionSelect.disabled = true;
         }
         //Clear the select
-        collectionSelect.innerHTML = '';
+        collectionSelect.innerHTML = "";
         //Populate the select
-        data.items.forEach(element => {
-            let opt = document.createElement("option");
+        data.items.forEach((element) => {
+            const opt = document.createElement("option");
             opt.value = element.itemname;
             opt.innerHTML = element.displayname;
             collectionSelect.appendChild(opt);
@@ -119,8 +123,7 @@ function OnClick_Mod(data) {
                 opt.selected = true;
             }
         });
-    }
-    else {
+    } else {
         collectionMenu.style.display = "none";
     }
     hasClickedInstallButton = true;
@@ -129,12 +132,12 @@ function OnClick_Mod(data) {
 updateButton_Download.onclick = (downloadUpdate) => {
     window.ipcRenderer.send("download_update");
     window.log.info("User chose to download the update. Downloading it." + downloadUpdate);
-}
+};
 
 updateButton_Update.onclick = (closeProgramAndUpdate) => {
     window.ipcRenderer.send("restart_app");
     window.log.info("User chose to restart the launcher to update." + closeProgramAndUpdate);
-}
+};
 
 window.ipcRenderer.on("update_not_available", () => {
     window.ipcRenderer.removeAllListeners("update_not_available");
@@ -169,17 +172,17 @@ window.ipcRenderer.on("update_error", () => {
     window.log.info("An error occurred while trying to get update info");
 });
 
-document.getElementById("settings-button").addEventListener("click", (a,b) => {
+settingsButton.addEventListener("click", () => {
     window.ipcRenderer.send("SettingsWindow", "");
 });
-document.getElementById("patchnotes-button").addEventListener("click", (a,b) => {
+patchnotesButton.addEventListener("click", () => {
     window.ipcRenderer.send("PatchNotesWindow", "");
 });
-document.getElementById("server-list").addEventListener("click", (a,b) => {
+serverListButton.addEventListener("click", () => {
     window.ipcRenderer.send("ServerListWindow", "");
 });
 
-installButton.addEventListener("click", (e) => {
+installButton.addEventListener("click", () => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
@@ -192,8 +195,7 @@ window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
         modVersion.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg;
         removeButton.style.display = "block";
-    }
-    else {
+    } else {
         modVersion.style.display = "none";
         modVersionText.innerText = "";
         removeButton.style.display = "none";
@@ -208,9 +210,10 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
         installButton.disabled = false;
     }
 
-    switch(arg) {
+    switch (arg) {
         case "installed":
-            installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)"; //Green (light-to-dark)
+            // Green (light-to-dark)
+            installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)";
             collectionSelect.disabled = true;
             break;
         case "install":
@@ -218,11 +221,13 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             collectionSelect.disabled = false;
             break;
         case "update":
-            installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)"; //Blue (dark-to-light)
+            // Blue (dark-to-light)
+            installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)";
             collectionSelect.disabled = true;
             break;
         case "internal error":
-            installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)"; //Red (light-to-dark)
+            // Red (light-to-dark)
+            installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)";
             collectionSelect.disabled = true;
             break;
         default:
@@ -236,6 +241,6 @@ window.ipcRenderer.on("FakeClickMod", (event, moddata) => {
     OnClick_Mod(moddata);
 });
 
-removeButton.addEventListener("click", function(e) {
+removeButton.addEventListener("click", (e) => {
     window.ipcRenderer.send("Remove-Mod", "");
 });

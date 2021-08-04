@@ -1,46 +1,43 @@
-//@ts-ignore
 import { app, BrowserWindow, ipcMain, shell, dialog, screen, App } from "electron";
+import { autoUpdater } from "electron-updater";
 import isDev from "electron-is-dev";
+import path from "path";
+import os from "os";
 import settingsPage from "./settings-page/settingspage";
 import patchnotesPage from "./patchnotes-page/patchnotespage";
-import { ServerListPage } from "./serverlist-page/serverlistpage";
+import ServerListPage from "./serverlist-page/serverlistpage";
 import mod_manager from "./modules/mod_manager";
-import { autoUpdater } from "electron-updater";
-import { Utilities } from "./modules/utilities";
-import { ModListLoader, ModList } from "./modules/mod_list_loader";
-import path from "path";
-import { ConfigType } from "modules/mod_list_loader";
-import os from "os";
-const _config = require("./modules/config");
+import Utilities from "./modules/utilities";
+import { ModListLoader, ModList, ConfigType } from "./modules/mod_list_loader";
+import Config from "./modules/config";
+
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 import log from "electron-log";
-
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "main.log";
 log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
-//@ts-ignore
-global.log = log;
 
 const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
 
 class Main {
-    static mainWindow: BrowserWindow;
-    static app: App;
-    static config: ConfigType;
-    static screenWidth: number;
-    static screenHeight: number;
-    static minWindowWidth: number;
-    static minWindowHeight: number;
+    public static mainWindow: BrowserWindow;
+    public static app: App;
+    public static config: ConfigType;
+    public static screenWidth: number;
+    public static screenHeight: number;
+    public static minWindowWidth: number;
+    public static minWindowHeight: number;
+    public static icon: string;
 
     public static createWindow() {
-        //@ts-ignore
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
         this.screenWidth = width;
         this.screenHeight = height;
         this.minWindowWidth = 960;
         this.minWindowHeight = 540;
+        this.icon = path.join(__dirname, "images/installer/256x256.png");
         try {
             Main.mainWindow = new BrowserWindow({
                 minWidth: this.minWindowWidth,
@@ -58,76 +55,82 @@ class Main {
                 autoHideMenuBar: true,
                 darkTheme: true,
                 backgroundColor: "#2B2826",
-                icon: path.join(__dirname, "images/installer/256x256.png")
+                icon: this.icon
             });
             //@ts-ignore
             global.mainWindow = Main.mainWindow;
             Main.app = app;
-            if (!isDev) Main.mainWindow.removeMenu();
+            if (!isDev) {
+                Main.mainWindow.removeMenu();
+            }
 
             //Lets load the config file.
-            _config.GetConfig().then((c) => {
+            Config.GetConfig().then((c) => {
                 //Make sure the config is loaded in.
                 // and load the index.html of the app.
                 //Also setup the mod manager.
                 this.config = c;
                 try {
-                    mod_manager.Setup().then(
-                        () => Main.mainWindow.loadFile(path.resolve(__dirname, "index.html"))
-                    );
+                    mod_manager.Setup().then(() => {
+                        Main.mainWindow.loadFile(path.resolve(__dirname, "index.html"));
+                    });
                 }
-                catch(e) {
+                catch (e) {
                     log.error(e.toString());
                     dialog.showMessageBox({
                         type: "error",
                         title: "Startup Error - Main Window Load",
                         message: e.toString() + majorErrorMessageEnd,
                         buttons: ["OK"]
-                    }).then((button) => {
+                    }).then(() => {
                         app.quit();
                     });
                 }
             })
-            .catch((e) => {
-                log.error(e.toString());
-                dialog.showMessageBox({
-                    type: "error",
-                    title: "Startup Error - Config Load",
-                    message: e.toString() + majorErrorMessageEnd,
-                    buttons: ["OK"]
-                }).then((button) => {
-                    app.quit();
+                .catch((e) => {
+                    log.error(e.toString());
+                    dialog.showMessageBox({
+                        type: "error",
+                        title: "Startup Error - Config Load",
+                        message: e.toString() + majorErrorMessageEnd,
+                        buttons: ["OK"]
+                    }).then(() => {
+                        app.quit();
+                    });
                 });
-            });
         }
-        catch(majorE) {
+        catch (majorE) {
             log.error(majorE.toString());
             dialog.showMessageBox({
                 type: "error",
                 title: "Startup Error - Major Initial Error",
                 message: majorE.toString() + majorErrorMessageEnd,
                 buttons: ["OK"]
-            }).then((button) => {
+            }).then(() => {
                 app.quit();
             });
         }
     }
 
-    static logDeviceInfo() {
+    public static logDeviceInfo() {
         log.log(`Basic System Information: [platform: ${os.platform()}, release: ${os.release()}, arch: ${os.arch()}, systemmem: ${(((os.totalmem() / 1024) / 1024) / 1024).toFixed(2)} gb]`);
     }
 
-    static autoUpdateCheckAndSettings() {
+    public static autoUpdateCheckAndSettings() {
         autoUpdater.checkForUpdatesAndNotify();
         autoUpdater.logger = log;
         autoUpdater.autoDownload = false;
         log.info("Checking for updates.");
     }
 
-    static getClientCurrentVersion() {
-        var lVer = Utilities.GetCurrentVersion();
-        if (lVer != null) log.info("Current launcher version: " + lVer);
-        else log.error("Failed to get launcher version");
+    public static getClientCurrentVersion() {
+        let lVer = Utilities.GetCurrentVersion();
+        if (lVer != null) {
+            log.info("Current launcher version: " + lVer);
+        }
+        else {
+            log.error("Failed to get launcher version");
+        }
     }
 }
 
@@ -149,13 +152,13 @@ app.on("ready", () => {
             title: "App Ready Error - Major Initial Error",
             message: error.toString() + majorErrorMessageEnd,
             buttons: ["OK"]
-        }).then((button) => {
+        }).then(() => {
             app.quit();
         });
     }
 });
 
-app.on("window-all-closed", function() {
+app.on("window-all-closed", function () {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== "darwin") {
@@ -199,37 +202,38 @@ ipcMain.on("restart_app", () => {
     log.info("Restarting program to install an update");
 });
 
-ipcMain.on("SettingsWindow", async (event, arg) => {
-    settingsPage.OpenWindow(Main.screenWidth, Main.screenHeight, Main.config);
+ipcMain.on("SettingsWindow", async () => {
+    settingsPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, Main.config, Main.icon);
 });
-ipcMain.on("PatchNotesWindow", async (event, arg) => {
-    patchnotesPage.OpenWindow(Main.screenWidth, Main.screenHeight);
+ipcMain.on("PatchNotesWindow", async () => {
+    patchnotesPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, Main.icon);
 });
-ipcMain.on("ServerListWindow", async (event, arg) => {
+ipcMain.on("ServerListWindow", async () => {
     //Get the mod list data so we can get the server providers for the current mod.
 
-    var modList = ModListLoader.GetModList();
+    const modList = ModListLoader.GetModList();
     //Make sacrificial object soo the local method exists. Thanks js on your half assed oo.
-    var realModList = new ModList();
+    const realModList = new ModList();
     Object.assign(realModList, modList);
 
-    var providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
-    if (providers != null) ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, providers);
-    else{
-        if (isDev){
+    const providers = realModList.GetMod(mod_manager.currentModData.name).serverlistproviders;
+    if (providers != null) {
+        ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, providers, Main.icon);
+    }
+    else {
+        if (isDev) {
             Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
-        }
-        else {
+        } else {
             log.error("There were no providers for the current mod! Did not open server list page.");
         }
     }
 });
 
-ipcMain.on("GetConfig", async (event, arg) => {
+ipcMain.on("GetConfig", async (event) => {
     event.reply("GetConfig-Reply", Main.config);
 });
 
-ipcMain.on("SetCurrentMod", async (event, arg) => {    
+ipcMain.on("SetCurrentMod", async (event, arg) => {
     try {
         const result = await mod_manager.ChangeCurrentMod(arg);
         event.reply("InstallButtonName-Reply", result);
@@ -243,15 +247,15 @@ ipcMain.on("install-play-click", async (event, args) => {
     await mod_manager.ModInstallPlayButtonClick(args);
 });
 
-ipcMain.on("Visit-Mod-Social", async(event, arg) => {
-    let socialLink = mod_manager.currentModData[arg];
+ipcMain.on("Visit-Mod-Social", async (event, arg) => {
+    const socialLink = mod_manager.currentModData[arg];
     if (socialLink != null && socialLink != "") {
         shell.openExternal(socialLink);
     }
 });
 
-ipcMain.on("GetCurrentModVersion", async(event, arg) => {
-    let version;
+ipcMain.on("GetCurrentModVersion", async (event) => {
+    let version: string;
     try {
         version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
         if (version == null) {
@@ -263,8 +267,8 @@ ipcMain.on("GetCurrentModVersion", async(event, arg) => {
     event.reply("GetCurrentModVersion-Reply", version);
 });
 
-ipcMain.on("Remove-Mod", async(event, arg) => {
-    if(mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE" )){
+ipcMain.on("Remove-Mod", async () => {
+    if (mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE")) {
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
             title: `Remove Mod - ${mod_manager.currentModData.name}?`,
@@ -281,12 +285,13 @@ ipcMain.on("Remove-Mod", async(event, arg) => {
 });
 
 ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
-    if(steamdir != ""){
-        const tf2dir = await _config.GetTF2Directory(steamdir);
-        if (tf2dir && tf2dir != "")
+    if (steamdir != "") {
+        const tf2dir = await Config.GetTF2Directory(steamdir);
+        if (tf2dir && tf2dir != "") {
             Main.config.steam_directory = steamdir;
-            Main.config.tf2_directory = tf2dir;
-    
+        }
+        Main.config.tf2_directory = tf2dir;
+
         event.reply("GetConfig-Reply", Main.config);
     }
     else {
@@ -294,24 +299,26 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
     }
 });
 
-ipcMain.on("GetModData", async (event, args) => {
+ipcMain.on("GetModData", async (event) => {
     ModListLoader.CheckForUpdates().then(() => {
         ModListLoader.UpdateLocalModList();
 
-        if(isDev){
+        if (isDev) {
             log.verbose("Development only mods were added.");
             ModListLoader.InjectDevMods();
         }
 
         log.verbose("Latest mod list was sent to renderer");
-        let modList = ModListLoader.GetModList();
+        const modList = ModListLoader.GetModList();
 
-        event.reply("ShowMods", {mods: modList.mods});
+        event.reply("ShowMods", {
+            mods: modList.mods
+        });
     });
 });
 
-ipcMain.on("get-config", async (event, arg) => {
-    let res = await _config.GetConfig();
+ipcMain.on("get-config", async (event) => {
+    const res = await Config.GetConfig();
     event.reply(res);
 });
 

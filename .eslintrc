@@ -1,0 +1,46 @@
+// References for the rules can be found at https://eslint.org/docs/rules/
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": ["@typescript-eslint"],
+    "rules": {
+        "indent": ["warn", 4],
+        "linebreak-style": ["warn", "windows"],
+        "quotes": ["warn", "double", {
+            "avoidEscape": true
+        }],
+        "semi": ["error", "always"],
+        "semi-style": ["error", "last"],
+        "semi-spacing": ["error", {
+            "before": false,
+            "after": true
+        }],
+        "comma-dangle": ["error", "never"],
+        "comma-style": ["error", "last"],
+        "comma-spacing": ["error", {
+            "before": false,
+            "after": true
+        }],
+        "line-comment-position": ["error", "above"],
+        "multiline-comment-style": ["warn", "separate-lines"],
+        "block-spacing": ["error", "always"],
+        "key-spacing": ["error", {
+            "beforeColon": false,
+            "afterColon": true,
+            "mode": "strict"
+        }],
+        "func-style": ["warn", "expression"],
+        "no-lonely-if": ["warn"]
+    }
+}

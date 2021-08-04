@@ -5,9 +5,7 @@ const arrowRightHTML = ' <i class="mdi mdi-arrow-right-drop-circle"></i>';
 const mapThumb = 'https://creators.tf/api/mapthumb?map=';
 const creatorsServerListPage = "https://creators.tf/servers";
 
-var container;
 var hasCreatedPageContent = false;
-var refreshButton;
 var refreshing = false;
 var serverCount = 0;
 const regionDOMData = new Map();
@@ -43,7 +41,7 @@ String.prototype.escape = function() {
 
 class ServerDOMData {
     _region = "";
-    _id = "";
+    _id = 0;
     id = null;
     hostname = null;
     map = null;
@@ -55,18 +53,21 @@ class ServerDOMData {
     button = null;
     lock = null;
 }
-window.gotServerList = false;
+
 window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("serverpagea").addEventListener("click", (ev) => {
+    const refreshButton = document.getElementById("refreshButton");
+    const serverPageA = document.getElementById("serverpagea");
+
+    let gotServerList = false;
+    serverPageA.addEventListener("click", (ev) => {
         shell.openExternal(creatorsServerListPage);
     });
 
-    if(!window.gotServerList){
+    if (!gotServerList) {
         ipcRenderer.send("GetServerList", "");
-        window.gotServerList = true;
+        gotServerList = true;
     }
-    container = document.getElementById("server-container");
-    refreshButton = document.getElementById("refreshButton");
+    
     refreshButton.addEventListener("click", Refresh);
     //Set an initial automatic refresh.
     setTimeout(Refresh, refreshTime);
@@ -74,7 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     refreshing = false;
-    try{
+    try {
         if (serverListData != null && serverListData.result != null && serverListData.result == "SUCCESS") {
             var servers = serverListData.servers;
             serverCount = servers.length;
@@ -97,10 +98,10 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 for (let server of region[1]) {
                     var serverDOMData = regionDOMs.get(parseInt(server.id));
                     //Skip a server that has a long time since its last heartbeat.
-                    if(server.since_heartbeat > 60 * 60){
+                    if (server.since_heartbeat > 60 * 60) {
                         serverDOMData.tr.style.display = "none";
                     }
-                    else{
+                    else {
                         serverDOMData.tr.style.display = "table-row";
                     }
                     serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
@@ -143,8 +144,8 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                 }
             }
         }
-        else if(serverListData == "503"){
-            loading.remove();
+        else if (serverListData == "503") {
+            document.getElementById("loading").remove();
             document.getElementById("cloudflare-error").style.display = "flex";
         }
         else {
@@ -157,15 +158,16 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
     }
 });
 
-function ShowFailMessage(){
-    loading.remove();
-    document.getElementById("failMessage").style.display = "block";
+function ShowFailMessage() {
+    document.getElementById("loading").remove();
+    document.getElementById("fail-message").style.display = "block";
     console.error("Server list failed to show.");
 }
 
-function CreateServerDOMElements(serverRegionMap){
-    loading.remove();
-    failMessage.remove();
+function CreateServerDOMElements(serverRegionMap) {
+    const container = document.getElementById("server-container");
+    document.getElementById("loading").remove();
+    document.getElementById("fail-message").remove();
     //First time getting server info, create the page layout!
     for (const region of serverRegionMap) {
         var heading = document.createElement("span");
@@ -174,7 +176,7 @@ function CreateServerDOMElements(serverRegionMap){
 
         container.appendChild(heading);
         heading.className = "serverRegions";
-    
+
         if (serverNames.has(regionName)) {
             heading.innerText = serverNames.get(regionName);
             headingFlag.className = "flag-icon flag-icon-" + regionName;
@@ -195,7 +197,7 @@ function CreateServerDOMElements(serverRegionMap){
         container.appendChild(table);
 
         for (let server of region[1]) {
-            var domData = new ServerDOMData();
+            let domData = new ServerDOMData();
             domData._id = parseInt(server.id);
             domData._region = regionName;
             regionDOMDatas.set(domData._id, domData);
@@ -256,7 +258,9 @@ function CreateServerDOMElements(serverRegionMap){
             table.appendChild(tr);
         }
 
-        if(serverCount > maxServersForCollapsingAll) table.style.display = "none";
+        if (serverCount > maxServersForCollapsingAll) {
+            table.style.display = "none";
+        }
     }
 
     hasCreatedPageContent = true;
@@ -284,8 +288,8 @@ function GetServerURL(ip, port) {
     return `steam://connect/${ip}:${port}`;
 }
 
-function Refresh(e = null){
-    if(!refreshing){
+function Refresh(e = null) {
+    if (!refreshing) {
         ipcRenderer.send("GetServerList", "");
         refreshing = true;
 
@@ -294,7 +298,7 @@ function Refresh(e = null){
     }
 }
 
-function SortServersIntoRegions(serverData){
+function SortServersIntoRegions(serverData) {
     var resultMap = new Map();
     for (let server of serverData) {
         var regionArray;

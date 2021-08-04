@@ -1,14 +1,14 @@
 import Main from "../main";
 import fs from "fs";
-import ProgressBar from 'electron-progressbar';
-import jszip, { folder } from "jszip";
+import ProgressBar from "electron-progressbar";
+import jszip from "jszip";
 import path from "path";
 import log from "electron-log";
 import filemanager from "./file_manager";
 
 const loadingTextStyle = {
     color: "ghostwhite"
-}
+};
 
 class FileWriter
 {
@@ -19,14 +19,14 @@ class FileWriter
      * @param currentModName Current mod name for this operation.
      * @returns If this was succcessful.
      */
-    public static async ExtractZip(targetPath : string, data : Buffer, currentModName : string) : Promise<boolean> {
-        let fileListObject = await filemanager.GetFileList(currentModName);
+    public static async ExtractZip(targetPath: string, data: Buffer, currentModName: string): Promise<boolean> {
+        const fileListObject = await filemanager.GetFileList(currentModName);
 
         let active = true;
-        let progressBar = new ProgressBar({
+        const progressBar = new ProgressBar({
             indeterminate: false,
-            text: 'Extracting data',
-            detail: 'Starting data extraction...',
+            text: "Extracting data",
+            detail: "Starting data extraction...",
             abortOnError: true,
             closeOnComplete: false,
             browserWindow: {
@@ -48,8 +48,8 @@ class FileWriter
             maxValue: 1
         });
 
-        progressBar.on('completed', () => {
-            progressBar.detail = 'Extraction completed. Exiting...';
+        progressBar.on("completed", () => {
+            progressBar.detail = "Extraction completed. Exiting...";
         });
 
         //Create the target directory if it doesnt exist somehow.
@@ -57,29 +57,31 @@ class FileWriter
             fs.mkdirSync(targetPath, {recursive: true});
         }
 
-        progressBar.on('aborted', () => {
+        progressBar.on("aborted", () => {
             active = false;
             throw new Error("Extraction aborted by the user. You will need to restart the installation process to install this mod.");
         });
 
-        var zip = await jszip.loadAsync(data.buffer);
-        let allFiles = Object.values(zip.files);
+        const zip = await jszip.loadAsync(data.buffer);
+        const allFiles = Object.values(zip.files);
         let filesWritten = 0;
         for(let i = 0; i < allFiles.length; i++){
-            if(!active) return false;
-            let file = allFiles[i];
-            let fullPath = path.join(targetPath, file.name);
+            if (!active) {
+                return false;
+            }
+            const file = allFiles[i];
+            const fullPath = path.join(targetPath, file.name);
             if(file.dir){
                 //Make missing directories syncronously as they MUST exist before we write.
                 fs.mkdirSync(fullPath, {recursive: true});
                 log.log("ExtractZip: Wrote directory: " + fullPath);
             }
             else {
-                let data = await zip.file(file.name).async("uint8array");
+                const data = await zip.file(file.name).async("uint8array");
 
                 //Check and make missing folder paths anyway as we cannot guarantee the order of the elements given from JSZip.
                 //Check for the directory and write the file synchronously, otherwise missing path errors can happen. Do NOT change.
-                let folderPathOnly = path.dirname(fullPath);
+                const folderPathOnly = path.dirname(fullPath);
                 if(!fs.existsSync(folderPathOnly)){
                     fs.mkdirSync(folderPathOnly, {recursive: true});
                 }
@@ -109,4 +111,4 @@ class FileWriter
     }
 }
 
-export default FileWriter
+export default FileWriter;

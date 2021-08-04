@@ -1,0 +1,96 @@
+name: Bug report
+title: "[bug] ..."
+description: File a bug report to help improve the launcher
+labels: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a bug report issue.
+        Please make sure to fill every field correctly to help us easily identify a fix for the bug.
+  - type: checkboxes
+    attributes:
+      label: Prerequisites
+      description: Please verify and check the options below.
+      options:
+        - label: This is not a feature request.
+          required: true
+        - label: I checked recent issues and verified that this is not a duplicate.
+          required: true
+
+  - type: input
+    attributes:
+      label: UI or mechanical bug?
+      description: Is this a user interface bug or a mechanical/operational bug?
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Was there an error dialogue for this bug? If so, please, provide its contents here. (optional)
+      description: Error dialog if applicable.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Actual behavior
+      description: What actually happened.
+    validations:
+      required: true  
+
+  - type: textarea
+    attributes:
+      label: Launcher logs (optional)
+      description: |
+        Please upload the logs from your launcher either here or on a site such as pastebin.
+        You can find the logs in the "logs" folder in the "Config/Log Folder".
+        Use the button in the Settings menu in the launcher to find the folder.
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Screenshots (optional)
+      description: If applicable, add screenshots to help explain your problem.
+    validations:
+      required: false
+
+  - type: input
+    attributes:
+      label: Operating system and version
+      placeholder: Windows 10 -- Ubuntu 20.04
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional context (optional)
+      description: Anything else you would like to add?
+    validations:
+      required: false

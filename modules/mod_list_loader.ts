@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
 import https from "https";
-import {Utilities} from "./utilities";
-import ElectronLog from "electron-log";
+import log from "electron-log";
 import semver from "semver";
-import electronIsDev from "electron-is-dev";
+import isDev from "electron-is-dev";
+import Utilities from "./utilities";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -32,38 +32,35 @@ class ModListLoader {
     }
 
     public static InjectDevMods() {
-        let devModsPath = path.join(this.GetInternalFolderPath(), "devmods.json");
+        const devModsPath = path.join(this.GetInternalFolderPath(), "devmods.json");
         this.localModList.mods = this.localModList.mods.concat(JSON.parse(fs.readFileSync(devModsPath, "utf-8")).mods);
     }
 
     /**
      * Update the local mod list file on disk to contain the latest data we found.
      */
-    public static UpdateLocalModList() : Boolean {
-        let modlistUpdated : Boolean;
+    public static UpdateLocalModList(): boolean {
+        let modlistUpdated: boolean;
         if(this.lastDownloaded != null && this.localModList.version < this.lastDownloaded.version){
-            let configPath = path.join(Utilities.GetDataFolder(), localModListName);
+            const configPath = path.join(Utilities.GetDataFolder(), localModListName);
             fs.writeFileSync(configPath, JSON.stringify(this.lastDownloaded));
             this.localModList = this.lastDownloaded;
             modlistUpdated = true;
         }
         modlistUpdated = false;
 
-        let oldMods = this.localModList.mods.slice();
+        const oldMods = this.localModList.mods.slice();
         //Filter out mods that do not meet the min version requirement
-        let currentVersion = Utilities.GetCurrentVersion();
-        this.localModList.mods = this.localModList.mods.filter(
-            (value) => {
-                return (value.minLauncherVersion == undefined || 
-                (semver.valid(value.minLauncherVersion) != null && semver.gte(currentVersion, value.minLauncherVersion)))
-            }
-        );
+        const currentVersion = Utilities.GetCurrentVersion();
+        this.localModList.mods = this.localModList.mods.filter((value) => {
+            return (value.minLauncherVersion == undefined || (semver.valid(value.minLauncherVersion) != null && semver.gte(currentVersion, value.minLauncherVersion)));
+        });
 
         //Log removed mods in development environments
-        if(electronIsDev){
+        if (isDev) {
             oldMods.forEach(element => {
                 if(this.localModList.mods.find((x) => x.name == element.name) == undefined){
-                    ElectronLog.verbose(`The mod '${element.name}' was filtered out. Version requirement: ${element.minLauncherVersion}`);
+                    log.verbose(`The mod "${element.name}" was filtered out. Version requirement: ${element.minLauncherVersion}`);
                 }
             });
         }
@@ -74,17 +71,19 @@ class ModListLoader {
     /**Check if there is a newer mod list online.
      * Also checks if the internal version is newer than the local, written version.
      */
-    public static async CheckForUpdates() : Promise<boolean> {
-        ElectronLog.log("Checking for modlist updates");
-        var data = new Array<any>();
+    public static async CheckForUpdates(): Promise<boolean> {
+        log.log("Checking for modlist updates");
+        
+        //Not being used. Should it be removed?
+        //let data = new Array<any>();
 
         try{
             for(let i = 0; i < modListURLs.length; i++){
-                var url = modListURLs[i];
+                const url = modListURLs[i];
                 //Soo ts shuts up about the method returning any, which it must do otherwise it gets mad.
                 //Seems its not very good with async hidden promises...
-                var remoteModList;
-                try{
+                let remoteModList;
+                try {
                     remoteModList = await <ModList><unknown>this.TryGetModList(url);
                 }
                 catch {
@@ -95,11 +94,11 @@ class ModListLoader {
                 if (remoteModList != null && remoteModList != undefined){
                     this.lastDownloaded = remoteModList;
                     break;
-                } 
+                }
             }
 
             if(this.lastDownloaded != null && this.lastDownloaded.hasOwnProperty("version")){
-                ElectronLog.log(`Local mod list version: ${this.localModList.version}, Remote mod list version: ${this.lastDownloaded.version}.`);
+                log.log(`Local mod list version: ${this.localModList.version}, Remote mod list version: ${this.lastDownloaded.version}.`);
                 return this.localModList.version < this.lastDownloaded.version;
             }
         }
@@ -107,18 +106,18 @@ class ModListLoader {
             console.error("Failed to check for updates. " + error.toString());
             return false;
         }
-        ElectronLog.log("No mod list updates found.");
+        log.log("No mod list updates found.");
         return false;
     }
 
-    private static async TryGetModList(url : string) : Promise<ModList> {
-        return new Promise((resolve, reject) => {
-            ElectronLog.log("Trying to get mod list from: " + url);
-            var data = new Array<any>();
-            let req = https.get(url, res => {
+    private static async TryGetModList(url: string): Promise<ModList> {
+        return new Promise((resolve) => {
+            log.log("Trying to get mod list from: " + url);
+            const data = new Array<any>();
+            const req = https.get(url, res => {
                 console.log(`statusCode: ${res.statusCode}`);
 
-                res.on('data', d => {
+                res.on("data", (d) => {
                     if(res.statusCode != 200){
                         resolve(null);
                     }
@@ -127,41 +126,46 @@ class ModListLoader {
 
                 res.on("end", () => {
                     try {
-                        var buf = Buffer.concat(data);
+                        let parsed;
+                        const buf = Buffer.concat(data);
                         if (res.statusCode != 200) {
                             console.log("ERROR! Not parsing " + url);
                             return;
                         } else {
-                            var parsed = JSON.parse(buf.toString());
+                            parsed = JSON.parse(buf.toString());
                         }
                         resolve(parsed);
                     }
                     catch (error){
                         //Json parsing failed soo reject.
-                        ElectronLog.error(`Failed to parse JSON in TryGetModList request for ${url}, error: ${error.toString()}`);
+                        log.error(`Failed to parse JSON in TryGetModList request for ${url}, error: ${error.toString()}`);
                         resolve(null);
                     }
                 });
             });
-            
-            req.on('error', (error: string | undefined) => {
-                ElectronLog.error("General request error in a TryGetModList request, error: " + error.toString());
+
+            req.on("error", (error: string | undefined) => {
+                log.error("General request error in a TryGetModList request, error: " + error.toString());
                 resolve(null);
             });
-            
+
             req.end();
         });
     }
 
-    public static GetLocalModList() : ModList {
+    public static GetLocalModList(): ModList {
         //Try to load file from our local data, if that doesn't exist, write the internal mod list and return that.
-        var internalModListJSON = fs.readFileSync(path.resolve(this.GetInternalFolderPath(), "mods.json"), {encoding:"utf-8"});
-        var internalModList = <ModList>JSON.parse(internalModListJSON);
-        let configPath = path.join(Utilities.GetDataFolder(), localModListName);
+        const internalModListJSON = fs.readFileSync(path.resolve(this.GetInternalFolderPath(), "mods.json"), {
+            encoding: "utf-8"
+        });
+        const internalModList = <ModList>JSON.parse(internalModListJSON);
+        const configPath = path.join(Utilities.GetDataFolder(), localModListName);
 
-        if(fs.existsSync(configPath)){
-            var localConfig = <ModList>JSON.parse(fs.readFileSync(configPath, {encoding:"utf-8"}));
-            if(localConfig.version > internalModList.version){
+        if (fs.existsSync(configPath)) {
+            const localConfig = <ModList>JSON.parse(fs.readFileSync(configPath, {
+                encoding: "utf-8"
+            }));
+            if (localConfig.version > internalModList.version) {
                 return localConfig;
             }
         }
@@ -172,16 +176,16 @@ class ModListLoader {
         return <ModList>JSON.parse(internalModListJSON);
     }
 
-    public static DeleteLocalModList() : Boolean {
-        let configPath = path.join(Utilities.GetDataFolder(), localModListName);
-        if(fs.existsSync(configPath)){
+    public static DeleteLocalModList(): boolean {
+        const configPath = path.join(Utilities.GetDataFolder(), localModListName);
+        if (fs.existsSync(configPath)) {
             fs.unlinkSync(configPath);
             return true;
         }
         return false;
     }
 
-    private static GetInternalFolderPath() : string {
+    private static GetInternalFolderPath(): string {
         return path.resolve(__dirname, "..", "internal");
     }
 }
@@ -191,13 +195,12 @@ class ModList
     version: number;
     mods: Array<ModListEntry>;
 
-    public GetMod(name : any) : ModListEntry{
-        for(var entry of this.mods){
-            if(entry.name == name){
+    public GetMod(name: string): ModListEntry {
+        for (const entry of this.mods) {
+            if (entry.name == name) {
                 return entry;
             }
         }
-
         return null;
     }
 }
@@ -207,7 +210,7 @@ class Install {
     modname: string;
     get_url: string;
     targetdirectory: string;
-    cloudflarebypass: Boolean;
+    cloudflarebypass: boolean;
     version_property_name: string;
     install_url_property_name: string;
     asset_index: number
@@ -234,7 +237,6 @@ class ModListEntry
     twitter: string;
     instagram: string;
     discord: string;
-    serverlist: string;
     serverlistproviders: Array<number>;
     modid: string;
     contenttext: string;
@@ -259,8 +261,8 @@ class ConfigType {
 
 class ModVersion {
     name: string;
-    version: any;
+    version: number;
     collectionversion?: string;
 }
 
-export { ModListLoader, ModList, ModListEntry, Install, GithubAsset, ConfigType }
+export { ModListLoader, ModList, ModListEntry, Install, GithubAsset, ConfigType, ModVersion };

@@ -3,22 +3,22 @@ const { ipcRenderer } = require("electron");
 const log = require("electron-log");
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
-log.transports.file.fileName = "preloadsettingspage.log";
+log.transports.file.fileName = "settingspage.log";
 log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
 
 window.addEventListener("DOMContentLoaded", () => {
+    const cfg_debug = document.getElementById("config-debug");
+    const btn_showCfg = document.getElementById("config-show-button");
+    const btn_showCfgClose = document.getElementById("config-dontshow-button");
+    const btn_copyCfgContents = document.getElementById("config-copycontents-button");
+    const btn_openConfigLoc = document.getElementById("open-config-location");
+    const btn_openLogLoc = document.getElementById("open-log-location");
+    const btn_reload = document.getElementById("reload-button");
+    const btn_clearmodlist = document.getElementById("config-clearmodlist");
+    
     ipcRenderer.send("GetCurrentVersion", "");
 
-    var cfg_debug = document.getElementById("config-debug");
-    var btn_showCfg = document.getElementById("config-show-button");
-    var btn_showCfgClose = document.getElementById("config-dontshow-button");
-    var btn_copyCfgContents = document.getElementById("config-copycontents-button");
-    var btn_openConfigLoc = document.getElementById("open-config-location");
-    var btn_openLogLoc = document.getElementById("open-log-location");
-    var btn_reload = document.getElementById("reload-button");
-    var btn_clearmodlist = document.getElementById("config-clearmodlist");
-    
     log.info("Asking for config");
     ipcRenderer.send("GetConfig", "");
     
@@ -38,10 +38,10 @@ window.addEventListener("DOMContentLoaded", () => {
         copyCfgContentsToClipboard();
     }
     btn_reload.onclick = () => {
-        const steamdir = document.getElementById("steam_directory").value;
+        const steamdir = document.getElementById("steam-directory").value;
         ipcRenderer.send("config-reload-tf2directory", steamdir);
     };
-
+    
     btn_clearmodlist.onclick = () => {
         ipcRenderer.send("ClearModList", "");
     };
@@ -49,15 +49,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ipcRenderer.on("GetConfig-Reply", (event, config_arg) => {
     log.info("Populating settings values");
-    document.getElementById("tf2_directory").value = config_arg.tf2_directory;
-    document.getElementById("steam_directory").value = config_arg.steam_directory;
+    document.getElementById("tf2-directory").value = config_arg.tf2_directory;
+    document.getElementById("steam-directory").value = config_arg.steam_directory;
     document.getElementById("config-contents").value = JSON.stringify(config_arg);
 });
 
 ipcRenderer.on("GetNewSettings", (event, arg) => {
-    log.info("GetNewSettings event recieved. Sending data back");
-    arg.tf2_directory = document.getElementById("tf2_directory").value;
-    arg.steam_directory = document.getElementById("steam_directory").value;
+    log.info("GetNewSettings event received. Sending data back");
+    arg.tf2_directory = document.getElementById("tf2-directory").value;
+    arg.steam_directory = document.getElementById("steam-directory").value;
     ipcRenderer.send("GetNewSettings-Reply", arg);
 });
 
@@ -66,7 +66,6 @@ ipcRenderer.on("GetCurrentVersion-Reply", async (event, version) => {
 });
 
 function copyCfgContentsToClipboard() {
-    var cfgContents = document.getElementById("config-contents");
-    cfgContents.select();
+    document.getElementById("config-contents").select();
     document.execCommand("copy");
 }
