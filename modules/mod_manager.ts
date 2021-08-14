@@ -67,7 +67,7 @@ class ModManager {
         this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
-        
+
 
         log.log(`Set current mod to: ${this.currentModData.name}`);
 
@@ -102,7 +102,7 @@ class ModManager {
         else {
             //We have a version, now we need to determine if there is an update or not.
             const version = await this.source_manager.GetLatestVersionNumber();
-            
+
             //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
             this.currentModVersionRemote = version;
 
@@ -141,13 +141,13 @@ class ModManager {
                 //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
 
                 log.log("Will validate TF2 path before starting download...");
-                if(!await ValidateTF2Dir()){                
+                if(!await ValidateTF2Dir()){
                     this.FakeClickMod();
                     log.error("Ending Install attempt now as validation failed!");
                     return;
                 }
                 log.log("TF2 Path was validated.");
-                    
+
                 //Perform mod download and install.
                 try {
                     //TS won't let me delete this bit
@@ -155,7 +155,7 @@ class ModManager {
                     const desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, args);
 
                     const _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
-                    
+
                     log.log("Successfuly got mod install file urls. Will proceed to try to download them.");
                     const result = await this.ModInstall(_url);
                     if(result){
@@ -167,12 +167,12 @@ class ModManager {
                             await this.SetupNewModAsInstalled();
                         }
                     }
-                    
+
                 } catch (e) {
                     this.FakeClickMod();
                     await ErrorDialog(e, "Mod Begin Install Error");
                 }
-                
+
                 break;
 
             case "UPDATE":
@@ -184,7 +184,7 @@ class ModManager {
                 // let version = await this.source_manager.GetLatestVersionNumber();
                 const displayVersion = await this.source_manager.GetDisplayVersionNumber();
                 const update_msg = `Would you like to update this mod to version "${displayVersion}"?`;
-                
+
                 //Ask if the users wants to update or not
                 const button = await dialog.showMessageBox(Main.mainWindow, {
                     type: "question",
@@ -197,7 +197,7 @@ class ModManager {
                 if(button.response == 0) {
                     //Do the update!
                     log.log("Starting update process...");
-                    
+
                     const configObj = await config.GetConfig();
                     const modList = configObj.current_mod_versions;
                     //Find the current mod version we want
@@ -218,7 +218,7 @@ class ModManager {
                 else{
                     this.FakeClickMod();
                 }
-                
+
                 break;
 
             default:
@@ -248,7 +248,7 @@ class ModManager {
                     //Then we can incrementally update hopefully and download a lot less.
                     const jsonSourceManager = <JsonListSource>this.source_manager;
                     const data = await jsonSourceManager.GetJsonData();
-                    
+
                     let urls;
                     if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
                         //There should be urls to patch zips for each update.
@@ -278,13 +278,13 @@ class ModManager {
                             urls.push(patchURLS[i].DownloadURL);
                         }
                     }
-                        
+
                     if(urls.length > 0) {
                         log.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
                         const result = await this.ModInstall(urls);
                         if(result){
                             //Update the version for the mod.
-                            
+
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
                             //Save the config changes.
@@ -310,9 +310,9 @@ class ModManager {
 
                             //Save the config changes.
                             await config.SaveConfig(Main.config);
-    
+
                             this.FakeClickMod();
-    
+
                             await dialog.showMessageBox(Main.mainWindow, {
                                 type: "info",
                                 title: "Mod Update",
@@ -368,7 +368,7 @@ class ModManager {
                 }
             }
         } catch (e) {
-            await ErrorDialog(e, "Mod Update Error"); 
+            await ErrorDialog(e, "Mod Update Error");
         }
     }
 
@@ -380,10 +380,10 @@ class ModManager {
             urlArray = [];
             urlArray.push(contentURL);
         }
-        
-        try {   
-            const files = await DownloadFiles_UI(urlArray);     
-            try {        
+
+        try {
+            const files = await DownloadFiles_UI(urlArray);
+            try {
                 await this.InstallFiles(files);
                 return true;
             } catch (e) {
@@ -424,7 +424,7 @@ class ModManager {
 
         //Save the config changes.
         await config.SaveConfig(Main.config);
-        
+
         const installOperation = this.source_manager.PostInstall(collectionVersion);
 
         this.currentModState = "INSTALLED";
@@ -433,7 +433,7 @@ class ModManager {
 
         //Wait until the file move operation is done
         await installOperation;
-        
+
         await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
             title: "Mod Install",
@@ -472,26 +472,26 @@ class ModManager {
                         title: "Removing Mod Files",
                         backgroundColor: "#2b2826",
                         closable: true
-                        },
-                        style: {
-                            text: loadingTextStyle,
-                            detail: loadingTextStyle,
-                            value: loadingTextStyle
-                        }
-                    }, Main.app);
+                    },
+                    style: {
+                        text: loadingTextStyle,
+                        detail: loadingTextStyle,
+                        value: loadingTextStyle
+                    }
+                }, Main.app);
 
-                    //Setup events to display data.
-                    progressBar.on("completed", () => {
-                        progressBar.detail = "Removal Done.";
-                    })
-                    .on("aborted", () => {
-                        running = false;
-                        ErrorDialog(`Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.`, "Removal Canceled!");
-                        this.FakeClickMod();
-                    })
-                    .on("progress", (value) => {
-                        progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
-                    });
+                //Setup events to display data.
+                progressBar.on("completed", () => {
+                    progressBar.detail = "Removal Done.";
+                })
+                .on("aborted", () => {
+                    running = false;
+                    ErrorDialog(`Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.`, "Removal Canceled!");
+                    this.FakeClickMod();
+                })
+                .on("progress", (value: number) => {
+                    progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
+                });
 
                 for(let i = 0; i < files_object.files.length; i++){
                     if (!running) {
@@ -623,7 +623,7 @@ class ModManager {
                 //Add the map value for this handle function and set its value as an empty array.
                 sortedFiles.set(handleF, []);
             }
-            
+
             sortedFiles.get(handleF).push(f);
         }
 
@@ -638,7 +638,7 @@ class ModManager {
             if(entry != null){
                 func = entry.value[0];
             }
-            
+
             await func(this.GetRealInstallPath(), entry.value[1], this.currentModData);
             entryIndex++;
             if(entryIndex < sortedFiles.size){
@@ -724,12 +724,10 @@ function DownloadFiles_UI(urls){
             //Setup events to display data.
             progressBar.on("completed", () => {
                 //progressBar.detail = 'Download Finished!';
-            })
-            .on("aborted", () => { 
+            }).on("aborted", () => {
                 shouldStop.value = true;
                 reject("Download Cancelled by User!");
-            })
-            .on("progress", (value) => {
+            }).on("progress", (value) => {
                 try {
                     progressBar.detail = `[File ${currentIndex + 1} of ${urls.length}] Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
                 }
@@ -738,7 +736,7 @@ function DownloadFiles_UI(urls){
                 }
             });
 
-            maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;           
+            maxProgressVal = Math.round((parseInt(contentLength) / 1000000) * 100) / 100;
         };
 
         //Setup download sequence for all files
@@ -816,7 +814,7 @@ async function WriteFilesToDirectory(targetPath: any, files: any, currentModData
         active = false;
         throw new Error("User aborted file writing. You will need to restart the installation process to install this mod.");
     });
-    
+
     log.log("Waiting for file writing to complete...");
 
     for (let index = 0; index < files.length; index++) {
@@ -870,13 +868,13 @@ async function ValidateTF2Dir(){
         if(await FsExtensions.fileExists(path.join(Main.config.tf2_directory, "hl2.exe"))){
             return true;
         }
-    }    
+    }
     else if (plat == "linux" || plat == "freebsd" || plat == "openbsd"){
         if(await FsExtensions.pathExists(path.join(Main.config.tf2_directory, "hl2_linux"))){
             return true;
         }
     }
-    
+
     //Check if the directory has the app id txt and it has 440 in it.
     const appid_path = path.join(Main.config.tf2_directory, "steam_appid.txt");
     if(await FsExtensions.fileExists(appid_path)){
@@ -895,7 +893,7 @@ async function ValidateTF2Dir(){
 function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any, shouldStop: any) {
     return new Promise((resolve, reject) => {
 
-        // This is not being used, should it be removed? 
+        // This is not being used, should it be removed?
         // var options = {
         //     headers: {
         //       "User-Agent": "creators-tf-launcher"
@@ -907,7 +905,7 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                const error = `Endpoint ${_url} redirected too many times. Aborted!`;
                log.error(error);
                reject(error);
-            } 
+            }
 
             log.log("Starting GET for file data at: " + __url);
             const req = https.get(__url, function (res) {
@@ -931,13 +929,13 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                     if (responseHeadersFunc != null) {
                         responseHeadersFunc(res.headers);
                     }
-    
+
                     const data = [];
                     let dataLen = 0;
-    
+
                     // don't set the encoding, it will break everything !
                     // or, if you must, set it to null. In that case the chunk will be a string.
-    
+
                     res.on("data", (chunk) => {
                         if(shouldStop.value){
                             res.destroy();
@@ -951,14 +949,14 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                             progressFunc(dataLen);
                         }
                     });
-    
+
                     res.on("end", () => {
                         if(!shouldStop.value){
                             const buf = Buffer.concat(data);
-        
+
                             progressFunc = null;
                             responseHeadersFunc = null;
-                            
+
                             log.log("File download finished. Returning raw data.");
                             //This approach to get the file name only works for direct file urls.
                             //A better solution for later would be via the content-disposition header if this is missing.
@@ -967,7 +965,7 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                             if (contentDispositionHeader != undefined) {
                                 const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
                                 const matches = filenameRegex.exec(contentDispositionHeader);
-                                if (matches != null && matches[1]) { 
+                                if (matches != null && matches[1]) {
                                     filename = matches[1].replace(/['"]/g, "");
                                     log.info("Got filename for download from content-disposition header: " + filename);
                                 }
@@ -985,7 +983,7 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                     });
                 }
             });
-    
+
             req.on("error", (err) => {
                 log.error(`File download request for ${_url} errored out: ` + err);
                 reject(err);
