@@ -1,5 +1,5 @@
 {
-    "version": 1.35,
+    "version": 1.36,
     "mods": [
         {
             "name": "Creators.TF",
@@ -17,7 +17,8 @@
             "instagram": "https://creators.tf/instagram",
             "discord": "https://creators.tf/discord",
             "serverlistproviders": [15, 1756],
-            "modid": "",
+            "isMod": 0,
+            "gameId": "440",
             "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
             "install": {
                 "modname": "Creators.tf",
@@ -45,7 +46,8 @@
             "instagram": "",
             "discord": "https://creators.tf/discord",
             "serverlistproviders": [11919],
-            "modid": "",
+            "isMod": 0,
+            "gameId": "440",
             "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Silly Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
             "install": {
                 "modname": "Creators.TF Events Servers",
@@ -73,7 +75,8 @@
             "instagram": "",
             "discord": "",
             "serverlistproviders": [],
-            "modid": "",
+            "isMod": 0,
+            "gameId": "440",
             "contenttext": "Custom Creators.TF G-Man Announcer Pack",
             "install": {
                 "modname": "GMan Announcer",
@@ -101,7 +104,8 @@
             "instagram": "",
             "discord": "",
             "serverlistproviders": [],
-            "modid": "",
+            "isMod": 0,
+            "gameId": "440",
             "contenttext": "Community made Visual Fixes for various issues with cosmetics, weapons, particles, visual effects,\n plus fixing Dragon’s Fury lag, opaque and glitchy Flamethrower flames, worse looking stock weapons, and more!",
             "install": {
                 "modname": "Ultimate TF2 Visual Fix Pack",
@@ -128,7 +132,8 @@
             "instagram": "",
             "discord": "",
             "serverlistproviders": [],
-            "modid": "",
+            "isMod": 0,
+            "gameId": "440",
             "contenttext": "A modern Team Fortress 2 performance and customization config. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with mastercomfig.",
             "minLauncherVersion": "0.2.4",
             "install": {

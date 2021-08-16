@@ -68,8 +68,7 @@ class ModManager {
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
 
-
-        log.log(`Set current mod to: ${this.currentModData.name}`);
+        log.log(`Set current mod to: "${this.currentModData.name}"`);
 
         //Setup the source manager object depending on the type of the mod.
         //If it is not a collection, create a list with one object (the install) in it
@@ -143,7 +142,7 @@ class ModManager {
                 log.log("Will validate TF2 path before starting download...");
                 if(!await ValidateTF2Dir()){
                     this.FakeClickMod();
-                    log.error("Ending Install attempt now as validation failed!");
+                    log.error("Ending install attempt now as validation failed!");
                     return;
                 }
                 log.log("TF2 Path was validated.");
@@ -156,7 +155,7 @@ class ModManager {
 
                     const _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
 
-                    log.log("Successfuly got mod install file urls. Will proceed to try to download them.");
+                    log.log("Successfully got mod install file urls. Will proceed to try to download them.");
                     const result = await this.ModInstall(_url);
                     if(result){
                         //This is a function to separate the collections from the non-collections
@@ -167,12 +166,10 @@ class ModManager {
                             await this.SetupNewModAsInstalled();
                         }
                     }
-
                 } catch (e) {
                     this.FakeClickMod();
                     await ErrorDialog(e, "Mod Begin Install Error");
                 }
-
                 break;
 
             case "UPDATE":
@@ -215,14 +212,18 @@ class ModManager {
                         await this.UpdateCurrentMod(desiredCollectionVersion);
                     }
                 }
-                else{
+                else {
                     this.FakeClickMod();
                 }
+                break;
 
+            case "INSTALLED":
+                log.log("Mod is installed, user initiated the game. Calling FakeClickMod func to reset the UI.");
+                this.FakeClickMod();
                 break;
 
             default:
-                log.error("Somehow the install button was clicked when the mod is in the installed state.");
+                log.log("Something went wrong.")
                 break;
         }
     }
@@ -295,7 +296,7 @@ class ModManager {
                             await dialog.showMessageBox(Main.mainWindow, {
                                 type: "info",
                                 title: "Mod Update",
-                                message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                                message: `Mod update for "${this.currentModData.name}" was completed successfully.`,
                                 buttons: ["OK"]
                             });
                         }
@@ -316,7 +317,7 @@ class ModManager {
                             await dialog.showMessageBox(Main.mainWindow, {
                                 type: "info",
                                 title: "Mod Update",
-                                message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                                message: `Mod update for "${this.currentModData.name}" was completed successfully.`,
                                 buttons: ["OK"]
                             });
                         }
@@ -337,7 +338,7 @@ class ModManager {
                         await dialog.showMessageBox(Main.mainWindow, {
                             type: "info",
                             title: "Mod Update",
-                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                            message: `Mod update for "${this.currentModData.name}" was completed successfully.`,
                             buttons: ["OK"]
                         });
                     }
@@ -357,7 +358,7 @@ class ModManager {
                         await dialog.showMessageBox(Main.mainWindow, {
                             type: "info",
                             title: "Mod Update",
-                            message: `Mod update for ${this.currentModData.name} was completed successfully.`,
+                            message: `Mod update for "${this.currentModData.name}" was completed successfully.`,
                             buttons: ["OK"]
                         });
                     }
@@ -413,13 +414,11 @@ class ModManager {
                 });
             }
         }
-        else {
-            if (!versionUpdated) {
-                Main.config.current_mod_versions.push({
-                    name: this.currentModData.name,
-                    version: this.currentModVersionRemote
-                });
-            }
+        else if (!versionUpdated) {
+            Main.config.current_mod_versions.push({
+                name: this.currentModData.name,
+                version: this.currentModVersionRemote
+            });
         }
 
         //Save the config changes.
@@ -437,7 +436,7 @@ class ModManager {
         await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
             title: "Mod Install",
-            message: `Mod files installation for ${this.currentModData.name} was completed successfully.`,
+            message: `Mod files installation for "${this.currentModData.name}" was completed successfully.`,
             buttons: ["OK"]
         });
     }
@@ -484,14 +483,14 @@ class ModManager {
                 progressBar.on("completed", () => {
                     progressBar.detail = "Removal Done.";
                 })
-                .on("aborted", () => {
-                    running = false;
-                    ErrorDialog(`Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.`, "Removal Canceled!");
-                    this.FakeClickMod();
-                })
-                .on("progress", (value: number) => {
-                    progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
-                });
+                    .on("aborted", () => {
+                        running = false;
+                        ErrorDialog("Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.", "Removal Canceled!");
+                        this.FakeClickMod();
+                    })
+                    .on("progress", (value: number) => {
+                        progressBar.detail = `${value} files removed out of ${progressBar.maxValue}`;
+                    });
 
                 for(let i = 0; i < files_object.files.length; i++){
                     if (!running) {
@@ -516,7 +515,7 @@ class ModManager {
                 progressBar.close();
 
                 if(await FsExtensions.fileExists(files_object.files[0])){
-                    await ErrorDialog(`Mod Removal Failed, TF2 may be using these files still. You must close TF2 to remove a mod.`, "Removal Error");
+                    await ErrorDialog("Mod removal failed, TF2 may be using these files still. You must close TF2 to remove a mod.", "Removal Error");
                     this.FakeClickMod();
                     return;
                 }
@@ -533,10 +532,18 @@ class ModManager {
                 }
                 await config.SaveConfig(Main.config);
 
+                // Because this pissed me off way more than it should have.
+                let modRemovalMessage: string;
+                if (files_object.files.length > 1) {
+                    modRemovalMessage = `The mod "${this.currentModData.name}" has been successfully removed.\n${files_object.files.length} files were removed.`;
+                } else {
+                    modRemovalMessage = `The mod "${this.currentModData.name}" has been successfully removed.\n${files_object.files.length} file was removed.`;
+                }
+
                 await dialog.showMessageBox(Main.mainWindow, {
                     type: "info",
-                    title: "Mod Removal Complete",
-                    message: `The mod "${this.currentModData.name}" has been removed successfully.\n${files_object.files.length} files were removed.`,
+                    title: "Mod Removal Completed",
+                    message: modRemovalMessage,
                     buttons: ["OK"]
                 });
 
@@ -557,7 +564,7 @@ class ModManager {
             let errorString;
 
             if(e.toString().includes("EBUSY")){
-                errorString = "Mod file(s) were busy or in use. You cannot remove a mod if TF2 is still running.\nSome files may not be deleted and some may remain.\nClose TF2 and try removing the mod again.";
+                errorString = "Mod file(s) were busy or in use. You cannot remove a mod if TF2 is still running.\nClose TF2 and try removing the mod again.";
             } else{
                 errorString = e.toString();
             }
@@ -630,11 +637,10 @@ class ModManager {
         const fileEntries = sortedFiles.entries();
         let entryIndex = 0;
 
-        let entry;
         let func;
 
         const entryProcess = async () => {
-            entry = fileEntries.next();
+            const entry = fileEntries.next();
             if(entry != null){
                 func = entry.value[0];
             }
@@ -662,6 +668,7 @@ class ModManager {
         setTimeout(() => {
             Main.mainWindow.webContents.send("FakeClickMod", this.currentModData);
         }, 50);
+        log.log("FakeClickMod func sent.")
     }
 }
 
@@ -681,7 +688,7 @@ function DownloadFiles_UI(urls){
 
         let maxProgressVal = 0;
 
-        const progressFunction = (dataLength) => {
+        const progressFunction = (dataLength: number) => {
             if(progressBar && !progressBar.isCompleted()){
                 try{
                     progressBar.value = dataLength;
@@ -727,7 +734,7 @@ function DownloadFiles_UI(urls){
             }).on("aborted", () => {
                 shouldStop.value = true;
                 reject("Download Cancelled by User!");
-            }).on("progress", (value) => {
+            }).on("progress", (value: number) => {
                 try {
                     progressBar.detail = `[File ${currentIndex + 1} of ${urls.length}] Downloaded ${(Math.round((value / 1000000) * 100) / 100).toFixed(2)} MB out of ${maxProgressVal} MB.`;
                 }
@@ -810,10 +817,10 @@ async function WriteFilesToDirectory(targetPath: any, files: any, currentModData
         active = false;
         progressBar.detail = "Writing completed. Exiting...";
     })
-    .on("aborted", () => {
-        active = false;
-        throw new Error("User aborted file writing. You will need to restart the installation process to install this mod.");
-    });
+        .on("aborted", () => {
+            active = false;
+            throw new Error("User aborted file writing. You will need to restart the installation process to install this mod.");
+        });
 
     log.log("Waiting for file writing to complete...");
 
@@ -901,10 +908,10 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
         // };
 
         const DoRequest = (__url: string, retries: number) => {
-            if(retries <= 0){
-               const error = `Endpoint ${_url} redirected too many times. Aborted!`;
-               log.error(error);
-               reject(error);
+            if (retries <= 0) {
+                const error = `Endpoint ${_url} redirected too many times. Aborted!`;
+                log.error(error);
+                reject(error);
             }
 
             log.log("Starting GET for file data at: " + __url);

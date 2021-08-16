@@ -50,6 +50,7 @@ function OnClick_Mod(data) {
     window.log.info("Mod entry clicked: " + data.name);
 
     let bgImg: string;
+
     if (data.backgroundimage != "") {
         bgImg = data.backgroundimage;
     } else {
@@ -106,10 +107,8 @@ function OnClick_Mod(data) {
         //Do stuff for collections
         if (data.items != "") {
             collectionMenu.style.display = "block";
-            collectionSelect.disabled = true;
         } else {
             collectionMenu.style.display = "none";
-            collectionSelect.disabled = true;
         }
         //Clear the select
         collectionSelect.innerHTML = "";
@@ -206,7 +205,7 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     hasClickedInstallButton = false;
     arg = arg.toLowerCase();
     installButton.innerText = arg.toUpperCase();
-    if (arg != "installed" && arg != "internal error") {
+    if (arg != "internal error") {
         installButton.disabled = false;
     }
 
@@ -215,6 +214,8 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             // Green (light-to-dark)
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)";
             collectionSelect.disabled = true;
+            installButton.innerHTML = "<i class='mdi mdi-play'></i>PLAY";
+            installButton.onclick = () => { window.ipcRenderer.send("Open-External-Game", "gameId"); };
             break;
         case "install":
             installButton.style.background = "#FF850A";

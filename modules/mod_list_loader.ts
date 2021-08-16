@@ -68,12 +68,12 @@ class ModListLoader {
         return modlistUpdated;
     }
 
-    /**Check if there is a newer mod list online.
-     * Also checks if the internal version is newer than the local, written version.
-     */
+    // Check if there is a newer mod list online.
+    // Also checks if the internal version is newer than the local, written version.
+    //
     public static async CheckForUpdates(): Promise<boolean> {
         log.log("Checking for modlist updates");
-        
+
         //Not being used. Should it be removed?
         //let data = new Array<any>();
 
@@ -238,7 +238,8 @@ class ModListEntry
     instagram: string;
     discord: string;
     serverlistproviders: Array<number>;
-    modid: string;
+    isMod: boolean;
+    gameId: string;
     contenttext: string;
     install: Install;
     items: Install[];
