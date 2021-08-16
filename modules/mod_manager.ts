@@ -485,7 +485,7 @@ class ModManager {
                 })
                     .on("aborted", () => {
                         running = false;
-                        ErrorDialog("Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.", "Removal Canceled!");
+                        ErrorDialog(`Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.`, "Removal Canceled!");
                         this.FakeClickMod();
                     })
                     .on("progress", (value: number) => {

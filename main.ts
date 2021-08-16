@@ -284,13 +284,13 @@ ipcMain.on("Remove-Mod", async () => {
     if (mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE")) {
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
-            title: `Remove Mod - ${mod_manager.currentModData.name}?`,
+            title: `Remove Mod - ${mod_manager.currentModData.name}`,
             message: `Would you like to uninstall "${mod_manager.currentModData.name}"?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
         }).then(async (button) => {
             if (button.response == 0) {
-                log.info(`Starting the mod removal process for ${mod_manager.currentModData.name}. User said yes.`);
+                log.info(`Starting the mod removal process for "${mod_manager.currentModData.name}". User said yes.`);
                 await mod_manager.RemoveCurrentMod();
             }
         });
