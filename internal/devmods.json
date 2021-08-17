@@ -1,30 +1,32 @@
 {
-    "mods": [
-        {
-            "name": "Test Mod",
-            "blurb": "Dev testing mod",
-            "icon": "images/logos/modcirclelogos/creatorstf.svg",
-            "titleimage": "images/logos/modlogos/creatorstf.png",
-            "backgroundimage": "images/backgrounds/creatorstf.png",
-            "bordercolor": "green",
-            "backgroundposX": "left",
-            "backgroundposY": "top",
-            "website": "https://creators.tf",
-            "github": "",
-            "twitter": "https://creators.tf/twitter",
-            "instagram": "https://creators.tf/instagram",
-            "discord": "https://creators.tf/discord",
-            "serverlist": "no",
-            "modid": "",
-            "contenttext": "Test mod for development.",
-            "install": {
-                "type": "jsonlist",
-                "get_url": "https://fastdl.creators.tf/launcher/testmod.json",
-                "cloudflarebypass": true,
-                "targetdirectory": "{tf2_dir}/tf/test/",
-                "version_property_name": "Version",
-                "install_url_property_name": "DownloadLink"
-            }
-        }
-    ]
+  "mods": [
+    {
+      "name": "Test Mod",
+      "blurb": "Dev testing mod",
+      "icon": "images/logos/modcirclelogos/creatorstf.svg",
+      "titleimage": "images/logos/modlogos/creatorstf.png",
+      "backgroundimage": "images/backgrounds/creatorstf.png",
+      "backgroundBlendMode": "luminosity",
+      "bordercolor": "green",
+      "backgroundposX": "left",
+      "backgroundposY": "top",
+      "website": "https://creators.tf",
+      "github": "",
+      "twitter": "https://creators.tf/twitter",
+      "instagram": "https://creators.tf/instagram",
+      "discord": "https://creators.tf/discord",
+      "serverlistproviders": [],
+      "isMod": 0,
+      "gameId": "440",
+      "contenttext": "Test mod for development.",
+      "install": {
+        "type": "jsonlist",
+        "get_url": "https://fastdl.creators.tf/launcher/testmod.json",
+        "cloudflarebypass": true,
+        "targetdirectory": "{tf2_dir}/tf/test/",
+        "version_property_name": "Version",
+        "install_url_property_name": "DownloadLink"
+      }
+    }
+  ]
 }

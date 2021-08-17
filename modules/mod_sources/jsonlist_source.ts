@@ -25,7 +25,9 @@ class JsonListSource extends ModInstallSource {
             if(this.jsonlist_data == null){
                 this.GetJsonReleaseData().then(resolve).catch(reject);
             }
-            else resolve(this.jsonlist_data);
+            else {
+                resolve(this.jsonlist_data);
+            }
         });
     }
 
@@ -101,11 +103,11 @@ class JsonListSource extends ModInstallSource {
                     }
                 });
             });
-            
+
             req.on("error", (error) => {
                 reject("(GetJsonReleaseData) " + error.toString());
             });
-            
+
             req.end();
         });
     }

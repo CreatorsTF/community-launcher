@@ -258,12 +258,21 @@ ipcMain.on("Open-External-Game", async () => {
     const isMod = mod_manager.currentModData.isMod;
     const game = steamProtocol + mod_manager.currentModData.gameId;
     const gameMod = steamProtocolMod + mod_manager.currentModData.gameId;
-    if (isMod == false) {
-        log.log("User initiated (non-mod) game: " + game);
-        shell.openExternal(game);
+    const gameDefault = steamProtocol + "440";
+
+    if (mod_manager.currentModData.gameId != "" && mod_manager.currentModState == "INSTALLED") {
+        if (isMod == false) {
+            log.log("GAME LAUNCHING: User initiated (non-mod) game: " + game);
+            shell.openExternal(game);
+        } else {
+            log.log("GAME LAUNCHING: User initiated (mod) game: " + gameMod);
+            shell.openExternal(gameMod);
+        }
+    } else if (mod_manager.currentModData.gameId == "" && mod_manager.currentModState == "INSTALLED") {
+        log.log("GAME LAUNCHING: Current mod doesn't have a gameId, initiating default game: " + gameDefault);
+        shell.openExternal(gameDefault);
     } else {
-        log.log("User initiated (mod) game: " + gameMod);
-        shell.openExternal(gameMod);
+        log.log("GAME LAUNCHING: Can't initiate the current mod's game. It's either uninstalled or with a pending update.");
     }
 });
 

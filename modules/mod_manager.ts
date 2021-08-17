@@ -93,6 +93,7 @@ class ModManager {
                 const version = await this.source_manager.GetLatestVersionNumber();
                 this.currentModState = "NOT_INSTALLED";
                 this.currentModVersionRemote = version;
+                console.log("96 - MOD STATE: " + this.currentModState);
                 return "Install";
             } catch (e) {
                 throw new Error("Failed to get mod version: " + e.toString());
@@ -102,7 +103,11 @@ class ModManager {
             //We have a version, now we need to determine if there is an update or not.
             const version = await this.source_manager.GetLatestVersionNumber();
 
-            //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
+            this.currentModState = "INSTALLED";
+            console.log("106 - MOD STATE: " + this.currentModState);
+
+            //Compare the currently selected version number to this one.
+            //If ours is smaller, update. If not, do nothing.
             this.currentModVersionRemote = version;
 
             if (version > this.currentModVersion) {
@@ -138,7 +143,6 @@ class ModManager {
             case "NOT_INSTALLED":
                 //We should try to install this mod!
                 //Before we try anything we need to validate the tf2 install directory. Otherwise downloading is a waste.
-
                 log.log("Will validate TF2 path before starting download...");
                 if(!await ValidateTF2Dir()){
                     this.FakeClickMod();
@@ -181,7 +185,6 @@ class ModManager {
                 // let version = await this.source_manager.GetLatestVersionNumber();
                 const displayVersion = await this.source_manager.GetDisplayVersionNumber();
                 const update_msg = `Would you like to update this mod to version "${displayVersion}"?`;
-
                 //Ask if the users wants to update or not
                 const button = await dialog.showMessageBox(Main.mainWindow, {
                     type: "question",
@@ -191,7 +194,7 @@ class ModManager {
                     cancelId: 1
                 });
 
-                if(button.response == 0) {
+                if (button.response == 0) {
                     //Do the update!
                     log.log("Starting update process...");
 
@@ -210,6 +213,8 @@ class ModManager {
                         });
                         desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
                         await this.UpdateCurrentMod(desiredCollectionVersion);
+                    } else {
+                        await this.UpdateCurrentMod();
                     }
                 }
                 else {
@@ -218,12 +223,12 @@ class ModManager {
                 break;
 
             case "INSTALLED":
-                log.log("Mod is installed, user initiated the game. Calling FakeClickMod func to reset the UI.");
+                log.log("Mod is installed, user clicked the button to initiate the game.");
                 this.FakeClickMod();
                 break;
 
             default:
-                log.log("Something went wrong.")
+                log.log("Something went wrong.");
                 break;
         }
     }
@@ -241,7 +246,6 @@ class ModManager {
 
         try {
             //Compare the currently selected version number to this one. If ours is smaller, update. If not, do nothing.
-
             if (version > this.currentModVersion) {
                 //Check mod type.
                 if (this.currentModData.install.type == "jsonlist") {
@@ -250,7 +254,7 @@ class ModManager {
                     const jsonSourceManager = <JsonListSource>this.source_manager;
                     const data = await jsonSourceManager.GetJsonData();
 
-                    let urls;
+                    let urls = [];
                     if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
                         //There should be urls to patch zips for each update.
                         const patchObjects = data.PatchUpdates;
@@ -283,7 +287,8 @@ class ModManager {
                     if(urls.length > 0) {
                         log.log("Incremental update will begin for current mod using the following archive urls: " + urls.toString());
                         const result = await this.ModInstall(urls);
-                        if(result){
+
+                        if (result) {
                             //Update the version for the mod.
 
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
@@ -373,7 +378,7 @@ class ModManager {
         }
     }
 
-    public static async ModInstall(contentURL: string): Promise<boolean>{
+    public static async ModInstall(contentURL): Promise<boolean>{
         let urlArray;
         if (Array.isArray(contentURL)) {
             urlArray = contentURL;
@@ -403,7 +408,6 @@ class ModManager {
         //Set the current version of the mod in the config.
 
         const versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-
         //If we didnt update the version of an exstisting object. Add it.
         if (typeof(collectionVersion) != "undefined") {
             if (!versionUpdated) {
@@ -561,7 +565,7 @@ class ModManager {
         catch(e){
             progressBar.setCompleted();
             progressBar.close();
-            let errorString;
+            let errorString: string;
 
             if(e.toString().includes("EBUSY")){
                 errorString = "Mod file(s) were busy or in use. You cannot remove a mod if TF2 is still running.\nClose TF2 and try removing the mod again.";
@@ -663,12 +667,13 @@ class ModManager {
     }
 
     public static FakeClickMod(){
-        //Send to trigger a reload of the mod in the UI. We can just trigger the mod change again in the ui now to update everything.
+        //Send to trigger a reload of the mod in the UI.
+        //We can just trigger the mod change again in the ui now to update everything.
         //This sends an event to the render thread that we subscribe to.
         setTimeout(() => {
             Main.mainWindow.webContents.send("FakeClickMod", this.currentModData);
         }, 50);
-        log.log("FakeClickMod func sent.")
+        log.log("FakeClickMod func sent.");
     }
 }
 

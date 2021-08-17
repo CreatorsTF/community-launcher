@@ -186,6 +186,7 @@ installButton.addEventListener("click", () => {
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
     window.ipcRenderer.send("install-play-click", collectionSelect.value);
+    window.ipcRenderer.send("Open-External-Game", "gameId");
 });
 
 // Disabling stuff based on if the mod is installed or not
@@ -215,7 +216,6 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)";
             collectionSelect.disabled = true;
             installButton.innerHTML = "<i class='mdi mdi-play'></i>PLAY";
-            installButton.onclick = () => { window.ipcRenderer.send("Open-External-Game", "gameId"); };
             break;
         case "install":
             installButton.style.background = "#FF850A";
