@@ -14,7 +14,7 @@ $gray: #888;
 $default-bg-color: #2B2826;
 $dark-orange: #B35215;
 $error: #D62828;
-$subtle-shadow: rgba(0,0,0,0.35);
+$subtle-shadow: rgba(0,0,0,0.5);
 $not-so-subtle-shadow: rgba(0,0,0,0.7);
 $not-so-subtle-gray-shadow: rgba(50,50,50,0.7);
 $button-update-download-color: #EBBD34;
@@ -31,9 +31,9 @@ $down: #D62828;
 $up: #008F00;
 $blue: #2963A9;
 
-::-webkit-scrollbar { width: 1.25vh; }
+::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: $black-3; }
-::-webkit-scrollbar-thumb { background: $dark-gray; border-radius: 1vh; }
+::-webkit-scrollbar-thumb { background: $dark-gray; border-radius: 100vh; }
 ::-webkit-scrollbar-thumb:hover { background: $gray; }
 
 .down { color: $down; }
@@ -116,7 +116,7 @@ input {
     overflow: hidden;
     user-select: none;
     z-index: 0;
-    
+
     &::before {
         content: "";
         background: $dark-orange;
@@ -133,7 +133,7 @@ input {
 
     &:hover {
         color: $white;
-        
+
         &::before {
             width: 142%;
             z-index: -1;

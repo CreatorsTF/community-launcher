@@ -43,21 +43,21 @@ body {
     &:last-child {
         margin: 0px;
     }
-    
+
     img {
         height: inherit;
         border-radius: 100vh;
         pointer-events: none;
         background-color: #222;
     }
-    
+
     &:hover {
         img {
-            box-shadow: 0 0 3vh $not-so-subtle-shadow;
+            box-shadow: 0 0 3vh $subtle-shadow;
         }
-        
+
         .mod-info-sidebar {
-            text-shadow: 0 0 3vh $not-so-subtle-shadow;
+            text-shadow: 0 0 3vh $subtle-shadow;
         }
 
         color: #FFF;
@@ -74,7 +74,7 @@ body {
         left: -50px;
         transition: 0.25s;
         z-index: -1;
-        transform: skewX(-25deg);     
+        transform: skewX(-25deg);
     }
     &:hover::before {
         width: 135%;
@@ -260,7 +260,7 @@ body {
         border-radius: 10vh;
         transition: 0.2s;
         z-index: 1;
-        
+
         &:hover {
             filter: brightness(0.9);
             transform: scale(0.9);
@@ -317,7 +317,7 @@ body {
 #mod-info-box {
     display: flex;
     pointer-events: auto;
-    
+
     button {
         width: 7vh;
         height: 7vh;
@@ -383,7 +383,7 @@ body {
     display: flex;
     align-items: center;
     font-size: 2.35vh;
-    
+
     i {
         margin-right: 1vh;
     }
