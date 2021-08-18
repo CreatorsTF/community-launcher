@@ -124,7 +124,7 @@ class Main {
     }
 
     public static getClientCurrentVersion() {
-        let lVer = Utilities.GetCurrentVersion();
+        const lVer = Utilities.GetCurrentVersion();
         if (lVer != null) {
             log.info("Current launcher version: " + lVer);
         }
@@ -220,12 +220,10 @@ ipcMain.on("ServerListWindow", async () => {
     if (providers != null) {
         ServerListPage.OpenWindow(Main.mainWindow, Main.screenWidth, Main.screenHeight, Main.minWindowWidth, Main.minWindowHeight, providers, Main.icon);
     }
-    else {
-        if (isDev) {
-            Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
-        } else {
-            log.error("There were no providers for the current mod! Did not open server list page.");
-        }
+    else if (isDev) {
+        Utilities.ErrorDialog("There were no providers for the current mod! Populate the 'serverlistproviders' property", "Missing Server Providers");
+    } else {
+        log.error("There were no providers for the current mod! Did not open server list page.");
     }
 });
 
@@ -254,6 +252,30 @@ ipcMain.on("Visit-Mod-Social", async (event, arg) => {
     }
 });
 
+ipcMain.on("Open-External-Game", async () => {
+    const steamProtocol = "steam://run/";
+    const steamProtocolMod = "steam://rungameid/";
+    const isMod = mod_manager.currentModData.isMod;
+    const game = steamProtocol + mod_manager.currentModData.gameId;
+    const gameMod = steamProtocolMod + mod_manager.currentModData.gameId;
+    const gameDefault = steamProtocol + "440";
+
+    if (mod_manager.currentModData.gameId != "" && mod_manager.currentModState == "INSTALLED") {
+        if (isMod == false) {
+            log.log("GAME LAUNCHING: User initiated (non-mod) game: " + game);
+            shell.openExternal(game);
+        } else {
+            log.log("GAME LAUNCHING: User initiated (mod) game: " + gameMod);
+            shell.openExternal(gameMod);
+        }
+    } else if (mod_manager.currentModData.gameId == "" && mod_manager.currentModState == "INSTALLED") {
+        log.log("GAME LAUNCHING: Current mod doesn't have a gameId, initiating default game: " + gameDefault);
+        shell.openExternal(gameDefault);
+    } else {
+        log.log("GAME LAUNCHING: Can't initiate the current mod's game. It's either uninstalled or with a pending update.");
+    }
+});
+
 ipcMain.on("GetCurrentModVersion", async (event) => {
     let version: string;
     try {
@@ -271,13 +293,13 @@ ipcMain.on("Remove-Mod", async () => {
     if (mod_manager.currentModData != null && (mod_manager.currentModState == "INSTALLED" || mod_manager.currentModState == "UPDATE")) {
         dialog.showMessageBox(Main.mainWindow, {
             type: "warning",
-            title: `Remove Mod - ${mod_manager.currentModData.name}?`,
-            message: `Would you like to uninstall the mod ${mod_manager.currentModData.name}?`,
+            title: `Remove Mod - ${mod_manager.currentModData.name}`,
+            message: `Would you like to uninstall "${mod_manager.currentModData.name}"?`,
             buttons: ["Yes", "Cancel"],
             cancelId: 1
         }).then(async (button) => {
             if (button.response == 0) {
-                log.info("Will start the mod removal process. User said yes.");
+                log.info(`Starting the mod removal process for "${mod_manager.currentModData.name}". User said yes.`);
                 await mod_manager.RemoveCurrentMod();
             }
         });
@@ -324,6 +346,3 @@ ipcMain.on("get-config", async (event) => {
 
 //Quickplay
 //ipcMain.on("")
-
-// Run games: steam://run/[ID]
-// Run games, mods and non-Steam shortcuts: steam://rungameid/[ID]

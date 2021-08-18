@@ -70,7 +70,7 @@ class GithubSource extends ModInstallSource {
                         resolve(asset.browser_download_url);
                     }
 
-                    reject("This Github repositorys latest release was missing a usable asset.");
+                    reject("This Github repository's latest release was missing a usable asset.");
                 }
                 else {
                     reject("This Github repository has no releases avaliable.");
