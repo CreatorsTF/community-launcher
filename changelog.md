@@ -1,3 +1,9 @@
+## Version 0.2.6 - (ALPHA)
+### 19/08/2021 - 21:51 (GMT)
+- Added the ability to launch a game when a mod is installed.
+- Fixed a bug that broke mod updates.
+- Style tweaks.
+
 ## Version 0.2.5 - (ALPHA)
 ### 16/07/2021 - 18:49 (GMT)
 - Fixed mod install error relating to the progress bar.
