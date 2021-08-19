@@ -10,7 +10,8 @@ import Utilities from "./utilities";
 //More than one allows fallbacks.
 const modListURLs = [
     "https://fastdl.creators.tf/launcher/mods.json",
-    "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json"
+    "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json",
+    "https://raw.githubusercontent.com/CreatorsTF/Creators.TF-Community-Launcher/master/internal/mods.json"
 ];
 
 const localModListName = "mods.json";

@@ -254,7 +254,7 @@ class ModManager {
                     const jsonSourceManager = <JsonListSource>this.source_manager;
                     const data = await jsonSourceManager.GetJsonData();
 
-                    let urls = [];
+                    const urls = [];
                     if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
                         //There should be urls to patch zips for each update.
                         const patchObjects = data.PatchUpdates;
@@ -489,7 +489,7 @@ class ModManager {
                 })
                     .on("aborted", () => {
                         running = false;
-                        ErrorDialog(`Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.`, "Removal Canceled!");
+                        ErrorDialog("Mod removal was canceled and may be incomplete.\nYou may need to reinstall the mod to remove it correctly.", "Removal Canceled!");
                         this.FakeClickMod();
                     })
                     .on("progress", (value: number) => {
@@ -926,7 +926,7 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
                     DoRequest(res.headers.location, retries--);
                 }
                 else if (res.statusCode == 404){
-                    const error = `Remote Mod file was not able to be found. Try again later.\nIf this persists please report this error.`;
+                    const error = "Remote Mod file was not able to be found. Try again later.\nIf this persists please report this error.";
                     log.error(error);
                     log.error("404 for: " + _url);
                     reject(error);

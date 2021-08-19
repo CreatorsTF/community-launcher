@@ -167,7 +167,8 @@ window.ipcRenderer.on("update_downloaded", () => {
 
 window.ipcRenderer.on("update_error", () => {
     window.ipcRenderer.removeAllListeners("update_error");
-    updateButton_Fail.classList.remove("hidden");
+    //updateButton_Fail.classList.remove("hidden");
+    updateButton_Updated.classList.remove("hidden");
     window.log.info("An error occurred while trying to get update info");
 });
 

@@ -10,13 +10,14 @@ marked.setOptions({
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-    fetch("https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/changelog.md").then((res) => {
+    fetch("https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/changelog.md").then(async (res) => {
         if (res.status === 200) {
             res.text().then((data) => {
                 document.getElementById("patchnotes").innerHTML = marked(data);
             });
         } else {
-            document.getElementById("patchnotes").innerHTML = marked("## If you are reading this, there are two options:\n- Github is down (You can check their status page at `githubstatus.com`)\n- Your internet is down");
+            const fallbackChangelogLocalFile = fetch("../changelog.md").then((res) => res.text());
+            document.getElementById("patchnotes").innerHTML = marked(await fallbackChangelogLocalFile);
         }
     }).catch((err) => {
         console.log("Error fetching the latest changelog! Error: " + err);
