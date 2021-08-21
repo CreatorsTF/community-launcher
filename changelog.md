@@ -1,3 +1,7 @@
+## Version 0.2.7 - (ALPHA)
+### 21/08/2021 - 16:33 (GMT)
+- Fixed a bug that led to the config file not being created on fresh installs or when it's deleted.
+
 ## Version 0.2.6 - (ALPHA)
 ### 19/08/2021 - 21:51 (GMT)
 - Added the ability to launch a game when a mod is installed.

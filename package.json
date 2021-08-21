@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ampersoftware/Creators.TF-Community-Launcher.git"
+    "url": "https://github.com/CreatorsTF/Creators.TF-Community-Launcher.git"
   },
   "license": "MIT",
   "devDependencies": {
