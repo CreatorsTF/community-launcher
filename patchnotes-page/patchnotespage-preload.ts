@@ -10,7 +10,7 @@ marked.setOptions({
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-    fetch("https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/changelog.md").then(async (res) => {
+    fetch("https://raw.githubusercontent.com/CreatorsTF/Creators.TF-Community-Launcher/master/changelog.md").then(async (res) => {
         if (res.status === 200) {
             res.text().then((data) => {
                 document.getElementById("patchnotes").innerHTML = marked(data);
