@@ -140,13 +140,8 @@ class Config {
             //Linux solution is untested
             const homedir = process.env.HOME;
             const steamPaths = [".steam/steam", ".local/share/steam"];
-            for (const pathGroup of steamPaths) {
-                let existingPath = await getExistingPath(pathGroup["paths"]);
-                basedir = path.join(homedir, existingPath);
-                if (basedir != "") {
-                    break;
-                }
-            }
+            let existingPath = await getExistingPath(steamPaths);
+            basedir = path.join(homedir, existingPath);
         }
         else {
             basedir = "";
