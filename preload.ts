@@ -62,7 +62,7 @@ ipcRenderer.on("ShowMods", (event, data) => {
     const launcherVersionBox = document.getElementById("launcher-version");
     const config: any = fs.readFileSync(path.join(__dirname, "package.json"));
     const currentClientVersion: number = JSON.parse(config).version;
-    fetch("https://api.github.com/repos/ampersoftware/Creators.TF-Community-Launcher/releases/latest").then((res) => {
+    fetch("https://api.github.com/repos/CreatorsTF/Creators.TF-Community-Launcher/releases/latest").then((res) => {
         if (res.status === 200) {
             res.json().then((data) => {
                 const version = data.tag_name;

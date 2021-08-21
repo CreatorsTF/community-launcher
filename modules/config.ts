@@ -42,7 +42,7 @@ class Config {
             //Try to populate the default values of the steam directory and tf2 directory automatically.
             this.config.steam_directory = await Config.GetSteamDirectory();
 
-            log.log(`Auto locater for the users steam directory returned '${this.config.steam_directory}'`);
+            log.log(`Auto locater for the users steam directory returned "${this.config.steam_directory}"`);
 
             if (this.config.steam_directory != "") {
                 //Try to find the users tf2 directory automatically.
@@ -102,7 +102,6 @@ class Config {
 
     public static async GetConfigFullPath(): Promise<string> {
         const _path = (process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
-
         await FsExtensions.ensureDirectoryExists(_path);
 
         const configName = "config.json";
@@ -121,9 +120,9 @@ class Config {
          * @returns First existing path in steamPaths or null if none of the paths exist, with prefix added
          */
 
-        async function getExistingPath(steamPaths: Array<string>, pathPrefix: string): Promise<string> {
+        async function getExistingPath(steamPaths: Array<string>): Promise<string> {
             for (let steamPath of steamPaths) {
-                steamPath = path.join(pathPrefix, steamPath);
+                steamPath = path.join(steamPath);
                 if (await FsExtensions.pathExists(steamPath)) {
                     return steamPath;
                 }
@@ -136,24 +135,14 @@ class Config {
         //We check the most likely install paths.
         if (os.platform() == "win32") {
             const steamPaths = ["C:/Program Files (x86)/Steam", "C:/Program Files/Steam"];
-            //@ts-ignore
             basedir = await getExistingPath(steamPaths);
         }
         else if (os.platform() == "linux" || "freebsd" || "openbsd") {
             //Linux solution is untested
             const homedir = process.env.HOME;
-            const steamPaths = [
-                {
-                    "paths": [".steam/steam"],
-                    "prefix": homedir
-                },
-                {
-                    "paths": [".local/share/steam"],
-                    "prefix": ""
-                }
-            ];
+            const steamPaths = [".steam/steam", ".local/share/steam"];
             for (const pathGroup of steamPaths) {
-                basedir = await getExistingPath(pathGroup["paths"], pathGroup["prefix"]);
+                basedir = homedir + await getExistingPath(pathGroup["paths"]);
                 if (basedir != "") {
                     break;
                 }
