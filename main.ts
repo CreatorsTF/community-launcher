@@ -19,7 +19,7 @@ log.transports.file.fileName = "main.log";
 log.transports.file.maxSize = 10485760;
 log.transports.file.getFile();
 
-const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by making a new 'Issue'.\nVisit creators.tf/launcher for more info.\nYou can also report if via our Discord.";
+const majorErrorMessageEnd = "\nIf this error persists, please report it on our GitHub page by creating a new 'Issue'.\nVisit creators.tf/launcher for more info.";
 
 class Main {
     public static mainWindow: BrowserWindow;

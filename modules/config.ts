@@ -116,7 +116,6 @@ class Config {
         /**
          * Gets first existing path in an array of strings
          * @param {string[]} steamPaths An array of directory paths
-         * @param {string} pathPrefix A path to add before each path in steamPaths before checking
          * @returns First existing path in steamPaths or null if none of the paths exist, with prefix added
          */
 
@@ -142,7 +141,8 @@ class Config {
             const homedir = process.env.HOME;
             const steamPaths = [".steam/steam", ".local/share/steam"];
             for (const pathGroup of steamPaths) {
-                basedir = homedir + await getExistingPath(pathGroup["paths"]);
+                let existingPath = await getExistingPath(pathGroup["paths"]);
+                basedir = path.join(homedir, existingPath);
                 if (basedir != "") {
                     break;
                 }
