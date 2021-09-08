@@ -43,9 +43,8 @@ class GithubCollectionSource extends ModInstallSource {
     }
 
     async GetDisplayVersionNumber(): Promise<string> {
-        const versionNumber = await this.GetLatestVersionNumber();
         const githubData = await this._GetGithubData();
-        return `${githubData[0].name} (${versionNumber})`;
+        return `${githubData[0].tag_name}`;
     }
 
     async GetFileURL(collection_version: number): Promise<string> {

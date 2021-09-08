@@ -4,29 +4,28 @@ const titleImage = document.getElementById("title-image") as HTMLImageElement;
 const text = document.getElementById("content-text");
 const modVersion = document.getElementById("mod-version");
 const modVersionText = document.getElementById("mod-version-text");
+const configPresetText = document.getElementById("config-preset-text");
 
-const installButton = document.getElementById("install-play-button") as HTMLButtonElement;
-const removeButton = document.getElementById("remove-mod") as HTMLButtonElement;
+const updateButton_Download = document.getElementById("update-button-download") as HTMLButtonElement;
+const updateButton_Downloading = document.getElementById("update-button-downloading") as HTMLButtonElement;
+const updateButton_Update = document.getElementById("update-button-update") as HTMLButtonElement;
+const updateButton_Updated = document.getElementById("update-button-updated") as HTMLButtonElement;
+const updateButton_Fail = document.getElementById("update-button-fail") as HTMLButtonElement;
 
-const updateButton_Download = document.getElementById("update-button-download");
-const updateButton_Downloading = document.getElementById("update-button-downloading");
-const updateButton_Update = document.getElementById("update-button-update");
-const updateButton_Updated = document.getElementById("update-button-updated");
-const updateButton_Fail = document.getElementById("update-button-fail");
-
-const website = document.getElementById("socialMediaWebsite");
-const github = document.getElementById("socialMediaGithub");
-const twitter = document.getElementById("socialMediaTwitter");
-const discord = document.getElementById("socialMediaDiscord");
-const instagram = document.getElementById("socialMediaInstagram");
-const serverlist = document.getElementById("server-list");
+const website = document.getElementById("socialMediaWebsite") as HTMLButtonElement;
+const github = document.getElementById("socialMediaGithub") as HTMLButtonElement;
+const twitter = document.getElementById("socialMediaTwitter") as HTMLButtonElement;
+const discord = document.getElementById("socialMediaDiscord") as HTMLButtonElement;
+const instagram = document.getElementById("socialMediaInstagram") as HTMLButtonElement;
 const titleHeader = document.getElementById("title-header");
 const collectionMenu = document.getElementById("collection-menu");
 const collectionSelect = document.getElementById("collection-versions") as HTMLButtonElement;
 
-const settingsButton = document.getElementById("settings-button");
-const patchnotesButton = document.getElementById("patchnotes-button");
-const serverListButton = document.getElementById("server-list");
+const installButton = document.getElementById("install-play-button") as HTMLButtonElement;
+const removeButton = document.getElementById("remove-mod") as HTMLButtonElement;
+const settingsButton = document.getElementById("settings-button") as HTMLButtonElement;
+const patchnotesButton = document.getElementById("patchnotes-button") as HTMLButtonElement;
+const serverListButton = document.getElementById("server-list") as HTMLButtonElement;
 
 let hasClickedInstallButton = false;
 
@@ -77,8 +76,6 @@ function OnClick_Mod(data) {
     content.style.borderColor = data.bordercolor;
     content.style.backgroundPositionX = data.backgroundposX;
     content.style.backgroundPositionY = data.backgroundposY;
-    // TypeScript does not have "backgroundBlendMode" on "CSSStyleDeclaration"...
-    // @ts-ignore
     content.style.backgroundBlendMode = data.backgroundBlendMode;
 
     contentDummy.remove();
@@ -95,14 +92,14 @@ function OnClick_Mod(data) {
     twitter.style.display = data.twitter != "" ? "block" : "none";
     instagram.style.display = data.instagram != "" ? "block" : "none";
     discord.style.display = data.discord != "" ? "block" : "none";
-    serverlist.style.display = data.serverlistproviders != "" ? "block" : "none";
+    serverListButton.style.display = data.serverlistproviders != "" ? "block" : "none";
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
     window.ipcRenderer.send("SetCurrentMod", data.name);
     window.ipcRenderer.send("GetCurrentModVersion", "");
     collectionSelect.disabled = true;
-
+    
     if (data.install.type == "githubcollection" || data.install.type == "jsonlistcollection") {
         //Do stuff for collections
         if (data.items != "") {
@@ -110,6 +107,7 @@ function OnClick_Mod(data) {
         } else {
             collectionMenu.style.display = "none";
         }
+
         //Clear the select
         collectionSelect.innerHTML = "";
         //Populate the select
@@ -167,8 +165,7 @@ window.ipcRenderer.on("update_downloaded", () => {
 
 window.ipcRenderer.on("update_error", () => {
     window.ipcRenderer.removeAllListeners("update_error");
-    //updateButton_Fail.classList.remove("hidden");
-    updateButton_Updated.classList.remove("hidden");
+    updateButton_Fail.classList.remove("hidden");
     window.log.info("An error occurred while trying to get update info");
 });
 
@@ -194,11 +191,13 @@ installButton.addEventListener("click", () => {
 window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
     if (arg != "" && arg != null) {
         modVersion.style.display = "block";
-        modVersionText.innerText = "Mod version: " + arg;
+        modVersionText.innerText = "Mod version: " + arg.versionDisplay;
+        configPresetText.innerText = "Config preset: " + arg.collectionversion;
         removeButton.style.display = "block";
     } else {
         modVersion.style.display = "none";
         modVersionText.innerText = "";
+        configPresetText.innerText = "Config preset:";
         removeButton.style.display = "none";
     }
 });
@@ -216,25 +215,30 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
             // Green (light-to-dark)
             installButton.style.background = "linear-gradient(to right, #009028 35%, #006419 75%)";
             collectionSelect.disabled = true;
+            collectionSelect.style.display = "none";
             installButton.innerHTML = "<i class='mdi mdi-play'></i>PLAY";
             break;
         case "install":
             installButton.style.background = "#FF850A";
             collectionSelect.disabled = false;
+            collectionSelect.style.display = "inline-flex";
             break;
         case "update":
             // Blue (dark-to-light)
             installButton.style.background = "linear-gradient(to left, #1A96FF 35%, #1A70FF 75%)";
             collectionSelect.disabled = true;
+            collectionSelect.style.display = "none";
             break;
         case "internal error":
             // Red (light-to-dark)
             installButton.style.background = "linear-gradient(to right, #C72D1A 25%, #9B1100 75%)";
             collectionSelect.disabled = true;
+            collectionSelect.style.display = "none";
             break;
         default:
             installButton.style.background = "grey";
             collectionSelect.disabled = true;
+            collectionSelect.style.display = "none";
             break;
     }
 });

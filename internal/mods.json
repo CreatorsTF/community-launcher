@@ -1,12 +1,12 @@
 {
-  "version": 1.36,
+  "version": 1.37,
   "mods": [
     {
       "name": "Creators.TF",
       "blurb": "A TF2 celebration project",
       "icon": "images/logos/modcirclelogos/creatorstf.svg",
       "titleimage": "images/logos/modlogos/creatorstf.png",
-      "backgroundimage": "images/backgrounds/creatorstf.png",
+      "backgroundimage": "images/backgrounds/creatorstf.jpg",
       "backgroundBlendMode": "soft-light",
       "bordercolor": "orange",
       "backgroundposX": "left",
@@ -17,7 +17,7 @@
       "instagram": "https://creators.tf/instagram",
       "discord": "https://creators.tf/discord",
       "serverlistproviders": [ 15, 1756 ],
-      "isMod": 0,
+      "isMod": false,
       "gameId": "440",
       "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
       "install": {
@@ -35,7 +35,7 @@
       "blurb": "Content for the Silly Events Servers",
       "icon": "images/logos/modcirclelogos/ctf_events.svg",
       "titleimage": "images/logos/modlogos/eventsbanner.png",
-      "backgroundimage": "images/backgrounds/events.png",
+      "backgroundimage": "images/backgrounds/events.jpg",
       "backgroundBlendMode": "soft-light",
       "bordercolor": "#2ECC71",
       "backgroundposX": "right",
@@ -46,7 +46,7 @@
       "instagram": "",
       "discord": "https://creators.tf/discord",
       "serverlistproviders": [ 11919 ],
-      "isMod": 0,
+      "isMod": false,
       "gameId": "440",
       "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Silly Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
       "install": {
@@ -75,7 +75,7 @@
       "instagram": "",
       "discord": "",
       "serverlistproviders": [],
-      "isMod": 0,
+      "isMod": false,
       "gameId": "440",
       "contenttext": "Custom Creators.TF G-Man Announcer Pack",
       "install": {
@@ -104,7 +104,7 @@
       "instagram": "",
       "discord": "",
       "serverlistproviders": [],
-      "isMod": 0,
+      "isMod": false,
       "gameId": "440",
       "contenttext": "Community made Visual Fixes for various issues with cosmetics, weapons, particles, visual effects,\n plus fixing Dragon’s Fury lag, opaque and glitchy Flamethrower flames, worse looking stock weapons, and more!",
       "install": {
@@ -132,7 +132,7 @@
       "instagram": "",
       "discord": "",
       "serverlistproviders": [],
-      "isMod": 0,
+      "isMod": false,
       "gameId": "440",
       "contenttext": "A modern Team Fortress 2 performance and customization config. Note that after installing, your class cfgs and autoexec.cfg will be moved to a new folder to be compatible with mastercomfig.",
       "minLauncherVersion": "0.2.4",

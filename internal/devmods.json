@@ -5,7 +5,7 @@
       "blurb": "Dev testing mod",
       "icon": "images/logos/modcirclelogos/creatorstf.svg",
       "titleimage": "images/logos/modlogos/creatorstf.png",
-      "backgroundimage": "images/backgrounds/creatorstf.png",
+      "backgroundimage": "images/backgrounds/creatorstf.jpg",
       "backgroundBlendMode": "luminosity",
       "bordercolor": "green",
       "backgroundposX": "left",
@@ -16,7 +16,7 @@
       "instagram": "https://creators.tf/instagram",
       "discord": "https://creators.tf/discord",
       "serverlistproviders": [],
-      "isMod": 0,
+      "isMod": false,
       "gameId": "440",
       "contenttext": "Test mod for development.",
       "install": {

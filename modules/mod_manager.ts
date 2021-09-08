@@ -50,6 +50,7 @@ class ModManager {
     public static currentModVersion = 0;
     public static currentModState: State;
     public static currentModVersionRemote = 0;
+    public static currentModVersionToDisplay = "";
     public static downloadWindow: BrowserWindow = null;
     public static files_object: any;
     public static source_manager: ModInstallSource;
@@ -94,6 +95,10 @@ class ModManager {
                 this.currentModState = "NOT_INSTALLED";
                 this.currentModVersionRemote = version;
                 console.log("96 - MOD STATE: " + this.currentModState);
+
+                const versionDisplay = await this.source_manager.GetDisplayVersionNumber();
+                this.currentModVersionToDisplay = versionDisplay;
+
                 return "Install";
             } catch (e) {
                 throw new Error("Failed to get mod version: " + e.toString());
@@ -102,6 +107,9 @@ class ModManager {
         else {
             //We have a version, now we need to determine if there is an update or not.
             const version = await this.source_manager.GetLatestVersionNumber();
+
+            const versionDisplay = await this.source_manager.GetDisplayVersionNumber();
+            this.currentModVersionToDisplay = versionDisplay;
 
             this.currentModState = "INSTALLED";
             console.log("106 - MOD STATE: " + this.currentModState);
@@ -408,12 +416,13 @@ class ModManager {
         //Set the current version of the mod in the config.
 
         const versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-        //If we didnt update the version of an exstisting object. Add it.
+        //If we didnt update the version of an existing object. Add it.
         if (typeof(collectionVersion) != "undefined") {
             if (!versionUpdated) {
                 Main.config.current_mod_versions.push({
                     name: this.currentModData.name,
                     version: this.currentModVersionRemote,
+                    versionDisplay: this.currentModVersionToDisplay,
                     collectionversion: collectionVersion
                 });
             }
@@ -421,7 +430,8 @@ class ModManager {
         else if (!versionUpdated) {
             Main.config.current_mod_versions.push({
                 name: this.currentModData.name,
-                version: this.currentModVersionRemote
+                version: this.currentModVersionRemote,
+                versionDisplay: this.currentModVersionToDisplay
             });
         }
 
@@ -601,13 +611,15 @@ class ModManager {
                 break;
             }
         }
-        //Return the version if it was there.
+        // Return the whole mod info if it was there so we can
+        // select the individual data required in the renderer.
         if (toReturn != null) {
-            return toReturn.version;
+            return toReturn;
         } else {
             return null;
         }
     }
+
     ///Only use the argument if using collections
     public static GetRealInstallPath() {
 
@@ -989,8 +1001,8 @@ function DownloadFile(_url: string, progressFunc: any, responseHeadersFunc: any,
 
                             resolve(new DownloadedFile(buf, filename));
                         }
-                        else{
-                            log.log("File download was cancled by the user successfully.");
+                        else {
+                            log.log("File download was canceled by the user successfully.");
                         }
                     });
                 }
