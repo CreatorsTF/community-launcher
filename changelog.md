@@ -1,3 +1,9 @@
+## Version 0.2.8 - (ALPHA)
+### 08/09/2021 - 19:45 (GMT)
+- Changed icons to use the new logo
+- Fixed a visual bug on collection version mods *(currently only mastercomfig)* not showing the correct version installed
+- GitHub mods now display their respective release version number instead of the launcher's automatically generated number
+
 ## Version 0.2.7 - (ALPHA)
 ### 21/08/2021 - 16:33 (GMT)
 - Fixed a bug that led to the config file not being created on fresh installs or when it's deleted.
