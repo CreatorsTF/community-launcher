@@ -9,8 +9,8 @@ import Utilities from "./utilities";
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
 const modListURLs = [
-    "https://fastdl.creators.tf/launcher/mods.json",
-    "https://raw.githubusercontent.com/CreatorsTF/Creators.TF-Community-Launcher/master/internal/mods.json"
+    "https://raw.githubusercontent.com/CreatorsTF/Creators.TF-Community-Launcher/master/internal/mods.json",
+    "https://fastdl.creators.tf/launcher/mods.json"
 ];
 
 const localModListName = "mods.json";
@@ -259,10 +259,10 @@ class ConfigType {
     current_mod_versions: ModVersion[]
 }
 
-
 class ModVersion {
     name: string;
     version: number;
+    versionDisplay?: string;
     collectionversion?: string;
 }
 

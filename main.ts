@@ -276,17 +276,18 @@ ipcMain.on("Open-External-Game", async () => {
     }
 });
 
+// We can now access everything we need from ModVersion[] here
 ipcMain.on("GetCurrentModVersion", async (event) => {
-    let version: string;
+    let mod: string;
     try {
-        version = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
-        if (version == null) {
-            version = "";
+        mod = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
+        if (mod == null) {
+            mod = "";
         }
     } catch {
-        version = "";
+        mod = "";
     }
-    event.reply("GetCurrentModVersion-Reply", version);
+    event.reply("GetCurrentModVersion-Reply", mod);
 });
 
 ipcMain.on("Remove-Mod", async () => {

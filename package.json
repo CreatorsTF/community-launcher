@@ -38,7 +38,7 @@
     "electron-builder": "22.9.1",
     "eslint": "^7.31.0",
     "sass": "^1.32.12",
-    "typescript": "^4.2.4"
+    "typescript": "^4.4.2"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",

@@ -1,6 +1,9 @@
 node_modules
 dist
 build
+electron
+public
+src
 .vs
 .vscode
 *.code-workspace
