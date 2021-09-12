@@ -9,11 +9,10 @@ import ServerListPage from "./serverlist-page/serverlistpage";
 import mod_manager from "./modules/mod_manager";
 import Utilities from "./modules/utilities";
 import { ModListLoader, ModList } from "./modules/remote_file_loader/mod_list_loader";
-const _config = require("./modules/config");
 import log from "electron-log";
 import QuickPlayConfigLoader from "./modules/remote_file_loader/quickplay_config_loader";
 import Quickplay from "./modules/api/quickplay";
-import Config from "./modules/config";
+import Config, { ConfigFileModVersion } from "./modules/config";
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
@@ -284,14 +283,11 @@ ipcMain.on("Open-External-Game", async () => {
 
 // We can now access everything we need from ModVersion[] here
 ipcMain.on("GetCurrentModVersion", async (event) => {
-    let mod: string;
+    let mod: ConfigFileModVersion;
     try {
         mod = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
-        if (mod == null) {
-            mod = "";
-        }
     } catch {
-        mod = "";
+        mod = null;
     }
     event.reply("GetCurrentModVersion-Reply", mod);
 });

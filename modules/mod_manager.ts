@@ -10,7 +10,7 @@ import log from "electron-log";
 import ProgressBar from "electron-progressbar";
 import FileWriter from "./filewriter";
 import FsExtensions from "./fs_extensions";
-import config from "./config";
+import config, { ConfigFileModVersion } from "./config";
 import filemanager from "./file_manager";
 import GithubSource from "./mod_sources/github_source";
 import GithubCollectionSource from "./mod_sources/github_collection_source";
@@ -66,7 +66,7 @@ class ModManager {
     public static async ChangeCurrentMod(name: string){
         //Get this mods data and store it for use.
         this.currentModData = this.GetModDataByName(name);
-        this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
+        this.currentModVersion = this.GetCurrentModVersionFromConfig(name).version;
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
 
@@ -603,8 +603,8 @@ class ModManager {
     }
 
     //Find the current version of the mod given by name that we have in our config. No version means it is not installed.
-    public static GetCurrentModVersionFromConfig(name: string) {
-        let toReturn = null;
+    public static GetCurrentModVersionFromConfig(name: string): ConfigFileModVersion {
+        let toReturn: ConfigFileModVersion;
         for (let i = 0; i < Config.config.current_mod_versions.length; i++) {
             const element = Config.config.current_mod_versions[i];
             if (element.name && element.name == name) {

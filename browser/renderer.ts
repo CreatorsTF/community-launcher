@@ -1,3 +1,18 @@
+import type { IpcRenderer } from "electron";
+import type {ConfigFileModVersion} from "../modules/config";
+import type {ElectronLog} from "electron-log";
+
+declare global {
+    interface Window {
+        ipcRenderer?: typeof ipcRenderer;
+        log?: ElectronLog;
+        OnClick_Mod?: (any) => void;
+    }
+}
+
+const ipcRenderer = <IpcRenderer>window.ipcRenderer;
+const log = <ElectronLog>window.log;
+
 const content = document.getElementById("content");
 const contentDummy = document.getElementById("content-dummy");
 const titleImage = document.getElementById("title-image") as HTMLImageElement;
@@ -29,11 +44,11 @@ const serverListButton = document.getElementById("server-list") as HTMLButtonEle
 
 let hasClickedInstallButton = false;
 
-website.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "website"); };
-github.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "github"); };
-twitter.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "twitter"); };
-instagram.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "instagram"); };
-discord.onclick = () => { window.ipcRenderer.send("Visit-Mod-Social", "discord"); };
+website.onclick = () => { ipcRenderer.send("Visit-Mod-Social", "website"); };
+github.onclick = () => { ipcRenderer.send("Visit-Mod-Social", "github"); };
+twitter.onclick = () => { ipcRenderer.send("Visit-Mod-Social", "twitter"); };
+instagram.onclick = () => { ipcRenderer.send("Visit-Mod-Social", "instagram"); };
+discord.onclick = () => { ipcRenderer.send("Visit-Mod-Social", "discord"); };
 
 document.onload = () => {
     installButton.disabled = true;
@@ -41,12 +56,12 @@ document.onload = () => {
 
 const defaultBackgroundImage = "images/backgrounds/servers.jpg";
 
-function OnClick_Mod(data) {
+window.OnClick_Mod = (data) => {
     if (hasClickedInstallButton) {
         return;
     }
 
-    window.log.info("Mod entry clicked: " + data.name);
+    log.info("Mod entry clicked: " + data.name);
 
     let bgImg: string;
 
@@ -96,8 +111,8 @@ function OnClick_Mod(data) {
 
     //Get the current state of this mod to set the name of the button correctly.
     //To do that, we tell the main process to set the current mod and set that up.
-    window.ipcRenderer.send("SetCurrentMod", data.name);
-    window.ipcRenderer.send("GetCurrentModVersion", "");
+    ipcRenderer.send("SetCurrentMod", data.name);
+    ipcRenderer.send("GetCurrentModVersion", "");
     collectionSelect.disabled = true;
     
     if (data.install.type == "githubcollection" || data.install.type == "jsonlistcollection") {
@@ -124,72 +139,72 @@ function OnClick_Mod(data) {
         collectionMenu.style.display = "none";
     }
     hasClickedInstallButton = true;
-}
+};
 
 updateButton_Download.onclick = (downloadUpdate) => {
-    window.ipcRenderer.send("download_update");
-    window.log.info("User chose to download the update. Downloading it." + downloadUpdate);
+    ipcRenderer.send("download_update");
+    log.info("User chose to download the update. Downloading it." + downloadUpdate);
 };
 
 updateButton_Update.onclick = (closeProgramAndUpdate) => {
-    window.ipcRenderer.send("restart_app");
-    window.log.info("User chose to restart the launcher to update." + closeProgramAndUpdate);
+    ipcRenderer.send("restart_app");
+    log.info("User chose to restart the launcher to update." + closeProgramAndUpdate);
 };
 
-window.ipcRenderer.on("update_not_available", () => {
-    window.ipcRenderer.removeAllListeners("update_not_available");
+ipcRenderer.on("update_not_available", () => {
+    ipcRenderer.removeAllListeners("update_not_available");
     updateButton_Updated.classList.remove("hidden");
-    window.log.info("No update available... Sad!");
+    log.info("No update available... Sad!");
 });
 
-window.ipcRenderer.on("update_available", () => {
-    window.ipcRenderer.removeAllListeners("update_available");
+ipcRenderer.on("update_available", () => {
+    ipcRenderer.removeAllListeners("update_available");
     updateButton_Updated.remove();
     updateButton_Download.classList.remove("hidden");
-    window.log.info("An update is available. Waiting for user's input to actually download it.");
+    log.info("An update is available. Waiting for user's input to actually download it.");
 });
 
-window.ipcRenderer.on("update_downloading", () => {
-    window.ipcRenderer.removeAllListeners("update_downloading");
+ipcRenderer.on("update_downloading", () => {
+    ipcRenderer.removeAllListeners("update_downloading");
     updateButton_Download.remove();
     updateButton_Downloading.classList.remove("hidden");
-    window.log.info("Downloading update...");
+    log.info("Downloading update...");
 });
 
-window.ipcRenderer.on("update_downloaded", () => {
-    window.ipcRenderer.removeAllListeners("update_downloaded");
+ipcRenderer.on("update_downloaded", () => {
+    ipcRenderer.removeAllListeners("update_downloaded");
     updateButton_Downloading.remove();
     updateButton_Update.classList.remove("hidden");
-    window.log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
+    log.info("The update was downloaded and will be installed on restart. Waiting for user's input.");
 });
 
-window.ipcRenderer.on("update_error", () => {
-    window.ipcRenderer.removeAllListeners("update_error");
+ipcRenderer.on("update_error", () => {
+    ipcRenderer.removeAllListeners("update_error");
     updateButton_Fail.classList.remove("hidden");
-    window.log.info("An error occurred while trying to get update info");
+    log.info("An error occurred while trying to get update info");
 });
 
 settingsButton.addEventListener("click", () => {
-    window.ipcRenderer.send("SettingsWindow", "");
+    ipcRenderer.send("SettingsWindow", "");
 });
 patchnotesButton.addEventListener("click", () => {
-    window.ipcRenderer.send("PatchNotesWindow", "");
+    ipcRenderer.send("PatchNotesWindow", "");
 });
 serverListButton.addEventListener("click", () => {
-    window.ipcRenderer.send("ServerListWindow", "");
+    ipcRenderer.send("ServerListWindow", "");
 });
 
 installButton.addEventListener("click", () => {
     //Do NOT use e
     installButton.innerText = "STARTING...";
     installButton.disabled = true;
-    window.ipcRenderer.send("install-play-click", collectionSelect.value);
-    window.ipcRenderer.send("Open-External-Game", "gameId");
+    ipcRenderer.send("install-play-click", collectionSelect.value);
+    ipcRenderer.send("Open-External-Game", "gameId");
 });
 
 // Disabling stuff based on if the mod is installed or not
-window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
-    if (arg != "" && arg != null) {
+ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg: ConfigFileModVersion) => {
+    if (arg != null) {
         modVersion.style.display = "block";
         modVersionText.innerText = "Mod version: " + arg.versionDisplay;
         configPresetText.innerText = "Config preset: " + arg.collectionversion;
@@ -202,7 +217,7 @@ window.ipcRenderer.on("GetCurrentModVersion-Reply", (event, arg) => {
     }
 });
 
-window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
+ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     hasClickedInstallButton = false;
     arg = arg.toLowerCase();
     installButton.innerText = arg.toUpperCase();
@@ -243,10 +258,10 @@ window.ipcRenderer.on("InstallButtonName-Reply", (event, arg) => {
     }
 });
 
-window.ipcRenderer.on("FakeClickMod", (event, moddata) => {
-    OnClick_Mod(moddata);
+ipcRenderer.on("FakeClickMod", (event, moddata) => {
+    window.OnClick_Mod(moddata);
 });
 
 removeButton.addEventListener("click", (e) => {
-    window.ipcRenderer.send("Remove-Mod", "");
+    ipcRenderer.send("Remove-Mod", "");
 });

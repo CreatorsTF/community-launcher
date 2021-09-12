@@ -8,11 +8,26 @@ import FsExtensions from "./fs_extensions";
 //Home made regex to find a path. May not be perfect.
 const pathStringRegex = new RegExp(/("(\S+[:]+[\S]+)")/, "g");
 
+class ConfigFile
+{
+    steam_directory: string;
+    tf2_directory: string;
+    current_mod_versions: Array<ConfigFileModVersion>;
+}
+
+class ConfigFileModVersion
+{
+    name: string;
+    version: number;
+    versionDisplay?: string;
+    collectionversion?: string;
+}
+
 class Config {
-    public static config: any | null
+    public static config: ConfigFile | null
 
     //Save the config given.
-    public static async SaveConfig(_config: any): Promise<any> {
+    public static async SaveConfig(_config: ConfigFile): Promise<void> {
         const filePathFull = await this.GetConfigFullPath();
 
         await promises.writeFile(filePathFull, JSON.stringify(_config), { encoding: "utf8" });
@@ -20,7 +35,7 @@ class Config {
     }
 
     //Get the config from disk.
-    public static async GetConfig(): Promise<any> {
+    public static async GetConfig(): Promise<ConfigFile> {
         //If config is null, load it.
         const filePathFull = await this.GetConfigFullPath();
 
@@ -140,7 +155,7 @@ class Config {
             //Linux solution is untested
             const homedir = process.env.HOME;
             const steamPaths = [".steam/steam", ".local/share/steam"];
-            let existingPath = await getExistingPath(steamPaths);
+            const existingPath = await getExistingPath(steamPaths);
             basedir = path.join(homedir, existingPath);
         }
         else {
@@ -151,3 +166,4 @@ class Config {
 }
 
 export default Config;
+export {Config, ConfigFile, ConfigFileModVersion};
