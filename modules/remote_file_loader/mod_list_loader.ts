@@ -12,13 +12,13 @@ class ModListLoader extends RemoteLoader<ModList>{
     static instance = new ModListLoader();
 
     remoteUrls = [
-        "https://raw.githubusercontent.com/ampersoftware/Creators.TF-Community-Launcher/master/internal/mods.json",
+        "https://raw.githubusercontent.com/CreatorsTF/Creators.TF-Community-Launcher/master/internal/mods.json",
         "https://fastdl.creators.tf/launcher/mods.json"
     ];
     localFileName = "mods.json";
     
     public InjectDevMods() {
-        const devModsPath = path.join(__dirname, "internal", "devmods.json");
+        const devModsPath = path.join(__dirname, "../..", "internal", "devmods.json");
         this.localFile.mods = this.localFile.mods.concat(JSON.parse(fs.readFileSync(devModsPath, "utf-8")).mods);
     }
 

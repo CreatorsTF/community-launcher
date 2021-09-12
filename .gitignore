@@ -15,5 +15,3 @@ dev-app-update.yml
 *.css
 # We use TypeScript... Sometimes
 *.js
-!settings-page/settingspage-preload.js
-!serverlist-page/serverlistpage-preload.js

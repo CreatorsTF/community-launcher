@@ -3,8 +3,9 @@ import fs from "fs";
 import log from "electron-log";
 import isDev from "electron-is-dev";
 import Main from "../../main";
-import { Install } from "../mod_list_loader";
+import { Install } from "../remote_file_loader/mod_list_loader";
 import Utilities from "../utilities";
+import Config from "../../modules/config";
 
 abstract class ModInstallSource {
     data: Install[];
@@ -37,7 +38,7 @@ abstract class ModInstallSource {
                     "sniper.cfg", "spy.cfg"
                 ];
                 //Move cfgs
-                const cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
+                const cfgpath = path.join(Config.config.tf2_directory, "tf", "cfg");
                 const usercfgpath = path.join(cfgpath, "user");
                 log.log("cfg path is: " + cfgpath);
                 log.log("user cfg path is: \"" + usercfgpath + "\"");
@@ -96,7 +97,7 @@ abstract class ModInstallSource {
                     "sniper.cfg", "spy.cfg"
                 ];
                 //Move cfgs
-                const cfgpath = path.join(Main.config.tf2_directory, "tf", "cfg");
+                const cfgpath = path.join(Config.config.tf2_directory, "tf", "cfg");
                 const usercfgpath = path.join(cfgpath, "user");
                 log.log("cfg path is: " + cfgpath);
                 log.log("user cfg path is: \"" + usercfgpath + "\"");

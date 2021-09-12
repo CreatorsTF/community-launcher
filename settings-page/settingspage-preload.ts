@@ -1,6 +1,5 @@
-const { ipcRenderer } = require("electron");
-
-const log = require("electron-log");
+import { ipcRenderer } from "electron";
+import log from "electron-log";
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "settingspage.log";
@@ -38,7 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
         copyCfgContentsToClipboard();
     }
     btn_reload.onclick = () => {
-        const steamdir = document.getElementById("steam-directory").value;
+        const steamdir = (<HTMLInputElement>document.getElementById("steam-directory")).value;
         ipcRenderer.send("config-reload-tf2directory", steamdir);
     };
     
@@ -49,15 +48,15 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ipcRenderer.on("GetConfig-Reply", (event, config_arg) => {
     log.info("Populating settings values");
-    document.getElementById("tf2-directory").value = config_arg.tf2_directory;
-    document.getElementById("steam-directory").value = config_arg.steam_directory;
-    document.getElementById("config-contents").value = JSON.stringify(config_arg);
+    (<HTMLInputElement>document.getElementById("tf2-directory")).value = config_arg.tf2_directory;
+    (<HTMLInputElement>document.getElementById("steam-directory")).value = config_arg.steam_directory;
+    (<HTMLInputElement>document.getElementById("config-contents")).value = JSON.stringify(config_arg);
 });
 
 ipcRenderer.on("GetNewSettings", (event, arg) => {
     log.info("GetNewSettings event received. Sending data back");
-    arg.tf2_directory = document.getElementById("tf2-directory").value;
-    arg.steam_directory = document.getElementById("steam-directory").value;
+    arg.tf2_directory = (<HTMLInputElement>document.getElementById("tf2-directory")).value;
+    arg.steam_directory = (<HTMLInputElement>document.getElementById("steam-directory")).value;
     ipcRenderer.send("GetNewSettings-Reply", arg);
 });
 
@@ -66,6 +65,6 @@ ipcRenderer.on("GetCurrentVersion-Reply", async (event, version) => {
 });
 
 function copyCfgContentsToClipboard() {
-    document.getElementById("config-contents").select();
+    (<HTMLTextAreaElement>document.getElementById("config-contents")).select();
     document.execCommand("copy");
 }
