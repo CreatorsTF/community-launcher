@@ -1,22 +1,19 @@
 node_modules
 dist
 build
+electron
+public
+src
 .vs
+.vscode
 *.code-workspace
 build.js
-build.bat
-*.map
+.bat
 dev-app-update.yml
-
-# list of .js files that are just compiled versions of .ts
-main.js
-
-serverlist-page/serverlistpage.js
-
-modules/mod_list_loader.js
-modules/mod_manager.js
-modules/utilities.js
-
-modules/mod_sources/github_source.js
-modules/mod_sources/jsonlist_source.js
-modules/mod_sources/mod_source_base.js
+*.map
+# We use SASS
+*.css
+# We use TypeScript... Sometimes
+*.js
+!settings-page/settingspage-preload.js
+!serverlist-page/serverlistpage-preload.js

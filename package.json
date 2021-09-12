@@ -1,14 +1,14 @@
 {
   "name": "creators-tf-launcher",
-  "version": "0.2.3",
+  "version": "0.2.8",
   "description": "An easier way to install, update and play TF2 content.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "compileAndStart": "npm run compile && electron .",
-    "deploy": "electron-builder build --win --x64 --ia32 --publish always",
-    "buildFix": "node buildfix.js",
-    "compile": "npx tsc --project browser/tsconfig-browser.json && npx tsc --project tsconfig.json",
+    "lint": "eslint **/*",
+    "compileTs": "npx tsc --project browser/tsconfig-browser.json && npx tsc --project tsconfig.json",
+    "compileSass": "sass styles/:styles/",
+    "compileAndStart": "npm run compileTs && npm run compileSass && electron .",
     "buildWindows": "electron-builder build --win --x64 --ia32 --publish never",
     "buildLinux": "electron-builder build --linux AppImage deb tar.gz --publish never"
   },
@@ -24,13 +24,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ampersoftware/Creators.TF-Community-Launcher.git"
+    "url": "https://github.com/CreatorsTF/Creators.TF-Community-Launcher.git"
   },
   "license": "MIT",
   "devDependencies": {
-    "electron": "12.0.5",
-    "electron-builder": "22.10.5",
-    "typescript": "^4.2.4"
+    "@types/electron-progressbar": "^1.2.2",
+    "@types/marked": "^2.0.4",
+    "@types/string-format": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "electron": "13.1.7",
+    "electron-builder": "22.9.1",
+    "eslint": "^7.31.0",
+    "sass": "^1.32.12",
+    "typescript": "^4.4.2"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",
@@ -43,6 +50,7 @@
     "flag-icon-css": "^3.5.0",
     "jszip": "^3.6.0",
     "marked": "^2.0.3",
+    "semver": "^7.3.5",
     "string-format": "^2.0.0"
   }
 }

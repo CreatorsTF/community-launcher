@@ -3,7 +3,7 @@ import {CreateMatchCommand, CreateMatchCommandParams, CreateMatchmakingQueryResp
 import QuickPlayConfigLoader from "../remote_file_loader/quickplay_config_loader";
 import { ipcMain, shell } from "electron";
 import ElectronLog from "electron-log";
-import { Utilities } from "../../modules/utilities";
+import Utilities from "../../modules/utilities";
 import electronIsDev from "electron-is-dev";
 import { IpcMainEvent } from "electron/main";
 import { MatchmakingStatusServer, MatchStatusCommand, MatchStatusResponse } from "./quickplay/MatchStatusCommand";
@@ -100,4 +100,4 @@ class Quickplay {
     
 }
 
-export default Quickplay
+export default Quickplay;

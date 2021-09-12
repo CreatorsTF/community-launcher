@@ -1,3 +1,33 @@
+## Version 0.2.8 - (ALPHA)
+### 08/09/2021 - 19:45 (GMT)
+- Changed icons to use the new logo
+- Fixed a visual bug on collection version mods *(currently only mastercomfig)* not showing the correct version installed
+- GitHub mods now display their respective release version number instead of the launcher's automatically generated number
+
+## Version 0.2.7 - (ALPHA)
+### 21/08/2021 - 16:33 (GMT)
+- Fixed a bug that led to the config file not being created on fresh installs or when it's deleted.
+
+## Version 0.2.6 - (ALPHA)
+### 19/08/2021 - 21:51 (GMT)
+- Added the ability to launch a game when a mod is installed.
+- Fixed a bug that broke mod updates.
+- Style tweaks.
+
+## Version 0.2.5 - (ALPHA)
+### 16/07/2021 - 18:49 (GMT)
+- Fixed mod install error relating to the progress bar.
+- Updated error messages for the server page to include the Status twitter handle.
+- Fixed more detailed errors not properly being displayed from mod installation.
+
+## Version 0.2.4 - (ALPHA)
+### 14/07/2021 - 21:35 (GMT)
+- Added mastercomfig support to the launcher (thanks BernardoGomesNegri!)
+- Servers that are down for more than 1h will now be hidden from the server list
+- Added new method for ZIP extraction
+- Added SCSS support
+- A red button is now displayed when the launcher's auto-update information can't be received due to either internet or GitHub problems.
+
 ## Version 0.2.3 - (ALPHA)
 ### 26/04/2021 - 20:45 (GMT)
 - Linux users are now able to get auto updates for the launcher by downloading the AppImage format, removing the need to manually download new versions.

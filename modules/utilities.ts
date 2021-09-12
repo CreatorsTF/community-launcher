@@ -1,25 +1,23 @@
-import { dialog } from "electron";
+import { dialog, app } from "electron";
 import fs from "fs";
 import process from "process";
 import path from "path";
-const ProgressBar = require('electron-progressbar');
-const {app} = require("electron");
-import ElectronLog from "electron-log";
+import ProgressBar from "electron-progressbar";
+import log from "electron-log";
+import { Install } from "./remote_file_loader/mod_list_loader";
 
 const loadingTextStyle = {
     color: "ghostwhite"
-}
+};
 
 class Utilities {
-
     /**
      * Create an error dialog and print the error to the log files.
      * @param error The error object/message.
      * @param title Title for the error dialog.
      */
-    static ErrorDialog(error : any, title : string){
-        //@ts-ignore
-        ElectronLog.error(`Error Dialog shown: ${title} : ${error.toString()}`);
+    public static ErrorDialog(error: any, title: string): any {
+        log.error(`Error Dialog shown: ${title} : ${error.toString()}`);
         //@ts-ignore
         dialog.showMessageBox(global.mainWindow, {
             type: "error",
@@ -32,23 +30,24 @@ class Utilities {
     /**
      * Get the data folder dynamically based on the platform.
      */
-    static GetDataFolder() : string {
-        let _path = (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
+    public static GetDataFolder(): string {
+        const _path = (process.env.APPDATA || (process.platform == "darwin" ? process.env.HOME + "/Library/Preferences" : process.env.HOME + "/.local/share")) + "/creators-tf-launcher";
         
-        if(!fs.existsSync(_path)) fs.mkdirSync(_path);
+        if (!fs.existsSync(_path)) {
+            fs.mkdirSync(_path);
+        }
 
         return _path;
     }
 
-    static GetLogsFolder() : string {
-        return ElectronLog.transports.file.getFile().path;
+    static GetLogsFolder(): string {
+        return log.transports.file.getFile().path;
     }
 
-
-    static GetNewLoadingPopup(title : string, mainWindow : any, onCanceled: () => void) : any {
-        var progressBar = new ProgressBar({
+    static GetNewLoadingPopup(title: string, mainWindow: any, onCanceled: () => void): any {
+        const progressBar = new ProgressBar({
             text: title,
-            detail: '...',
+            detail: "...",
             browserWindow: {
                 webPreferences: {
                     nodeIntegration: true
@@ -66,18 +65,17 @@ class Utilities {
             }
         }, app);
         
-        progressBar
-        .on('aborted', onCanceled);
+        progressBar.on("aborted", onCanceled);
 
         return progressBar;
     }
 
-    static currentLauncherVersion = null;
+    public static currentLauncherVersion: string;
 
-    static GetCurrentVersion() {
+    public static GetCurrentVersion(): string {
         if (this.currentLauncherVersion == null) {
             try {
-                let packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));
+                const packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));
                 this.currentLauncherVersion = JSON.parse(packageJson.toString()).version;
             }
             catch {
@@ -86,6 +84,27 @@ class Utilities {
         }
         return this.currentLauncherVersion;
     }
+
+    //Find which element in an Install[] has the desiredCollectionString as an argument
+    public static FindCollectionNumber(Installs: Install[], desiredCollectionString: string): number {
+    
+        if (typeof(desiredCollectionString) == "undefined") {
+            return 0;
+        }
+
+        if(Installs.length < 2) {
+            //It has a single item
+            return 0;
+        }
+        
+        for (let i = 0; i < Installs.length; i++) {
+            const element = Installs[i];
+            if (element.itemname == desiredCollectionString) {
+                //We've found it!
+                return i;
+            }
+        }
+    }
 }
 
-export {Utilities};
+export default Utilities;

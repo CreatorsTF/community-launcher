@@ -1,20 +1,21 @@
-html, body { height: 100%; }
+@use "general.scss" as *;
 
 body {
-    background-color: #111;
-    background-image: url(../images/backgrounds/servers.jpg);
+    background-color: $black-2;
+    background-image: url($images + "/backgrounds/servers.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-blend-mode: multiply;
     user-select: none;
     overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 h1, h2, p {
     margin: 0;
     text-align: center;
-    color: #DDD;
+    color: $white-2;
 }
 
 h1 {
@@ -28,29 +29,28 @@ h1 {
     font-family: Roboto Black, Arial, sans-serif;
     font-size: 40px;
     padding: 100px 0px;
-    color: #EEE;
+    color: $white-2;
 }
 
-.error{
-    padding-top: 20px;
-    margin: 0 auto;
+.error {
+    margin: 5vh auto;
     display: none;
-}
+    flex-direction: column;
 
-.error p, .error p a{
-    font-size: 20px;
-    color: lightcoral;
-    text-align: center;
-    font-family: Roboto Black, Arial, sans-serif;
-    transition: 0.2s;
-}
+    p, i, a {
+        font-size: 3vh;
+        color: lightcoral;
+        text-align: center;
+        transition: 0.2s;
+    }
+    
+    a:hover {
+        color: lightskyblue;
+    }
 
-.error p a:hover {
-    color: lightskyblue;
-}
-
-.error p i {
-    font-size: 15px;
+    i {
+        font-size: 2vh;
+    }
 }
 
 #refreshHolder {
@@ -62,36 +62,37 @@ h1 {
     border-radius: 10vh;
     padding: 1vh;
     transition: 0.2s;
-}
 
-#refreshButton:hover {
-    transform: rotate(180deg);
-}
+    &:hover {
+        transform: rotate(180deg);
+    }
 
-#refreshButton i {
-    font-size: 5vh;
+    i {
+        font-size: 5vh;
+        color: $blue;
+    }
 }
 
 .serverRegions {
     margin: 2vh auto;
-    font-size: 3.5vh;
-    color: #EEE;
-    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 3.2vh;
+    color: $white-2;
+    font-family: Open Sans Light, Arial, sans-serif;
     cursor: pointer;
     display: table;
-}
-
-.serverRegions:first-child {
-    margin-top: 0px;
-}
-
-.serverRegions i {
-    margin: 0px 1vh;
-    border-radius: 0.5vh;
-}
-
-.serverRegions i:last-child {
-    margin: 0px;
+    
+    &:first-child {
+        margin-top: 0px;
+    }
+    
+    i {
+        margin: 0px 1vh;
+        border-radius: 0.5vh;
+        
+        &:last-child {
+            margin: 0px;
+        }
+    }
 }
 
 p {
@@ -100,38 +101,24 @@ p {
     padding: 0px 1vh;
 }
 
-button {
-    padding: 1.25vh;
-    cursor: pointer;
-    transition: 0.2s;
-    border: 0;
-    outline: 0;
-    font-family: Roboto Light, Arial, sans-serif;
-    font-size: 2.3vh;
-}
-
-button:hover {
-    background-color: #CCC;
-}
-
 table {
     margin: 0 auto;
     width: 90%;
 }
 
 tr {
-    background-color: #161616;
+    background-color: $black-2;
     width: 100%;
     text-align: center;
     transition: 0.2s;
-}
-
-tr:nth-child(even) {
-    background-color: #292929;
-}
-
-tr:hover {
-    background-color: #454545;
+    
+    &:nth-child(even) {
+        background-color: $black-3;
+    }
+    
+    &:hover {
+        background-color: $dark-gray;
+    }
 }
 
 .id {
@@ -148,10 +135,10 @@ tr:hover {
 .map {
     width: 25%;
     position: relative;
-}
-
-.map:hover .mapCover {
-    opacity: 1;
+    
+    &:hover .mapCover {
+        opacity: 1;
+    }
 }
 
 .mapCover {
@@ -175,10 +162,17 @@ tr:hover {
 
 .connect {
     width: 14%;
-}
-
-.connect button {
-    width: 100%;
+    
+    button {
+        padding: 1.35vh;
+        font-family: Roboto Light, Arial, sans-serif;
+        font-size: 2.5vh;
+        width: 100%;
+        
+        &:hover {
+            background-color: $white-2;
+        }
+    }
 }
 
 .hb {
@@ -187,7 +181,7 @@ tr:hover {
     width: 10%;
     font-family: Roboto Thin, Arial, sans-serif;
     font-size: 15px;
-    color: #EEE;
+    color: $white-2;
     overflow: hidden;
     cursor: help;
 }
@@ -202,7 +196,3 @@ tr:hover {
 .link-mini {
     font-size: 3vh;
 }
-
-.down { color: red; }
-.up { color: green; }
-.blue { color: #6969FF; }

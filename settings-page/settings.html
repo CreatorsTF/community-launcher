@@ -4,19 +4,17 @@
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; base-uri 'self'; form-action 'self'; font-src 'self';">
         <title>Creators.TF Launcher - Alpha Version - Settings</title>
         <link rel="stylesheet" href="../node_modules/@mdi/font/css/materialdesignicons.min.css">
-        <link rel="stylesheet" href="../fonts/fonts.css">
-        <link rel="stylesheet" href="../generalstyle.css">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../styles/settings.css">
     </head>
     <body>
         <span id="coglabel"><i class="mdi mdi-cogs"></i></span>
         <span class="inputLabelRow">Steam Directory <small>[Not required]</small></span>
         <div class="inputRow">
-            <input spellcheck="false" id="steam_directory" class="inputColumn" type="text">
+            <input spellcheck="false" id="steam-directory" class="inputColumn" type="text">
         </div>
         <span class="inputLabelRow">TF2 Directory <small>[Required]</small></span>
         <div class="inputRow">
-            <input spellcheck="false" id="tf2_directory" class="inputColumn" type="text">
+            <input spellcheck="false" id="tf2-directory" class="inputColumn" type="text">
             <button id="reload-button" class="button" title="Click this button if you are having any problems linking/finding your TF2 directory.">
                 <i class="mdi mdi-folder-sync"></i>
             </button>
@@ -37,6 +35,5 @@
         <div id="version-box">
             Getting launcher version...
         </div>
-        <script src="../consolewarning.js"></script>
       </body>
 </html>
