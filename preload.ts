@@ -5,9 +5,9 @@ import log from "electron-log";
 
 declare global {
     interface Window {
-        ipcRenderer?: typeof ipcRenderer;
-        log?: typeof log;
-        OnClick_Mod?: (any) => void;
+        ipcRenderer: typeof ipcRenderer;
+        log: typeof log;
+        OnClick_Mod: (any) => void;
     }
 }
 window.ipcRenderer = ipcRenderer;

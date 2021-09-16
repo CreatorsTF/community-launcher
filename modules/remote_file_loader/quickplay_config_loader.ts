@@ -1,4 +1,4 @@
-import RemoteLoader, { RemoteFile } from "./remote_file_loader";
+import { RemoteLoader, RemoteFile } from "./remote_file_loader";
 
 class QuickPlayConfigLoader extends RemoteLoader<QuickPlayConfig>
 {

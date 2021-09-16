@@ -1,6 +1,6 @@
 import { promises } from "fs";
 import FsExtensions from "./fs_extensions";
-const process = global.process;
+import process from "process";
 
 class FileManager {
     public static fileListPath: string | null

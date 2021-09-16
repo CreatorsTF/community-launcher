@@ -1,7 +1,7 @@
 import axios, { Method } from "axios";
-import { CreatorsAPICommand} from "./CreatorsAPICommand";
-import electronIsDev from "electron-is-dev";
-import ElectronLog from "electron-log";
+import { CreatorsAPICommand } from "./CreatorsAPICommand";
+import isDev from "electron-is-dev";
+import log from "electron-log";
 
 const apiEndpoint = "https://creators.tf/api/";
 
@@ -24,9 +24,9 @@ class CreatorsAPIDispatcher
         }
         catch (e) {
             if(command.OnFailure != null && command.OnFailure != undefined){
-                if(electronIsDev){
+                if(isDev){
                     let error = <Error>e;
-                    ElectronLog.error(error.stack);
+                    log.error(error.stack);
                 }
                 command.OnFailure(e);
             }
@@ -50,9 +50,9 @@ class CreatorsAPIDispatcher
             return <T>resp.data;
         }
         catch (e) {
-            if(electronIsDev){
+            if(isDev){
                 let error = <Error>e;
-                ElectronLog.error(error.stack);
+                log.error(error.stack);
             }
             throw e;
         }

@@ -5,7 +5,7 @@ import isDev from "electron-is-dev";
 import Main from "../../main";
 import { Install } from "../remote_file_loader/mod_list_loader";
 import Utilities from "../utilities";
-import Config from "../../modules/config";
+import { Config } from "../../modules/config";
 
 abstract class ModInstallSource {
     data: Install[];

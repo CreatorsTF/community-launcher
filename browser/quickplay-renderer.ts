@@ -1,13 +1,11 @@
 import type { IpcRenderer } from "electron";
-import { create, ElectronLog } from "electron-log";
+import type { ElectronLog } from "electron-log";
 import type { QuickPlayConfig, QuickPlayGameType } from "../modules/remote_file_loader/quickplay_config_loader";
 import type { CreateMatchCommandParams } from "../modules/api/quickplay/CreateMatchCommand";
 import type { MatchStatusResponse, MatchmakingStatusServer } from "../modules/api/quickplay/MatchStatusCommand";
 
-var ipcRenderer: IpcRenderer;
-var log: ElectronLog;
-//@ts-ignore
-ipcRenderer = window.ipcRenderer; log = window.log;
+const ipcRenderer = <IpcRenderer>window.ipcRenderer;
+const log = <ElectronLog>window.log;
 
 const mapThumb = 'https://creators.tf/api/mapthumb?map=';
 const notSelectedOpacity = "0.5";

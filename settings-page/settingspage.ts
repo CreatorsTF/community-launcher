@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain, shell, dialog } from "electron";
-import Config from "../modules/config";
+import { Config } from "../modules/config";
 import path from "path";
 import { ModListLoader } from "../modules/remote_file_loader/mod_list_loader";
 import Utilities from "../modules/utilities";

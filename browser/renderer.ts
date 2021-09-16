@@ -1,12 +1,12 @@
 import type { IpcRenderer } from "electron";
-import type {ConfigFileModVersion} from "../modules/config";
-import type {ElectronLog} from "electron-log";
+import type { ElectronLog } from "electron-log";
+import type { ConfigFileModVersion } from "../modules/config";
 
 declare global {
     interface Window {
-        ipcRenderer?: typeof ipcRenderer;
-        log?: ElectronLog;
-        OnClick_Mod?: (any) => void;
+        ipcRenderer: typeof ipcRenderer;
+        log: ElectronLog;
+        OnClick_Mod: (any) => void;
     }
 }
 

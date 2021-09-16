@@ -2,7 +2,7 @@ import axios from "axios";
 import fs from "fs";
 import Utilities from "../utilities";
 import path from "path";
-import ElectronLog from "electron-log";
+import log from "electron-log";
 
 abstract class RemoteLoader <T extends RemoteFile>
 {
@@ -37,7 +37,7 @@ abstract class RemoteLoader <T extends RemoteFile>
     // Check if there is a newer mod list online.
     // Also checks if the internal version is newer than the local, written version.
     public async CheckForUpdates() : Promise<boolean> {
-        ElectronLog.log(`Checking for remote file updates for : ${this.localFileName}`);
+        log.log(`Checking for remote file updates for : ${this.localFileName}`);
 
         try{
             for(let i = 0; i < this.remoteUrls.length; i++){
@@ -60,7 +60,7 @@ abstract class RemoteLoader <T extends RemoteFile>
             }
 
             if(this.lastDownloaded != null && this.lastDownloaded.version != null){
-                ElectronLog.log(`Local mod list version: ${this.localFile.version}, Remote mod list version: ${this.lastDownloaded.version}.`);
+                log.log(`Local mod list version: ${this.localFile.version}, Remote mod list version: ${this.lastDownloaded.version}.`);
                 return this.localFile.version < this.lastDownloaded.version;
             }
         }
@@ -68,12 +68,12 @@ abstract class RemoteLoader <T extends RemoteFile>
             console.error("Failed to check for updates. " + error.toString());
             return false;
         }
-        ElectronLog.log("No mod list updates found.");
+        log.log("No mod list updates found.");
         return false;
     }
 
     private async TryGetRemoteFile(url : string) : Promise<T> {
-        ElectronLog.log("Trying to get file from: " + url);
+        log.log("Trying to get file from: " + url);
         try{
             const resp = await axios.get(url);
             if(resp.data.hasOwnProperty("version")){
@@ -84,7 +84,7 @@ abstract class RemoteLoader <T extends RemoteFile>
         }
         catch (error){
             //Json parsing failed soo reject.
-            ElectronLog.error(`Failed to get remote file at ${url}, error: ${error.toString()}`);
+            log.error(`Failed to get remote file at ${url}, error: ${error.toString()}`);
             throw error;
         }
     }
@@ -123,5 +123,4 @@ class RemoteFile
     version: number;
 }
 
-export default RemoteLoader
-export {RemoteFile}
+export { RemoteLoader, RemoteFile }

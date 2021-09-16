@@ -10,7 +10,7 @@ import log from "electron-log";
 import ProgressBar from "electron-progressbar";
 import FileWriter from "./filewriter";
 import FsExtensions from "./fs_extensions";
-import config, { ConfigFileModVersion } from "./config";
+import { Config, ConfigFileModVersion } from "./config";
 import filemanager from "./file_manager";
 import GithubSource from "./mod_sources/github_source";
 import GithubCollectionSource from "./mod_sources/github_collection_source";
@@ -18,7 +18,6 @@ import JsonListSource from "./mod_sources/jsonlist_source";
 import { Install, ModList, ModListEntry, ModListLoader } from "./remote_file_loader/mod_list_loader";
 import ModInstallSource from "./mod_sources/mod_source_base";
 import Utilities from "./utilities";
-import Config from "./config";
 
 const functionMap = new Map();
 
@@ -66,7 +65,7 @@ class ModManager {
     public static async ChangeCurrentMod(name: string){
         //Get this mods data and store it for use.
         this.currentModData = this.GetModDataByName(name);
-        this.currentModVersion = this.GetCurrentModVersionFromConfig(name).version;
+        this.currentModVersion = this.GetCurrentModVersionFromConfigV(name);
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
 
@@ -207,7 +206,7 @@ class ModManager {
                     //Do the update!
                     log.log("Starting update process...");
 
-                    const configObj = await config.GetConfig();
+                    const configObj = await Config.GetConfig();
                     const modList = configObj.current_mod_versions;
                     //Find the current mod version we want
                     let collectionVersionInstalled: string;
@@ -303,7 +302,7 @@ class ModManager {
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
                             //Save the config changes.
-                            await config.SaveConfig(Config.config);
+                            await Config.SaveConfig(Config.config);
 
                             this.FakeClickMod();
 
@@ -324,7 +323,7 @@ class ModManager {
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
                             //Save the config changes.
-                            await config.SaveConfig(Config.config);
+                            await Config.SaveConfig(Config.config);
 
                             this.FakeClickMod();
 
@@ -345,7 +344,7 @@ class ModManager {
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
-                        await config.SaveConfig(Config.config);
+                        await Config.SaveConfig(Config.config);
 
                         this.FakeClickMod();
 
@@ -365,7 +364,7 @@ class ModManager {
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
-                        await config.SaveConfig(Config.config);
+                        await Config.SaveConfig(Config.config);
 
                         this.FakeClickMod();
 
@@ -437,7 +436,7 @@ class ModManager {
         }
 
         //Save the config changes.
-        await config.SaveConfig(Config.config);
+        await Config.SaveConfig(Config.config);
 
         const installOperation = this.source_manager.PostInstall(collectionVersion);
 
@@ -545,7 +544,7 @@ class ModManager {
                         Config.config.current_mod_versions.splice(i, 1);
                     }
                 }
-                await config.SaveConfig(Config.config);
+                await Config.SaveConfig(Config.config);
 
                 // Because this pissed me off way more than it should have.
                 let modRemovalMessage: string;
@@ -602,7 +601,8 @@ class ModManager {
         return null;
     }
 
-    //Find the current version of the mod given by name that we have in our config. No version means it is not installed.
+    // Get the whole current version of the mod given by name that we have in our config.
+    // Nothing means it is not installed.
     public static GetCurrentModVersionFromConfig(name: string): ConfigFileModVersion {
         let toReturn: ConfigFileModVersion;
         for (let i = 0; i < Config.config.current_mod_versions.length; i++) {
@@ -616,6 +616,24 @@ class ModManager {
         // select the individual data required in the renderer.
         if (toReturn != null) {
             return toReturn;
+        } else {
+            return null;
+        }
+    }
+
+    // Just get the version from the mod version info given by name that we have in our config.
+    // Nothing means it is not installed.
+    public static GetCurrentModVersionFromConfigV(name: string) {
+        let toReturn: ConfigFileModVersion;
+        for (let i = 0; i < Config.config.current_mod_versions.length; i++) {
+            const element = Config.config.current_mod_versions[i];
+            if (element.name && element.name == name) {
+                toReturn = element;
+                break;
+            }
+        }
+        if (toReturn != null) {
+            return toReturn.version;
         } else {
             return null;
         }

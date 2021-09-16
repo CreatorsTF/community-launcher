@@ -165,5 +165,4 @@ class Config {
     }
 }
 
-export default Config;
-export {Config, ConfigFile, ConfigFileModVersion};
+export { Config, ConfigFile, ConfigFileModVersion };

@@ -12,7 +12,7 @@ import { ModListLoader, ModList } from "./modules/remote_file_loader/mod_list_lo
 import log from "electron-log";
 import QuickPlayConfigLoader from "./modules/remote_file_loader/quickplay_config_loader";
 import Quickplay from "./modules/api/quickplay";
-import Config, { ConfigFileModVersion } from "./modules/config";
+import { Config, ConfigFileModVersion } from "./modules/config";
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";

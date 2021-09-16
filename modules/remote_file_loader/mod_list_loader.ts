@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import https from "https";
-import ElectronLog from "electron-log";
-import RemoteLoader, { RemoteFile } from "./remote_file_loader";
+import log from "electron-log";
+import { RemoteLoader, RemoteFile } from "./remote_file_loader";
 
 /**
  * Responsible for providing the latest mod list avaliable.

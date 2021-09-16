@@ -1,10 +1,10 @@
 import CreatorsAPIDispatcher from "./CreatorsAPIDispatcher";
-import {CreateMatchCommand, CreateMatchCommandParams, CreateMatchmakingQueryResponse} from "./quickplay/CreateMatchCommand";
+import { CreateMatchCommand, CreateMatchCommandParams, CreateMatchmakingQueryResponse } from "./quickplay/CreateMatchCommand";
 import QuickPlayConfigLoader from "../remote_file_loader/quickplay_config_loader";
 import { ipcMain, shell } from "electron";
-import ElectronLog from "electron-log";
+import log from "electron-log";
 import Utilities from "../../modules/utilities";
-import electronIsDev from "electron-is-dev";
+import isDev from "electron-is-dev";
 import { IpcMainEvent } from "electron/main";
 import { MatchmakingStatusServer, MatchStatusCommand, MatchStatusResponse } from "./quickplay/MatchStatusCommand";
 
@@ -21,7 +21,7 @@ class Quickplay {
 
     constructor(){
         ipcMain.on("InitQuickplay", async (event, args) => {
-            ElectronLog.verbose("Sending Quickplay config to renderer");
+            log.verbose("Sending Quickplay config to renderer");
             event.reply("quickplay-setup", QuickPlayConfigLoader.instance.GetFile());
         });
         
@@ -37,7 +37,7 @@ class Quickplay {
 
     private async Search(event : IpcMainEvent, arg : any) {
         try {
-            ElectronLog.log("Starting quickplay search...");
+            log.log("Starting quickplay search...");
             let params = <CreateMatchCommandParams>arg;
 
             let resp = await this.CreateNewMatch(params);
@@ -48,7 +48,7 @@ class Quickplay {
             await this.WaitForMatchResult(this.currentMatchId, event);
         }
         catch (e) {
-            let error = electronIsDev ? e.toString() : "Failed to start a quickplay search";
+            let error = isDev ? e.toString() : "Failed to start a quickplay search";
             Utilities.ErrorDialog(error, "Quickplay Error");
         }
     }
@@ -66,21 +66,21 @@ class Quickplay {
     private async GetEndMatchStatus(matchId : string) : Promise<MatchStatusResponse>{
         let resp = null;
         while(resp == null){
-            ElectronLog.verbose("Starting new MatchStatusCommand");
+            log.verbose("Starting new MatchStatusCommand");
             let statusCommand = new MatchStatusCommand(matchId);
             var _resp = await CreatorsAPIDispatcher.instance.ExecuteCommandAsync(statusCommand);
             switch(_resp.status){
                 case STATUS_FINDING_SERVERS:
                 case STATUS_CHANGING_MAPS:
                 case STATUS_INITITATED:
-                    ElectronLog.verbose("Retrying MatchStatusCommand");
+                    log.verbose("Retrying MatchStatusCommand");
                     //Try again!
                     resp = null;
                     break;
                 case STATUS_FINISHED:
                 case STATUS_FAILED:
                 case STATUS_CANCELLED:
-                    ElectronLog.verbose("Finished MatchStatusCommand, got FINISHED or FAILED");
+                    log.verbose("Finished MatchStatusCommand, got FINISHED or FAILED");
                     resp = _resp;
                     break;
             }
