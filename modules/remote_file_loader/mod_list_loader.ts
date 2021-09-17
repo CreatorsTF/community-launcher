@@ -1,7 +1,5 @@
 import fs from "fs";
 import path from "path";
-import https from "https";
-import log from "electron-log";
 import { RemoteLoader, RemoteFile } from "./remote_file_loader";
 
 /**
