@@ -1,7 +1,7 @@
 import https from "https";
 import log from "electron-log";
 import ModInstallSource from "./mod_source_base";
-import { Install, GithubAsset } from "../mod_list_loader";
+import { Install, GithubAsset } from "../remote_file_loader/mod_list_loader";
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 

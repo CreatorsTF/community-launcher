@@ -5,8 +5,9 @@ import log from "electron-log";
 
 declare global {
     interface Window {
-        ipcRenderer?: typeof ipcRenderer;
-        log?: typeof log;
+        ipcRenderer: typeof ipcRenderer;
+        log: typeof log;
+        OnClick_Mod: (any) => void;
     }
 }
 window.ipcRenderer = ipcRenderer;
@@ -54,7 +55,7 @@ ipcRenderer.on("ShowMods", (event, data) => {
             divModInfoSidebar.appendChild(blurb);
 
             div.addEventListener("click", () => {
-                OnClick_Mod(modentry);
+                window.OnClick_Mod(modentry);
             }, false);
         }
     });

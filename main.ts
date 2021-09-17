@@ -8,11 +8,13 @@ import patchnotesPage from "./patchnotes-page/patchnotespage";
 import ServerListPage from "./serverlist-page/serverlistpage";
 import mod_manager from "./modules/mod_manager";
 import Utilities from "./modules/utilities";
-import { ModListLoader, ModList, ConfigType } from "./modules/mod_list_loader";
-import Config from "./modules/config";
+import { ModListLoader, ModList } from "./modules/remote_file_loader/mod_list_loader";
+import log from "electron-log";
+import QuickPlayConfigLoader from "./modules/remote_file_loader/quickplay_config_loader";
+import Quickplay from "./modules/api/quickplay";
+import { Config, ConfigFileModVersion } from "./modules/config";
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
-import log from "electron-log";
 log.transports.console.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.format = "[{d}-{m}-{y}] [{h}:{i}:{s}T{z}] -- [{processType}] -- [{level}] -- {text}";
 log.transports.file.fileName = "main.log";
@@ -24,12 +26,13 @@ const majorErrorMessageEnd = "\nIf this error persists, please report it on our 
 class Main {
     public static mainWindow: BrowserWindow;
     public static app: App;
-    public static config: ConfigType;
+    public static config: Config;
     public static screenWidth: number;
     public static screenHeight: number;
     public static minWindowWidth: number;
     public static minWindowHeight: number;
     public static icon: string;
+    public static quickPlay: Quickplay;
 
     public static createWindow() {
         const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -137,8 +140,10 @@ class Main {
 export default Main;
 
 app.on("ready", () => {
-    try {
-        ModListLoader.LoadLocalModList();
+    try{
+        ModListLoader.instance.LoadLocalFile();
+        QuickPlayConfigLoader.instance.LoadLocalFile();
+        Main.quickPlay = new Quickplay();
         Main.createWindow();
         Main.getClientCurrentVersion();
         Main.autoUpdateCheckAndSettings();
@@ -211,7 +216,7 @@ ipcMain.on("PatchNotesWindow", async () => {
 ipcMain.on("ServerListWindow", async () => {
     //Get the mod list data so we can get the server providers for the current mod.
 
-    const modList = ModListLoader.GetModList();
+    const modList = ModListLoader.instance.GetFile();
     //Make sacrificial object soo the local method exists. Thanks js on your half assed oo.
     const realModList = new ModList();
     Object.assign(realModList, modList);
@@ -278,14 +283,11 @@ ipcMain.on("Open-External-Game", async () => {
 
 // We can now access everything we need from ModVersion[] here
 ipcMain.on("GetCurrentModVersion", async (event) => {
-    let mod: string;
+    let mod: ConfigFileModVersion;
     try {
         mod = mod_manager.GetCurrentModVersionFromConfig(mod_manager.currentModData.name);
-        if (mod == null) {
-            mod = "";
-        }
     } catch {
-        mod = "";
+        mod = null;
     }
     event.reply("GetCurrentModVersion-Reply", mod);
 });
@@ -311,9 +313,9 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
     if (steamdir != "") {
         const tf2dir = await Config.GetTF2Directory(steamdir);
         if (tf2dir && tf2dir != "") {
-            Main.config.steam_directory = steamdir;
+            Config.config.steam_directory = steamdir;
         }
-        Main.config.tf2_directory = tf2dir;
+        Config.config.tf2_directory = tf2dir;
 
         event.reply("GetConfig-Reply", Main.config);
     }
@@ -323,16 +325,16 @@ ipcMain.on("config-reload-tf2directory", async (event, steamdir) => {
 });
 
 ipcMain.on("GetModData", async (event) => {
-    ModListLoader.CheckForUpdates().then(() => {
-        ModListLoader.UpdateLocalModList();
+    ModListLoader.instance.CheckForUpdates().then(() => {
+        ModListLoader.instance.UpdateLocalFile();
 
         if (isDev) {
             log.verbose("Development only mods were added.");
-            ModListLoader.InjectDevMods();
+            ModListLoader.instance.InjectDevMods();
         }
 
         log.verbose("Latest mod list was sent to renderer");
-        const modList = ModListLoader.GetModList();
+        const modList = ModListLoader.instance.GetFile();
 
         event.reply("ShowMods", {
             mods: modList.mods
@@ -344,6 +346,3 @@ ipcMain.on("get-config", async (event) => {
     const res = await Config.GetConfig();
     event.reply(res);
 });
-
-//Quickplay
-//ipcMain.on("")

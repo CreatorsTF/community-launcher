@@ -4,7 +4,7 @@ import process from "process";
 import path from "path";
 import ProgressBar from "electron-progressbar";
 import log from "electron-log";
-import { Install } from "./mod_list_loader";
+import { Install } from "./remote_file_loader/mod_list_loader";
 
 const loadingTextStyle = {
     color: "ghostwhite"

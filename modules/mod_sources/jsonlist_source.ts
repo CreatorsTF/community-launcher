@@ -1,7 +1,7 @@
 import https from "https";
 import log from "electron-log";
 import ModInstallSource from "./mod_source_base";
-import { Install } from "../mod_list_loader";
+import { Install } from "../remote_file_loader/mod_list_loader";
 
 const cloudFlareMessage = "\nFailed to get this mods latest data due to Cloudflare rate limiting. \nPlease wait till normal web service resumes or report on our Discord.";
 

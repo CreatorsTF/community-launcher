@@ -1,6 +1,6 @@
 import https from "https";
 import ModInstallSource from "./mod_source_base";
-import { Install } from "../mod_list_loader";
+import { Install } from "../remote_file_loader/mod_list_loader";
 
 // Reference: https://developer.github.com/v3/repos/releases/#list-releases
 

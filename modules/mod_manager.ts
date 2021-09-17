@@ -10,12 +10,12 @@ import log from "electron-log";
 import ProgressBar from "electron-progressbar";
 import FileWriter from "./filewriter";
 import FsExtensions from "./fs_extensions";
-import config from "./config";
+import { Config, ConfigFileModVersion } from "./config";
 import filemanager from "./file_manager";
 import GithubSource from "./mod_sources/github_source";
 import GithubCollectionSource from "./mod_sources/github_collection_source";
 import JsonListSource from "./mod_sources/jsonlist_source";
-import { Install, ModList, ModListEntry, ModListLoader } from "./mod_list_loader";
+import { Install, ModList, ModListEntry, ModListLoader } from "./remote_file_loader/mod_list_loader";
 import ModInstallSource from "./mod_sources/mod_source_base";
 import Utilities from "./utilities";
 
@@ -57,7 +57,7 @@ class ModManager {
 
     //Sets up the module.
     public static async Setup(){
-        this.all_mods_data = ModListLoader.GetModList();
+        this.all_mods_data = ModListLoader.instance.GetFile();
         return await filemanager.Init();
     }
 
@@ -65,7 +65,7 @@ class ModManager {
     public static async ChangeCurrentMod(name: string){
         //Get this mods data and store it for use.
         this.currentModData = this.GetModDataByName(name);
-        this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
+        this.currentModVersion = this.GetCurrentModVersionFromConfigV(name);
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
 
@@ -206,7 +206,7 @@ class ModManager {
                     //Do the update!
                     log.log("Starting update process...");
 
-                    const configObj = await config.GetConfig();
+                    const configObj = await Config.GetConfig();
                     const modList = configObj.current_mod_versions;
                     //Find the current mod version we want
                     let collectionVersionInstalled: string;
@@ -302,7 +302,7 @@ class ModManager {
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
                             //Save the config changes.
-                            await config.SaveConfig(Main.config);
+                            await Config.SaveConfig(Config.config);
 
                             this.FakeClickMod();
 
@@ -323,7 +323,7 @@ class ModManager {
                             SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
 
                             //Save the config changes.
-                            await config.SaveConfig(Main.config);
+                            await Config.SaveConfig(Config.config);
 
                             this.FakeClickMod();
 
@@ -344,7 +344,7 @@ class ModManager {
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
-                        await config.SaveConfig(Main.config);
+                        await Config.SaveConfig(Config.config);
 
                         this.FakeClickMod();
 
@@ -364,7 +364,7 @@ class ModManager {
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
                         //Save the config changes.
-                        await config.SaveConfig(Main.config);
+                        await Config.SaveConfig(Config.config);
 
                         this.FakeClickMod();
 
@@ -419,7 +419,7 @@ class ModManager {
         //If we didnt update the version of an existing object. Add it.
         if (typeof(collectionVersion) != "undefined") {
             if (!versionUpdated) {
-                Main.config.current_mod_versions.push({
+                Config.config.current_mod_versions.push({
                     name: this.currentModData.name,
                     version: this.currentModVersionRemote,
                     versionDisplay: this.currentModVersionToDisplay,
@@ -428,7 +428,7 @@ class ModManager {
             }
         }
         else if (!versionUpdated) {
-            Main.config.current_mod_versions.push({
+            Config.config.current_mod_versions.push({
                 name: this.currentModData.name,
                 version: this.currentModVersionRemote,
                 versionDisplay: this.currentModVersionToDisplay
@@ -436,7 +436,7 @@ class ModManager {
         }
 
         //Save the config changes.
-        await config.SaveConfig(Main.config);
+        await Config.SaveConfig(Config.config);
 
         const installOperation = this.source_manager.PostInstall(collectionVersion);
 
@@ -538,13 +538,13 @@ class ModManager {
                 await filemanager.RemoveFileList(this.currentModData.name);
 
                 //Remove mod from current config
-                for(let i = 0; i < Main.config.current_mod_versions.length; i++){
-                    const element = Main.config.current_mod_versions[i];
+                for(let i = 0; i < Config.config.current_mod_versions.length; i++){
+                    const element = Config.config.current_mod_versions[i];
                     if (element.name && element.name == this.currentModData.name) {
-                        Main.config.current_mod_versions.splice(i, 1);
+                        Config.config.current_mod_versions.splice(i, 1);
                     }
                 }
-                await config.SaveConfig(Main.config);
+                await Config.SaveConfig(Config.config);
 
                 // Because this pissed me off way more than it should have.
                 let modRemovalMessage: string;
@@ -601,11 +601,12 @@ class ModManager {
         return null;
     }
 
-    //Find the current version of the mod given by name that we have in our config. No version means it is not installed.
-    public static GetCurrentModVersionFromConfig(name: string) {
-        let toReturn = null;
-        for (let i = 0; i < Main.config.current_mod_versions.length; i++) {
-            const element = Main.config.current_mod_versions[i];
+    // Get the whole current version of the mod given by name that we have in our config.
+    // Nothing means it is not installed.
+    public static GetCurrentModVersionFromConfig(name: string): ConfigFileModVersion {
+        let toReturn: ConfigFileModVersion;
+        for (let i = 0; i < Config.config.current_mod_versions.length; i++) {
+            const element = Config.config.current_mod_versions[i];
             if (element.name && element.name == name) {
                 toReturn = element;
                 break;
@@ -615,6 +616,24 @@ class ModManager {
         // select the individual data required in the renderer.
         if (toReturn != null) {
             return toReturn;
+        } else {
+            return null;
+        }
+    }
+
+    // Just get the version from the mod version info given by name that we have in our config.
+    // Nothing means it is not installed.
+    public static GetCurrentModVersionFromConfigV(name: string) {
+        let toReturn: ConfigFileModVersion;
+        for (let i = 0; i < Config.config.current_mod_versions.length; i++) {
+            const element = Config.config.current_mod_versions[i];
+            if (element.name && element.name == name) {
+                toReturn = element;
+                break;
+            }
+        }
+        if (toReturn != null) {
+            return toReturn.version;
         } else {
             return null;
         }
@@ -632,7 +651,7 @@ class ModManager {
 
         realPath = path.normalize(realPath);
 
-        return path.normalize(realPath.replace("{tf2_dir}", Main.config.tf2_directory));
+        return path.normalize(realPath.replace("{tf2_dir}", Config.config.tf2_directory));
     }
 
     public static async InstallFiles(files){
@@ -869,19 +888,19 @@ async function WriteFilesToDirectory(targetPath: any, files: any, currentModData
 //Validates the tf2 directory. Can trigger dialogues depending on the outcome.
 async function ValidateTF2Dir(){
     //Check we have a config object
-    if(!Main.config){
+    if(!Config.config){
         await ErrorDialog("The application could not load the config. It may have failed to write it to disk.\nPlease report this issue!", "Internal Error");
         return false;
     }
 
     //If no path is specified. Maybe the auto locate failed?
-    if(Main.config.tf2_directory == ""){
+    if(Config.config.tf2_directory == ""){
         await ErrorDialog("No TF2 path has been specified. Please manually enter this in the Settings.\nE.g. 'C:\\Program Files (x86)\\steam\\steamapps\\common\\Team Fortress 2\\'", "TF2 Path Error");
         return false;
     }
 
     //Check if the directory actually exists.
-    if(!await FsExtensions.pathExists(Main.config.tf2_directory)){
+    if(!await FsExtensions.pathExists(Config.config.tf2_directory)){
         await ErrorDialog("The current TF2 directory specified does not exist. Please check your settings.", "TF2 Path Error");
         return false;
     }
@@ -889,18 +908,18 @@ async function ValidateTF2Dir(){
     //Check if the directory contains an hl2 win32 executable if we are on windows.
     const plat = os.platform();
     if(plat == "win32"){
-        if(await FsExtensions.fileExists(path.join(Main.config.tf2_directory, "hl2.exe"))){
+        if(await FsExtensions.fileExists(path.join(Config.config.tf2_directory, "hl2.exe"))){
             return true;
         }
     }
     else if (plat == "linux" || plat == "freebsd" || plat == "openbsd"){
-        if(await FsExtensions.pathExists(path.join(Main.config.tf2_directory, "hl2_linux"))){
+        if(await FsExtensions.pathExists(path.join(Config.config.tf2_directory, "hl2_linux"))){
             return true;
         }
     }
 
     //Check if the directory has the app id txt and it has 440 in it.
-    const appid_path = path.join(Main.config.tf2_directory, "steam_appid.txt");
+    const appid_path = path.join(Config.config.tf2_directory, "steam_appid.txt");
     if(await FsExtensions.fileExists(appid_path)){
         const content = await promises.readFile(appid_path, {encoding: "utf8"});
         const appid = content.split("\n")[0];
@@ -1026,8 +1045,8 @@ function GetFileName(_url: string) {
 
 function SetNewModVersion(version: number, currentModName: string) {
     //Try to update the version of the mod if its already in the array.
-    for(let i = 0; i < Main.config.current_mod_versions.length; i++){
-        const modVersionObject = Main.config.current_mod_versions[i];
+    for(let i = 0; i < Config.config.current_mod_versions.length; i++){
+        const modVersionObject = Config.config.current_mod_versions[i];
         if (modVersionObject.name == currentModName) {
             log.log(`Mod ${currentModName} version was updated from ${modVersionObject.version} to ${version}`);
             modVersionObject.version = version;

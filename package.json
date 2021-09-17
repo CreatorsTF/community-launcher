@@ -6,10 +6,11 @@
   "scripts": {
     "start": "electron .",
     "lint": "eslint **/*",
-    "compileTs": "npx tsc",
+    "dev:compileTs": "npx tsc -w",
+    "dev:compileSass": "sass styles/:styles/ --watch",
+    "compileTs": "npx tsc --project browser/tsconfig-browser.json && npx tsc --project tsconfig.json",
     "compileSass": "sass styles/:styles/",
-    "compileTsAndStart": "npx tsc && electron .",
-    "compileAndStart": "npx tsc && sass styles/:styles/ && electron .",
+    "compileAndStart": "npm run compileTs && npm run compileSass && npm run start",
     "buildWindows": "electron-builder build --win --x64 --ia32 --publish never",
     "buildLinux": "electron-builder build --linux AppImage deb tar.gz --publish never"
   },
@@ -43,6 +44,7 @@
   "dependencies": {
     "@mdi/font": "^5.9.55",
     "@types/node": "^14.14.40",
+    "axios": "^0.21.1",
     "electron-is-dev": "^1.2.0",
     "electron-log": "^4.3.4",
     "electron-progressbar": "^1.2.0",

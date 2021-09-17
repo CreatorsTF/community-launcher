@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain, shell, dialog } from "electron";
-import Config from "../modules/config";
+import { Config } from "../modules/config";
 import path from "path";
-import { ModListLoader } from "../modules/mod_list_loader";
+import { ModListLoader } from "../modules/remote_file_loader/mod_list_loader";
 import Utilities from "../modules/utilities";
 import isDev from "electron-is-dev";
 import log from "electron-log";
@@ -76,7 +76,7 @@ class SettingsPage {
             });
 
             ipcMain.on("ClearModList", (event, arg) => {
-                if (ModListLoader.DeleteLocalModList()) {
+                if (ModListLoader.instance.DeleteLocalFile()) {
                     dialog.showMessageBox({
                         type: "info",
                         title: "Settings",
