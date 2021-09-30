@@ -1,3 +1,4 @@
+/* eslint-disable func-style */
 //Manages main functions mod installation, downloading and removal.
 import { BrowserWindow, dialog } from "electron";
 import { promises } from "fs";
@@ -161,13 +162,11 @@ class ModManager {
 
                 //Perform mod download and install.
                 try {
-                    //TS won't let me delete this bit
-                    //Args is a string. Convert it to a number
                     const desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, args);
 
                     const _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
 
-                    log.log("Successfully got mod install file urls. Will proceed to try to download them.");
+                    log.verbose("Successfully got mod install file urls. Will proceed to try to download them.");
                     const result = await this.ModInstall(_url);
                     if(result){
                         //This is a function to separate the collections from the non-collections
@@ -263,7 +262,7 @@ class ModManager {
                     const data = await jsonSourceManager.GetJsonData();
 
                     const urls = [];
-                    if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
+                    if (data.PatchUpdates != null && data.PatchUpdates.length > 0) {
                         //There should be urls to patch zips for each update.
                         const patchObjects = data.PatchUpdates;
                         const patchURLS = [];
@@ -386,7 +385,7 @@ class ModManager {
         }
     }
 
-    public static async ModInstall(contentURL): Promise<boolean>{
+    public static async ModInstall(contentURL: string | Array<string>): Promise<boolean>{
         let urlArray;
         if (Array.isArray(contentURL)) {
             urlArray = contentURL;
