@@ -1,3 +1,7 @@
+## Version 0.2.9 - (ALPHA)
+### 01/10/2021 - 21:19 (GMT)
+- Fixes issue #71 , "Certificate has Expired" error when trying to download any creators.tf server content.
+
 ## Version 0.2.8 - (ALPHA)
 ### 08/09/2021 - 19:45 (GMT)
 - Changed icons to use the new logo
