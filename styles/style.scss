@@ -286,8 +286,8 @@ body {
 }
 
 #title-image-holder {
-    width: 67vh;
-    max-width: 72vh;
+    width: 35vw;
+    max-width: 38vw;
 }
 
 #title-image {
@@ -296,10 +296,10 @@ body {
 }
 
 #title-header {
-    font-size: 55px;
-    font-family: Roboto Light, Arial, sans-serif;
+    font-size: 8vh;
+    font-family: Roboto Medium, Arial, sans-serif;
     color: $white-2;
-    line-height: 55px;
+    line-height: 100%;
     text-align: center;
     font-weight: bold;
 }
@@ -326,6 +326,7 @@ body {
         background-repeat: no-repeat;
         background-position: center;
         transition: 0.2s;
+        filter: drop-shadow(0px 0px 10px $not-so-subtle-shadow);
 
         &:hover {
             transform: scale(0.9);
@@ -338,9 +339,9 @@ body {
 /* SOCIAL MEDIA LOGOS */
 #socialMediaTwitter { background-image: url($images + "logos/social/twitter.svg"); }
 #socialMediaInstagram { background-image: url($images + "logos/social/instagram.svg"); background-size: 57%; }
-#socialMediaDiscord { background-image: url($images + "logos/social/discord.svg"); background-size: 77%; }
+#socialMediaDiscord { background-image: url($images + "logos/social/discord.svg"); background-size: 58%; }
 #socialMediaWebsite { background-image: url($images + "logos/social/websiteicon.svg"); background-size: 73%;}
-#socialMediaGithub { background-image: url($images + "logos/social/github_light.svg"); background-size: 65%;}
+#socialMediaGithub { background-image: url($images + "logos/social/github.svg"); background-size: 65%;}
 
 #fadebehindbutton {
     width: 100%;

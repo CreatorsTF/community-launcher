@@ -95,7 +95,7 @@ class ModManager {
                 const version = await this.source_manager.GetLatestVersionNumber();
                 this.currentModState = "NOT_INSTALLED";
                 this.currentModVersionRemote = version;
-                console.log("96 - MOD STATE: " + this.currentModState);
+                console.log("98 - MOD STATE: " + this.currentModState);
 
                 const versionDisplay = await this.source_manager.GetDisplayVersionNumber();
                 this.currentModVersionToDisplay = versionDisplay;
@@ -108,17 +108,15 @@ class ModManager {
         else {
             //We have a version, now we need to determine if there is an update or not.
             const version = await this.source_manager.GetLatestVersionNumber();
+            this.currentModState = "INSTALLED";
+            this.currentModVersionRemote = version;
+            console.log("113 - MOD STATE: " + this.currentModState);
 
             const versionDisplay = await this.source_manager.GetDisplayVersionNumber();
             this.currentModVersionToDisplay = versionDisplay;
 
-            this.currentModState = "INSTALLED";
-            console.log("106 - MOD STATE: " + this.currentModState);
-
             //Compare the currently selected version number to this one.
             //If ours is smaller, update. If not, do nothing.
-            this.currentModVersionRemote = version;
-
             if (version > this.currentModVersion) {
                 this.currentModState = "UPDATE";
             }

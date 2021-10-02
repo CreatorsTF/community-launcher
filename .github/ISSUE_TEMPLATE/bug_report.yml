@@ -8,6 +8,7 @@ body:
       value: |
         This is a bug report issue.
         Please make sure to fill every field correctly to help us easily identify a fix for the bug.
+        Fields with the label "Optional" (without red asterisk) can be left blank if you have nothing to add.
   - type: checkboxes
     attributes:
       label: Prerequisites
@@ -34,7 +35,7 @@ body:
 
   - type: textarea
     attributes:
-      label: Was there an error dialogue for this bug? If so, please, provide its contents here. (optional)
+      label: Was there an error dialogue for this bug? If so, please, provide its content here. (optional)
       description: Error dialog if applicable.
     validations:
       required: false
@@ -70,7 +71,7 @@ body:
       description: |
         Please upload the logs from your launcher either here or on a site such as pastebin.
         You can find the logs in the "logs" folder in the "Config/Log Folder".
-        Use the button in the Settings menu in the launcher to find the folder.
+        Use the button in the "Settings" menu in the launcher to find the folder.
     validations:
       required: false
 

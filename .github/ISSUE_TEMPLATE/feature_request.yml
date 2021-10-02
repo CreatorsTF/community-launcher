@@ -7,8 +7,9 @@ body:
     attributes:
       value: |
         This is a feature request issue.
-        Make sure to give the issue a short, but descriptive name.
+        Make sure to give the issue a short but descriptive name.
         Further in-depth details must go in the description.
+        Fields with the label "Optional" (without red asterisk) can be left blank if you have nothing to add.
   - type: checkboxes
     attributes:
       label: Prerequisites
@@ -24,14 +25,14 @@ body:
   - type: textarea
     attributes:
       label: Is your feature request related to a problem? Please describe.
-      description: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+      description: A clear and concise description of what the problem is. -- e.g. I'm always frustrated when [...]
     validations:
       required: true
 
   - type: input
     attributes:
       label: Is your feature request graphical or mechanical in nature?
-      description: Please describe if this request is related to the UI, or to the inner workings of the application.
+      description: Please describe if this request is related to the UI or to the inner workings of the application.
     validations:
       required: true
 
