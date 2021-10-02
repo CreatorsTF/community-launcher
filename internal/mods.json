@@ -33,7 +33,7 @@
     {
       "name": "Creators.TF Silly Events Servers",
       "blurb": "Content for the Silly Events Servers",
-      "icon": "images/logos/modcirclelogos/ctf_events.svg",
+      "icon": "images/logos/modcirclelogos/creators_events_logo.png",
       "titleimage": "images/logos/modlogos/eventsbanner.png",
       "backgroundimage": "images/backgrounds/events.jpg",
       "backgroundBlendMode": "soft-light",
@@ -225,9 +225,9 @@
     {
         "name": "Unique Rockets",
         "blurb": "Unique rockets for Soldiers Viewmodels",
-        "icon": "https://fastdl.creators.tf/launcher/assets/unique_rockets_icon_1.png",
+        "icon": "images/logos/modcirclelogos/unique_rockets_icon_1.png",
         "titleimage": "",
-        "backgroundimage": "https://fastdl.creators.tf/launcher/assets/unique_rockets_bg.jpg",
+        "backgroundimage": "images/backgrounds/unique_rockets_bg.jpg",
         "backgroundBlendMode": "multiply",
         "bordercolor": "#3E3C3F",
         "backgroundposX": "left",
