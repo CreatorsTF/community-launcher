@@ -1,4 +1,4 @@
-const { ipcRenderer, shell } = require("electron");
+import { ipcRenderer, shell } from "electron";
 
 const arrowDownHTML = ' <i class="mdi mdi-arrow-down-drop-circle"></i>';
 const arrowRightHTML = ' <i class="mdi mdi-arrow-right-drop-circle"></i>';
@@ -28,13 +28,13 @@ serverNames.set("de", "Germany");
 serverNames.set("pl", "Poland");
 
 //Remove certain characters from remote data.
-String.prototype.escape = function() {
-    var tagsToReplace = {
+function EscapeString(s: string) : string{
+    const tagsToReplace = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;'
     };
-    return this.replace(/[&<>]/g, function(tag) {
+    return s.replace(/[&<>]/g, (tag) => {
         return tagsToReplace[tag] || tag;
     });
 };
@@ -104,9 +104,9 @@ ipcRenderer.on("GetServerList-Reply", (event, serverListData) => {
                     else {
                         serverDOMData.tr.style.display = "table-row";
                     }
-                    serverDOMData.id.innerHTML = `<p>${server.id.toString().escape()}</p>`;
-                    serverDOMData.hostname.innerHTML = `<p>${server.hostname.toString().escape()}</p>`;
-                    serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${server.map.toString().escape()}</p>`;
+                    serverDOMData.id.innerHTML = `<p>${EscapeString(server.id.toString())}</p>`;
+                    serverDOMData.hostname.innerHTML = `<p>${EscapeString(server.hostname.toString())}</p>`;
+                    serverDOMData.map.innerHTML = server.passworded ? "<p>???</p>" : `<p>${EscapeString(server.map.toString())}</p>`;
 
                     // let mapPic = document.createElement("div");
                     // serverDOMData.map.appendChild(mapPic);
