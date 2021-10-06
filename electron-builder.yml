@@ -51,4 +51,4 @@ files: [
   "!CODE_OF_CONDUCT.md",
   "!README.md"
 ]
-electronVersion: 15.1.0
+electronVersion: 15.1.1

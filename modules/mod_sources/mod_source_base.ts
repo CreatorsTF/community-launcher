@@ -72,7 +72,8 @@ export default abstract class ModInstallSource {
         const returnVal = await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
             title: "Post Install Info",
-            message: "Your custom configuration files (class configs + autoexec) will now be moved from 'tf/cfg' to 'tf/cfg/user' to be loaded properly by mastercomfig. Backups will also be made in 'tf/cfg/user_backup'.\nIf you do not want your files to be moved, you can cancel this now, the mod will still be installed.",
+            message: "Post Install Info",
+            detail: 'Your custom configuration files (class configs + autoexec) will now be moved from "tf/cfg" to "tf/cfg/user" to be loaded properly by mastercomfig.\nBackups will be stored in "tf/cfg/user_backup".\nIf you do not want your files to be moved you can simply cancel this. The mod will still be installed normally.',
             buttons: ["Move Files", "Cancel"]
         });
 
@@ -125,7 +126,7 @@ export default abstract class ModInstallSource {
         const returnVal = await dialog.showMessageBox(Main.mainWindow, {
             type: "info",
             title: "Post Uninstall Info",
-            message: "Your custom configuration files (class configs + autoexec) will now be moved from 'tf/cfg/user' back to 'tf/cfg' to work with tf2 normally again.\nIf you do not want your files to be moved, you can cancel this now.\nThe mod will still be removed.",
+            message: 'Your custom configuration files (class configs + autoexec) will now be moved from "tf/cfg/user" back to "tf/cfg" to work with TF2 normally again.\nIf you do not want your files to be moved you can simply cancel this. The mod will still be removed.',
             buttons: ["Move Files", "Cancel"]
         });
 

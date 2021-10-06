@@ -32,15 +32,13 @@ export default class GithubSource extends ModInstallSource {
                     if (data.length == null || data.length == 0) {
                         reject("No releases avaliable to download");
                     }
-
-                    let date = data[0].published_at;
-                    date = date.split("T")[0];
-                    date = date.replace(/-/g, "");
-
-                    resolve(date);
+                    else {
+                        const releaseID = data[0].id;
+                        resolve(releaseID);
+                    }
                 }
                 catch (error) {
-                    reject("Failed to correctly parse the latest release publish date. Cause: " + error.toString());
+                    reject("Failed to correctly parse the latest release publish ID. Cause: " + error.toString());
                 }
             }).catch(reject);
         });
@@ -48,7 +46,7 @@ export default class GithubSource extends ModInstallSource {
 
     async GetDisplayVersionNumber(): Promise<string> {
         const githubData = await this._GetGithubData();
-        return `${githubData[0].tag_name}`;
+        return githubData[0].tag_name;
     }
 
     override async GetFileURL(asset_index?: number): Promise<string | string[]> {
@@ -62,7 +60,7 @@ export default class GithubSource extends ModInstallSource {
         }
     }
 
-    protected GetFileURLs(githubData: any, asset_index: number | Array<number>): string | string[] {
+    protected GetFileURLs(githubData: JSON, asset_index: number | Array<number>): string | string[] {
         let asset;
         const releaseAssets = githubData[0].assets;
         if (releaseAssets != null && releaseAssets != []) {
@@ -90,7 +88,7 @@ export default class GithubSource extends ModInstallSource {
             }
         }
          
-        throw new Error("This Github repository's latest release was missing a usable asset.");
+        throw new Error("This Github repository's latest release was missing an usable asset.");
     }
 
     private _GetGitHubReleaseData(): Promise<any> {

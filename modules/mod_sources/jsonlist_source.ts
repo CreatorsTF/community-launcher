@@ -1,5 +1,3 @@
-import https from "https";
-import log from "electron-log";
 import ModInstallSource from "./mod_source_base";
 import { Install } from "../mod_list_loader";
 import axios from "axios";
@@ -23,11 +21,10 @@ class JsonListSource extends ModInstallSource {
 
     GetJsonData() : Promise<any>{
         return new Promise((resolve, reject) => {
-            if(this.jsonlist_data == null){
-                this.GetJsonReleaseData().then(resolve).catch(reject);
-            }
-            else {
+            if(this.jsonlist_data != null){
                 resolve(this.jsonlist_data);
+            } else {
+                this.GetJsonReleaseData().then(resolve).catch(reject);
             }
         });
     }
@@ -35,7 +32,18 @@ class JsonListSource extends ModInstallSource {
     async GetLatestVersionNumber() : Promise<number> {
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data[0].version_property_name]);
+                try {
+                    if (json_data == null || json_data == "") {
+                        reject("Empty JSON.");
+                    }
+                    else {
+                        const version: number = json_data[this.data[0].version_property_name];
+                        resolve(version);
+                    }
+                }
+                catch (error) {
+                    reject("An error occurred on JSON parse. Cause: " + error.toString());
+                }
             }).catch(reject);
         });
     }
@@ -45,18 +53,20 @@ class JsonListSource extends ModInstallSource {
         return version.toString();
     }
 
-    GetFileURL() : Promise<string>{
+    async GetFileURL() : Promise<string>{
         return new Promise((resolve) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data[0].install_url_property_name]);
+                const propertyName = json_data[this.data[0].install_url_property_name];
+                resolve(propertyName);
             });
         });
     }
 
     async GetJsonReleaseData() : Promise<any> {
         const resp = await axios.get(this.url);
-        if(resp.status == 200) {
-            return resp.data;
+        if (resp.status == 200) {
+            let data = resp.data;
+            return data;
         }
         else if(resp.status == 403){
             throw new Error("File was missing/not found.");
@@ -64,11 +74,8 @@ class JsonListSource extends ModInstallSource {
         else if(resp.status == 503){
             throw new Error(cloudFlareMessage);
         }
-        else if(resp.status != 200){
-            throw new Error(`Could not properly access "${this.url}". HTTP code was:${resp.status}.`);
-        }
         else {
-            throw new Error(resp.statusText);
+            throw new Error(`Could not properly access "${this.url}". HTTP code was: ${resp.status}. Error: ${resp.statusText}`);
         }
     }
 }
