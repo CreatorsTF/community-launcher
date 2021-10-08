@@ -47,9 +47,8 @@ files: [
   "!**/{__pycache__,.flowconfig,.idea,.vs,.vscode,.nyc_output,.github,.git,.svn}",
   "!**/{appveyor.yml,.travis.yml,circle.yml,electron-builder.yml,dev-app-update.yml}",
   "!**/{npm-debug.log,yarn.lock,package-lock.json,tsconfig.json,.yarn-integrity,.yarn-metadata.json}",
-  "!buildfix.js",
   "!tools/**",
   "!CODE_OF_CONDUCT.md",
   "!README.md"
 ]
-electronVersion: 15.1.0
+electronVersion: 15.1.1

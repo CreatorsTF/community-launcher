@@ -11,30 +11,13 @@
    viewBox="0 0 400 400"
    enable-background="new 0 0 400 400"
    xml:space="preserve"
-   sodipodi:docname="tf2logo_dark_fade.svg"
+   sodipodi:docname="tf2logo.svg"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"><defs
-   id="defs41317"><linearGradient
-     inkscape:collect="always"
-     id="linearGradient46287"><stop
-       style="stop-color:#111111;stop-opacity:1"
-       offset="0"
-       id="stop46283" /><stop
-       style="stop-color:#333333;stop-opacity:1"
-       offset="1"
-       id="stop46285" /></linearGradient><linearGradient
-     inkscape:collect="always"
-     xlink:href="#linearGradient46287"
-     id="linearGradient46289"
-     x1="21.391943"
-     y1="377.68695"
-     x2="378.19955"
-     y2="22.334446"
-     gradientUnits="userSpaceOnUse" /></defs><sodipodi:namedview
+   id="defs41317" /><sodipodi:namedview
    id="namedview41315"
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -53,29 +36,12 @@
    inkscape:window-maximized="1"
    inkscape:current-layer="svg3428_copy" />
 <g
+   id="svg3428_copy"
    style="display:inline">
-	<linearGradient
-   id="FADE"
-   gradientUnits="userSpaceOnUse"
-   x1="240.5625"
-   y1="765.26947"
-   x2="161.3222"
-   y2="416.49271"
-   gradientTransform="translate(0,-391)"
-   inkscape:swatch="gradient">
-		<stop
-   offset="0"
-   style="stop-color:#111"
-   id="stop41306" />
-		<stop
-   offset="1"
-   style="stop-color:#333"
-   id="stop41308" />
-	</linearGradient>
 	<path
    fill="url(#SVGID_1_)"
    d="m 245.314,26.641 c 77.276,19.735 134.42,89.813 134.42,173.24 0,1.904 -0.04,3.799 -0.102,5.688 L 259.376,188.464 c -3.521,-18.121 -15.257,-33.295 -31.177,-41.512 z M 148.013,172.62 c 8.216,-15.92 23.391,-27.655 41.511,-31.176 L 206.631,21.186 c -1.89,-0.059 -3.783,-0.099 -5.688,-0.099 -83.425,0 -153.502,57.14 -173.238,134.418 z m 25.669,80.191 c -15.919,-8.217 -27.655,-23.393 -31.175,-41.512 L 22.25,194.192 c -0.059,1.89 -0.099,3.785 -0.099,5.689 0,83.424 57.14,153.501 134.417,173.238 z m 80.19,-25.67 c -8.218,15.92 -23.392,27.654 -41.513,31.176 l -17.106,120.26 c 1.89,0.059 3.785,0.1 5.688,0.1 83.426,0 153.504,-57.143 173.237,-134.42 z"
    id="path41311"
-   style="stroke-opacity:0;stroke:none;fill-opacity:1;fill:url(#linearGradient46289);" />
+   style="fill-opacity:1;fill:#000000" />
 </g>
 </svg>

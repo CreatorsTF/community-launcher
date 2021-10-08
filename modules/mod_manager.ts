@@ -1,3 +1,4 @@
+/* eslint-disable func-style */
 //Manages main functions mod installation, downloading and removal.
 import { BrowserWindow, dialog } from "electron";
 import { promises } from "fs";
@@ -50,7 +51,7 @@ class ModManager {
     public static currentModVersion = 0;
     public static currentModState: State;
     public static currentModVersionRemote = 0;
-    public static currentModVersionToDisplay = "";
+    public static currentModVersionToDisplay: string;
     public static downloadWindow: BrowserWindow = null;
     public static files_object: any;
     public static source_manager: ModInstallSource;
@@ -65,7 +66,7 @@ class ModManager {
     public static async ChangeCurrentMod(name: string){
         //Get this mods data and store it for use.
         this.currentModData = this.GetModDataByName(name);
-        this.currentModVersion = this.GetCurrentModVersionFromConfig(name);
+        this.currentModVersion = await this.GetCurrentModVersion(name);
         this.currentModState = "NOT_INSTALLED";
         this.currentModVersionRemote = 0;
 
@@ -85,7 +86,7 @@ class ModManager {
                 break;
             default:
                 this.source_manager = null;
-                throw new Error(`Mod install type was not recognised: ${this.currentModData.install.type}. It may be new? Update to the latest version.`);
+                throw new Error(`Mod install type was not recognised: ${this.currentModData.install.type}. It may be new? Update the launcher to the latest version.`);
         }
 
         //We do not have a version for this mod. Method to use is install.
@@ -94,7 +95,7 @@ class ModManager {
                 const version = await this.source_manager.GetLatestVersionNumber();
                 this.currentModState = "NOT_INSTALLED";
                 this.currentModVersionRemote = version;
-                console.log("96 - MOD STATE: " + this.currentModState);
+                console.log("MOD STATE: " + this.currentModState);
 
                 const versionDisplay = await this.source_manager.GetDisplayVersionNumber();
                 this.currentModVersionToDisplay = versionDisplay;
@@ -107,17 +108,15 @@ class ModManager {
         else {
             //We have a version, now we need to determine if there is an update or not.
             const version = await this.source_manager.GetLatestVersionNumber();
+            this.currentModState = "INSTALLED";
+            this.currentModVersionRemote = version;
+            console.log("MOD STATE: " + this.currentModState);
 
             const versionDisplay = await this.source_manager.GetDisplayVersionNumber();
             this.currentModVersionToDisplay = versionDisplay;
 
-            this.currentModState = "INSTALLED";
-            console.log("106 - MOD STATE: " + this.currentModState);
-
             //Compare the currently selected version number to this one.
             //If ours is smaller, update. If not, do nothing.
-            this.currentModVersionRemote = version;
-
             if (version > this.currentModVersion) {
                 this.currentModState = "UPDATE";
             }
@@ -161,13 +160,11 @@ class ModManager {
 
                 //Perform mod download and install.
                 try {
-                    //TS won't let me delete this bit
-                    //Args is a string. Convert it to a number
                     const desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, args);
 
                     const _url = await this.source_manager.GetFileURL(desiredCollectionVersion);
 
-                    log.log("Successfully got mod install file urls. Will proceed to try to download them.");
+                    log.verbose("Successfully got mod install file urls. Will proceed to try to download them.");
                     const result = await this.ModInstall(_url);
                     if(result){
                         //This is a function to separate the collections from the non-collections
@@ -263,7 +260,7 @@ class ModManager {
                     const data = await jsonSourceManager.GetJsonData();
 
                     const urls = [];
-                    if (data.hasOwnProperty("PatchUpdates") && data.PatchUpdates.length > 0) {
+                    if (data.PatchUpdates != null && data.PatchUpdates.length > 0) {
                         //There should be urls to patch zips for each update.
                         const patchObjects = data.PatchUpdates;
                         const patchURLS = [];
@@ -298,8 +295,7 @@ class ModManager {
 
                         if (result) {
                             //Update the version for the mod.
-
-                            SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                            SetNewModVersion(this.currentModVersionRemote, this.currentModVersionToDisplay, this.currentModData.name);
 
                             //Save the config changes.
                             await config.SaveConfig(Main.config);
@@ -320,9 +316,8 @@ class ModManager {
                         const _url = await this.source_manager.GetFileURL();
                         const result = await this.ModInstall(_url);
                         if(result){
-                            SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+                            SetNewModVersion(this.currentModVersionRemote, this.currentModVersionToDisplay, this.currentModData.name);
 
-                            //Save the config changes.
                             await config.SaveConfig(Main.config);
 
                             this.FakeClickMod();
@@ -342,8 +337,8 @@ class ModManager {
                     log.log("Mod is type GitHub, will update using the most recent release url: " + _url);
                     const result = await this.ModInstall(_url);
                     if(result){
-                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                        //Save the config changes.
+                        SetNewModVersion(this.currentModVersionRemote, this.currentModVersionToDisplay, this.currentModData.name);
+
                         await config.SaveConfig(Main.config);
 
                         this.FakeClickMod();
@@ -362,8 +357,8 @@ class ModManager {
                     log.log("Mod is type GitHub Collection, will update using the most recent release url: " + _url);
                     const result = await this.ModInstall(_url);
                     if(result){
-                        SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
-                        //Save the config changes.
+                        SetNewModVersion(this.currentModVersionRemote, this.currentModVersionToDisplay, this.currentModData.name);
+                        
                         await config.SaveConfig(Main.config);
 
                         this.FakeClickMod();
@@ -386,7 +381,7 @@ class ModManager {
         }
     }
 
-    public static async ModInstall(contentURL): Promise<boolean>{
+    public static async ModInstall(contentURL: string | Array<string>): Promise<boolean>{
         let urlArray;
         if (Array.isArray(contentURL)) {
             urlArray = contentURL;
@@ -415,7 +410,7 @@ class ModManager {
         //Finish up the installation process.
         //Set the current version of the mod in the config.
 
-        const versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModData.name);
+        const versionUpdated = SetNewModVersion(this.currentModVersionRemote, this.currentModVersionToDisplay, this.currentModData.name);
         //If we didnt update the version of an existing object. Add it.
         if (typeof(collectionVersion) != "undefined") {
             if (!versionUpdated) {
@@ -589,7 +584,7 @@ class ModManager {
     }
 
     //Get the mod data object by the given name.
-    public static GetModDataByName(name: string){
+    public static GetModDataByName(name: string) {
         if(this.all_mods_data){
             for (let i = 0; i < this.all_mods_data.mods.length; i++) {
                 const element = this.all_mods_data.mods[i];
@@ -615,6 +610,22 @@ class ModManager {
         // select the individual data required in the renderer.
         if (toReturn != null) {
             return toReturn;
+        } else {
+            return null;
+        }
+    }
+
+    private static GetCurrentModVersion(name: string): Promise<number> {
+        let toReturn = null;
+        for (let i = 0; i < Main.config.current_mod_versions.length; i++) {
+            const element = Main.config.current_mod_versions[i];
+            if (element.name && element.name == name) {
+                toReturn = element;
+                break;
+            }
+        }
+        if (toReturn != null) {
+            return toReturn.version;
         } else {
             return null;
         }
@@ -1024,13 +1035,14 @@ function GetFileName(_url: string) {
     return path.basename(parsed.pathname);
 }
 
-function SetNewModVersion(version: number, currentModName: string) {
+function SetNewModVersion(version: number, versionDisplay: string, currentModName: string) {
     //Try to update the version of the mod if its already in the array.
     for(let i = 0; i < Main.config.current_mod_versions.length; i++){
         const modVersionObject = Main.config.current_mod_versions[i];
         if (modVersionObject.name == currentModName) {
             log.log(`Mod ${currentModName} version was updated from ${modVersionObject.version} to ${version}`);
             modVersionObject.version = version;
+            modVersionObject.versionDisplay = versionDisplay;
             return true;
         }
     }

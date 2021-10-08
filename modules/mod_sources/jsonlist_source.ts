@@ -1,7 +1,6 @@
-import https from "https";
-import log from "electron-log";
 import ModInstallSource from "./mod_source_base";
 import { Install } from "../mod_list_loader";
+import axios from "axios";
 
 const cloudFlareMessage = "\nFailed to get this mods latest data due to Cloudflare rate limiting. \nPlease wait till normal web service resumes or report on our Discord.";
 
@@ -22,11 +21,10 @@ class JsonListSource extends ModInstallSource {
 
     GetJsonData() : Promise<any>{
         return new Promise((resolve, reject) => {
-            if(this.jsonlist_data == null){
-                this.GetJsonReleaseData().then(resolve).catch(reject);
-            }
-            else {
+            if(this.jsonlist_data != null){
                 resolve(this.jsonlist_data);
+            } else {
+                this.GetJsonReleaseData().then(resolve).catch(reject);
             }
         });
     }
@@ -34,7 +32,18 @@ class JsonListSource extends ModInstallSource {
     async GetLatestVersionNumber() : Promise<number> {
         return new Promise((resolve, reject) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data[0].version_property_name]);
+                try {
+                    if (json_data == null || json_data == "") {
+                        reject("Empty JSON.");
+                    }
+                    else {
+                        const version: number = json_data[this.data[0].version_property_name];
+                        resolve(version);
+                    }
+                }
+                catch (error) {
+                    reject("An error occurred on JSON parse. Cause: " + error.toString());
+                }
             }).catch(reject);
         });
     }
@@ -44,72 +53,30 @@ class JsonListSource extends ModInstallSource {
         return version.toString();
     }
 
-    GetFileURL() : Promise<string>{
+    async GetFileURL() : Promise<string>{
         return new Promise((resolve) => {
             this.GetJsonData().then((json_data) => {
-                resolve(json_data[this.data[0].install_url_property_name]);
+                const propertyName = json_data[this.data[0].install_url_property_name];
+                resolve(propertyName);
             });
         });
     }
 
-    GetJsonReleaseData(){
-        return new Promise((resolve, reject) => {
-            const data = [];
-
-            const options = {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0"
-                }
-            };
-
-            const req = https.get(this.url, options, res => {
-                console.log(`statusCode: ${res.statusCode}`);
-
-                res.on("data", (d) => {
-                    if(res.statusCode == 503){
-                        reject(cloudFlareMessage);
-                        return;
-                    }
-                    data.push(d);
-                });
-
-                res.on("end", () => {
-                    try {
-                        const buf = Buffer.concat(data);
-
-                        if(res.statusCode == 503){
-                            reject(cloudFlareMessage);
-                            return;
-                        }
-                        else if(res.statusCode == 403){
-                            reject("File was missing/not found.");
-                        }
-                        else if(res.statusCode == 503){
-                            reject("HTTP 503, The server is busy/unable to handle the request at the current time. Try again later.");
-                        }
-                        else if(res.statusCode != 200){
-                            reject(`Could not properly access "${this.url}". HTTP code was:${res.statusCode}.`);
-                            return;
-                        }
-                        else {
-                            const parsed = JSON.parse(buf.toString());
-                            resolve(parsed);
-                        }
-                    }
-                    catch (error){
-                        //Json parsing failed, reject.
-                        log.error("Json parse failed. Website is not returning valid JSON. Site may be down!");
-                        reject(error.toString());
-                    }
-                });
-            });
-
-            req.on("error", (error) => {
-                reject("(GetJsonReleaseData) " + error.toString());
-            });
-
-            req.end();
-        });
+    async GetJsonReleaseData() : Promise<any> {
+        const resp = await axios.get(this.url);
+        if (resp.status == 200) {
+            let data = resp.data;
+            return data;
+        }
+        else if(resp.status == 403){
+            throw new Error("File was missing/not found.");
+        }
+        else if(resp.status == 503){
+            throw new Error(cloudFlareMessage);
+        }
+        else {
+            throw new Error(`Could not properly access "${this.url}". HTTP code was: ${resp.status}. Error: ${resp.statusText}`);
+        }
     }
 }
 

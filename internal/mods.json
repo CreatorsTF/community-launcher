@@ -1,5 +1,5 @@
 {
-  "version": 1.37,
+  "version": 1.38,
   "mods": [
     {
       "name": "Creators.TF",
@@ -16,7 +16,10 @@
       "twitter": "https://creators.tf/twitter",
       "instagram": "https://creators.tf/instagram",
       "discord": "https://creators.tf/discord",
-      "serverlistproviders": [ 15, 1756 ],
+      "serverlistproviders": [
+        15,
+        1756
+      ],
       "isMod": false,
       "gameId": "440",
       "contenttext": "Creators.TF is a community celebration project.\nJoin our servers to enjoy custom contracts, cosmetics and weapons!",
@@ -33,7 +36,7 @@
     {
       "name": "Creators.TF Silly Events Servers",
       "blurb": "Content for the Silly Events Servers",
-      "icon": "images/logos/modcirclelogos/ctf_events.svg",
+      "icon": "images/logos/modcirclelogos/ctf_events.jpg",
       "titleimage": "images/logos/modlogos/eventsbanner.png",
       "backgroundimage": "images/backgrounds/events.jpg",
       "backgroundBlendMode": "soft-light",
@@ -45,7 +48,9 @@
       "twitter": "",
       "instagram": "",
       "discord": "https://creators.tf/discord",
-      "serverlistproviders": [ 11919 ],
+      "serverlistproviders": [
+        11919
+      ],
       "isMod": false,
       "gameId": "440",
       "contenttext": "Tired of fighting or getting killed because you tried being “friendly” during a match?\nWe have a solution for this: The Creators.TF Silly Events Servers!\nThese are servers where you can chill on silly maps, with silly plugins.\nJoin our Discord server to also get notified about events like Deathrun, FF2 or Fundays!",
@@ -219,6 +224,57 @@
           "targetdirectory": "{tf2_dir}/tf/custom/",
           "setupfunc": "movecfgs",
           "asset_index": 15
+        }
+      ]
+    },
+    {
+      "name": "Unique Rockets",
+      "blurb": "Unique rockets for Soldiers Viewmodels",
+      "icon": "images/logos/modcirclelogos/unique_rockets.jpg",
+      "titleimage": "",
+      "backgroundimage": "images/backgrounds/unique_rockets.jpg",
+      "backgroundBlendMode": "multiply",
+      "bordercolor": "#3E3C3F",
+      "backgroundposX": "left",
+      "backgroundposY": "top",
+      "website": "https://gamebanana.com/mods/324446",
+      "github": "https://github.com/AtomicTEM/Unique-Rockets",
+      "twitter": "",
+      "instagram": "",
+      "discord": "",
+      "serverlistproviders": [],
+      "isMod": false,
+      "gameId": "440",
+      "contenttext": "Each Rocket Launcher reloads a unique rocket that's similar to its own style.\nViewmodels only.",
+      "minLauncherVersion": "0.3.0",
+      "install": {
+        "modname": "Unique Rockets",
+        "type": "githubcollection",
+        "targetdirectory": "{tf2_dir}/tf/custom/"
+      },
+      "items": [
+        {
+          "modname": "UniqueRockets",
+          "type": "github",
+          "owner": "AtomicTEM",
+          "name": "Unique-Rockets",
+          "itemname": "base",
+          "displayname": "Base Game Rockets",
+          "targetdirectory": "{tf2_dir}/tf/custom/",
+          "asset_index": 1
+        },
+        {
+          "modname": "Unique Rockets",
+          "type": "github",
+          "owner": "AtomicTEM",
+          "name": "Unique-Rockets",
+          "itemname": "base_pluswasp",
+          "displayname": "Base + WASP Launcher",
+          "targetdirectory": "{tf2_dir}/tf/custom/",
+          "asset_index": [
+            0,
+            1
+          ]
         }
       ]
     }

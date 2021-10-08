@@ -6,8 +6,8 @@ import { Install } from "../mod_list_loader";
 
 const github_api_url = "https://api.github.com/";
 
-class GithubSource extends ModInstallSource {
-    github_data = null;
+export default class GithubSource extends ModInstallSource {
+    protected github_data = null;
     fileType = "FILE";
 
     constructor(install_data: Install[]) {
@@ -32,15 +32,13 @@ class GithubSource extends ModInstallSource {
                     if (data.length == null || data.length == 0) {
                         reject("No releases avaliable to download");
                     }
-
-                    let date = data[0].published_at;
-                    date = date.split("T")[0];
-                    date = date.replace(/-/g, "");
-
-                    resolve(date);
+                    else {
+                        const releaseID = data[0].id;
+                        resolve(releaseID);
+                    }
                 }
                 catch (error) {
-                    reject("Failed to correctly parse the latest release publish date. Cause: " + error.toString());
+                    reject("Failed to correctly parse the latest release publish ID. Cause: " + error.toString());
                 }
             }).catch(reject);
         });
@@ -48,37 +46,52 @@ class GithubSource extends ModInstallSource {
 
     async GetDisplayVersionNumber(): Promise<string> {
         const githubData = await this._GetGithubData();
-        return `${githubData[0].tag_name}`;
+        return githubData[0].tag_name;
     }
 
-    async GetFileURL(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            //Try to get the download url for the release asset.
-            this._GetGithubData().then((data) => {
-                const releaseAssets = data[0].assets;
-                if (releaseAssets != null && releaseAssets != []) {
-                    let asset;
+    override async GetFileURL(asset_index?: number): Promise<string | string[]> {
+        const githubData = await this._GetGithubData();
+        const releaseAssets = githubData[0].assets;
+        if (releaseAssets != null && releaseAssets != []) {
+            return this.GetFileURLs(githubData, this.data[0].asset_index);
+        }
+        else {
+            throw new Error("This Github repository has no releases avaliable.");
+        }
+    }
 
-                    if (this.data[0].hasOwnProperty("asset_index")) {
-                        asset = releaseAssets[this.data[0].asset_index];
-                    } else {
-                        asset = releaseAssets[0];
+    protected GetFileURLs(githubData: JSON, asset_index: number | Array<number>): string | string[] {
+        let asset;
+        const releaseAssets = githubData[0].assets;
+        if (releaseAssets != null && releaseAssets != []) {
+            if (asset_index != null) {
+                //Is asset_index an array?
+                //If so get all the urls relating to the asset ids.
+                if(Array.isArray(asset_index)) {
+                    const urls = new Array<string>();
+                    for(const index of asset_index) {
+                        urls.push(releaseAssets[index].browser_download_url);
                     }
-
-                    if (asset != null) {
-                        resolve(asset.browser_download_url);
-                    }
-
-                    reject("This Github repository's latest release was missing a usable asset.");
+                    return urls;
                 }
                 else {
-                    reject("This Github repository has no releases avaliable.");
+                    //Single asset id
+                    asset = releaseAssets[asset_index];
                 }
-            }).catch(reject);
-        });
+            }
+            else {
+                //Default to 0 if we have no asset id specified.
+                asset = releaseAssets[0];
+            }
+            if(asset != null) {
+                return asset.browser_download_url;
+            }
+        }
+         
+        throw new Error("This Github repository's latest release was missing an usable asset.");
     }
 
-    _GetGitHubReleaseData() {
+    private _GetGitHubReleaseData(): Promise<any> {
         return new Promise((resolve, reject) => {
             //Construct initial request url to github api
             const url = github_api_url + `repos/${this.data[0].owner}/${this.data[0].name}/releases`;
@@ -89,7 +102,6 @@ class GithubSource extends ModInstallSource {
             };
 
             const data = [];
-            //var dataLen = 0;
 
             const req = https.get(url, options, res => {
                 console.log(`statusCode: ${res.statusCode}`);
@@ -121,4 +133,3 @@ class GithubSource extends ModInstallSource {
         });
     }
 }
-export default GithubSource;

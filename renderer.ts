@@ -56,7 +56,7 @@ function OnClick_Mod(data) {
         bgImg = defaultBackgroundImage;
     }
 
-    if (bgImg.includes("https")) {
+    if (bgImg.startsWith("https")) {
         content.style.backgroundImage = `url("${bgImg}")`;
     } else {
         content.style.backgroundImage = `url("${"./" + bgImg}")`;
