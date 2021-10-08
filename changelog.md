@@ -1,3 +1,12 @@
+## Version 0.3.0 - (ALPHA)
+### 08/10/2021 - 19:10 (GMT)
+- Added new "Unique Rockets" mod (by AtomicTEM)
+- Added new "Manned Machines Robot Model Fixes" mod (by HiGPS)
+- Fixed GitHub collection mods not updating with all the correct assets/collection type.
+- Disabled all animations to users with the "Reduced Motion" option enabled in their OS.
+- Changed how GitHub mods get their version number. (This will trigger a fake update for users with a GitHub mod installed).
+- Fixed mod's display version not being changed after an update.
+
 ## Version 0.2.9 - (ALPHA)
 ### 01/10/2021 - 21:19 (GMT)
 - Fixes issue #71 , "Certificate has Expired" error when trying to download any creators.tf server content.
