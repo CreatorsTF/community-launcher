@@ -246,7 +246,7 @@
       "isMod": false,
       "gameId": "440",
       "contenttext": "Each Rocket Launcher reloads a unique rocket that's similar to its own style.\nViewmodels only.",
-      "minLauncherVersion": "0.2.9",
+      "minLauncherVersion": "0.3.0",
       "install": {
         "modname": "Unique Rockets",
         "type": "githubcollection",
