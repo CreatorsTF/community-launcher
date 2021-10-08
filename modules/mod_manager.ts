@@ -203,21 +203,22 @@ class ModManager {
                     //Do the update!
                     log.log("Starting update process...");
 
-                    const configObj = await config.GetConfig();
-                    const modList = configObj.current_mod_versions;
-                    //Find the current mod version we want
-                    let collectionVersionInstalled: string;
-                    let desiredCollectionVersion: number;
-                    if (IsCollection(this.source_manager.data)) {
-                        //It is an install[] then
-                        modList.forEach(element => {
-                            if (element.name == this.source_manager.data[0].modname) {
-                                //We've found our mod
-                                collectionVersionInstalled = element.collectionversion;
-                            }
-                        });
-                        desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
-                        await this.UpdateCurrentMod(desiredCollectionVersion);
+                    if (this.source_manager instanceof GithubCollectionSource || IsCollection(this.source_manager.data)) {
+                        try {
+                            const configObj = await config.GetConfig();
+                            const modList = configObj.current_mod_versions;
+                            //Find the current mod version we want
+                            let collectionVersionInstalled = modList.find(
+                                x => x.name == this.source_manager.data[0].name || x.name == this.source_manager.data[0].modname).collectionversion;
+
+                            const desiredCollectionVersion = Utilities.FindCollectionNumber(this.source_manager.data, collectionVersionInstalled);
+                            await this.UpdateCurrentMod(desiredCollectionVersion);
+                        }
+                        catch (e) {
+                            await ErrorDialog("Unable to update mod due to error:\n" + e.toString(), "Update Error");
+                            this.FakeClickMod();
+                            return;
+                        }
                     } else {
                         await this.UpdateCurrentMod();
                     }
@@ -358,7 +359,7 @@ class ModManager {
                     const result = await this.ModInstall(_url);
                     if(result){
                         SetNewModVersion(this.currentModVersionRemote, this.currentModVersionToDisplay, this.currentModData.name);
-                        
+
                         await config.SaveConfig(Main.config);
 
                         this.FakeClickMod();

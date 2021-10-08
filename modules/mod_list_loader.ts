@@ -5,6 +5,7 @@ import log from "electron-log";
 import semver from "semver";
 import isDev from "electron-is-dev";
 import Utilities from "./utilities";
+import axios from "axios";
 
 //URLs to try to get mod lists from.
 //More than one allows fallbacks.
@@ -111,46 +112,19 @@ class ModListLoader {
     }
 
     private static async TryGetModList(url: string): Promise<ModList> {
-        return new Promise((resolve) => {
+        try{
             log.log("Trying to get mod list from: " + url);
-            const data = new Array<any>();
-            const req = https.get(url, res => {
-                console.log(`statusCode: ${res.statusCode}`);
-
-                res.on("data", (d) => {
-                    if(res.statusCode != 200){
-                        resolve(null);
-                    }
-                    data.push(d);
-                });
-
-                res.on("end", () => {
-                    try {
-                        let parsed;
-                        const buf = Buffer.concat(data);
-                        if (res.statusCode != 200) {
-                            console.log("ERROR! Not parsing " + url);
-                            return;
-                        } else {
-                            parsed = JSON.parse(buf.toString());
-                        }
-                        resolve(parsed);
-                    }
-                    catch (error){
-                        //Json parsing failed soo reject.
-                        log.error(`Failed to parse JSON in TryGetModList request for ${url}, error: ${error.toString()}`);
-                        resolve(null);
-                    }
-                });
-            });
-
-            req.on("error", (error: string | undefined) => {
-                log.error("General request error in a TryGetModList request, error: " + error.toString());
-                resolve(null);
-            });
-
-            req.end();
-        });
+            const result = await axios.get(url, {timeout: 8000});
+            if(result.status == 200 && result.data != null){
+                log.log(`Success (${result.status}): ${url}`);
+                return result.data;
+            }
+            log.error(`TryGetModList Error: ${result.statusText}`);
+        }
+        catch (e) {
+            log.error(e.toString());
+        }
+        return null;
     }
 
     public static GetLocalModList(): ModList {
@@ -253,17 +227,4 @@ class GithubAsset {
     size: string
 }
 
-class ConfigType {
-    steam_directory: string;
-    tf2_directory: string;
-    current_mod_versions: ModVersion[]
-}
-
-class ModVersion {
-    name: string;
-    version: number;
-    versionDisplay?: string;
-    collectionversion?: string;
-}
-
-export { ModListLoader, ModList, ModListEntry, Install, GithubAsset, ConfigType, ModVersion };
+export { ModListLoader, ModList, ModListEntry, Install, GithubAsset };

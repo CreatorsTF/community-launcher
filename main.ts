@@ -8,8 +8,8 @@ import patchnotesPage from "./patchnotes-page/patchnotespage";
 import ServerListPage from "./serverlist-page/serverlistpage";
 import mod_manager from "./modules/mod_manager";
 import Utilities from "./modules/utilities";
-import { ModListLoader, ModList, ConfigType } from "./modules/mod_list_loader";
-import Config from "./modules/config";
+import { ModListLoader, ModList } from "./modules/mod_list_loader";
+import Config, {ConfigObject} from "./modules/config";
 
 // There are 6 levels of logging: error, warn, info, verbose, debug and silly
 import log from "electron-log";
@@ -24,7 +24,7 @@ const majorErrorMessageEnd = "\nIf this error persists, please report it on our 
 class Main {
     public static mainWindow: BrowserWindow;
     public static app: App;
-    public static config: ConfigType;
+    public static config: ConfigObject;
     public static screenWidth: number;
     public static screenHeight: number;
     public static minWindowWidth: number;
