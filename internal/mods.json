@@ -1,5 +1,5 @@
 {
-  "version": 1.38,
+  "version": 1.39,
   "mods": [
     {
       "name": "Creators.TF",
@@ -254,7 +254,7 @@
       },
       "items": [
         {
-          "modname": "UniqueRockets",
+          "modname": "Unique Rockets",
           "type": "github",
           "owner": "AtomicTEM",
           "name": "Unique-Rockets",
@@ -277,6 +277,36 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Manned Machines Robot Model Fixes",
+      "blurb": "Fixes for the Manned Machines Mode",
+      "minLauncherVersion": "0.3.0",
+      "icon": "images/logos/modcirclelogos/bmod_robots_icon.jpg",
+      "titleimage": "",
+      "backgroundimage": "images/backgrounds/bmod_robots_bg.jpg",
+      "backgroundBlendMode": "soft-light",
+      "bordercolor": "#6969FF",
+      "backgroundposX": "center",
+      "backgroundposY": "bottom",
+      "website": "https://www.balancemod.tf/",
+      "github": "",
+      "twitter": "",
+      "instagram": "",
+      "discord": "",
+      "serverlistproviders": [1756],
+      "isMod": false,
+      "gameId": "440",
+      "contenttext": "Fixes for the Manned Machines Mode. Playable on Balancemod Servers.",
+      "install": {
+        "modname": "Manned Machines Robot Model Fixes",
+        "type": "jsonlist",
+        "get_url": "https://fastdl.creators.tf/launcher/robot_model_fixes.json",
+        "cloudflarebypass": true,
+        "targetdirectory": "{tf2_dir}/tf/custom/",
+        "version_property_name": "Version",
+        "install_url_property_name": "DownloadLink"
+      }
     }
   ]
 }
