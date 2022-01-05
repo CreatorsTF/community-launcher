@@ -1,5 +1,5 @@
 {
-  "version": 1.39,
+  "version": 1.4,
   "mods": [
     {
       "name": "Creators.TF",
@@ -301,7 +301,7 @@
       "install": {
         "modname": "Manned Machines Robot Model Fixes",
         "type": "jsonlist",
-        "get_url": "https://fastdl.creators.tf/launcher/robot_model_fixes.json",
+        "get_url": "https://www.balancemod.tf/robot_model_fixes.json",
         "cloudflarebypass": true,
         "targetdirectory": "{tf2_dir}/tf/custom/",
         "version_property_name": "Version",
