@@ -160,7 +160,7 @@ class ModListLoader {
     }
 
     private static GetInternalFolderPath(): string {
-        return path.resolve(__dirname, "..", "internal");
+        return path.resolve(__dirname, "..", "..", "internal");
     }
 }
 

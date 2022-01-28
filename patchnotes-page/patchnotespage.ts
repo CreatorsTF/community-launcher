@@ -30,7 +30,7 @@ class PatchnotesPage {
         if (!isDev) {
             this.patchnotesWindow.removeMenu();
         }
-        this.patchnotesWindow.loadFile(path.resolve(__dirname, "patchnotes.html"));
+        this.patchnotesWindow.loadFile(path.join(__dirname, "..", "..", "patchnotes-page", "patchnotes.html"));
         this.patchnotesWindow.once("ready-to-show", () => {
             this.patchnotesWindow.show();
         });

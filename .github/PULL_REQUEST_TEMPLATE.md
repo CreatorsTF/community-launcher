@@ -12,4 +12,4 @@ Remove the items that don't apply. For completed items, change [ ] to [x].
 - [ ] I have cloned the repository
 - [ ] I have started the app without errors
 - [ ] This pull request updates a dependency
-- [ ] [CI scripts](https://github.com/ampersoftware/Creators.TF-Community-Launcher/tree/master/.github/workflows) are changed or added
+- [ ] [CI scripts](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/tree/master/.github/workflows) are changed or added

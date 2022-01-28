@@ -2,7 +2,7 @@
   "name": "creators-tf-launcher",
   "version": "0.3.0",
   "description": "An easier way to install, update and play TF2 content.",
-  "main": "main.js",
+  "main": "build/main.js",
   "scripts": {
     "start": "electron .",
     "lint": "eslint **/*",
@@ -32,15 +32,15 @@
   "license": "MIT",
   "devDependencies": {
     "@types/electron-progressbar": "^1.2.2",
-    "@types/marked": "^2.0.4",
+    "@types/marked": "^4.0.1",
     "@types/string-format": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
-    "electron": "15.1.1",
+    "electron": "16.0.7",
     "electron-builder": "22.9.1",
     "eslint": "^7.31.0",
-    "sass": "^1.32.12",
-    "typescript": "^4.4.2"
+    "sass": "^1.49.0",
+    "typescript": "^4.5.5"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",
@@ -48,11 +48,11 @@
     "axios": "^0.22.0",
     "electron-is-dev": "^1.2.0",
     "electron-log": "^4.3.4",
-    "electron-progressbar": "^1.2.0",
+    "electron-progressbar": "^2.0.0",
     "electron-updater": "^4.3.8",
     "flag-icon-css": "^3.5.0",
     "jszip": "^3.6.0",
-    "marked": "^2.0.3",
+    "marked": "^4.0.12",
     "semver": "^7.3.5",
     "string-format": "^2.0.0"
   }

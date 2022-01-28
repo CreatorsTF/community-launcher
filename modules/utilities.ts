@@ -75,7 +75,7 @@ class Utilities {
     public static GetCurrentVersion(): string {
         if (this.currentLauncherVersion == null) {
             try {
-                const packageJson = fs.readFileSync(path.join(__dirname, "../package.json"));
+                const packageJson = fs.readFileSync(path.join(__dirname, "..", "..", "package.json"));
                 this.currentLauncherVersion = JSON.parse(packageJson.toString()).version;
             }
             catch {

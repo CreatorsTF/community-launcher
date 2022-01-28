@@ -35,10 +35,8 @@ class ServerListPage {
         if (!isDev) {
             this.serverlistWindow.removeMenu();
         }
-
         this.latestProviders = providers;
-
-        this.serverlistWindow.loadFile(path.join(__dirname, "serverlist.html"));
+        this.serverlistWindow.loadFile(path.join(__dirname, "..", "..", "serverlist-page", "serverlist.html"));
         this.serverlistWindow.once("ready-to-show", () => {
             this.serverlistWindow.show();
         });

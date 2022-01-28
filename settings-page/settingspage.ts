@@ -35,7 +35,7 @@ class SettingsPage {
         if (!isDev) {
             this.settingsWindow.removeMenu();
         }
-        this.settingsWindow.loadFile("./settings-page/settings.html");
+        this.settingsWindow.loadFile(path.join(__dirname, "..", "..", "settings-page", "settings.html"));
         this.settingsWindow.once("ready-to-show", () => {
             this.settingsWindow.show();
 

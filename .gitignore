@@ -10,7 +10,5 @@ src
 .bat
 dev-app-update.yml
 *.map
-# We use SASS
 *.css
-# We use TypeScript... Sometimes
 *.js

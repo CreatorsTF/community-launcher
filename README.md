@@ -1,7 +1,7 @@
 # [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher) (Alpha)
 
-[![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/ci.yml)
-[![](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml/badge.svg)](https://github.com/ampersoftware/Creators.TF-Community-Launcher/actions/workflows/release.yml)
+[![](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/actions/workflows/ci.yml/badge.svg)](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/actions/workflows/ci.yml)
+[![](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/actions/workflows/release.yml/badge.svg)](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/actions/workflows/release.yml)
 
 ## This repository contains the source code and releases for the [Creators.TF](https://creators.tf) [Community Launcher](https://creators.tf/launcher)
 
@@ -12,10 +12,10 @@
 * More details on our [website page](https://creators.tf/launcher)
 
 ### Useful links for this repository:
-* [Releases](https://github.com/ampersoftware/Creators.TF-Community-Launcher/releases) -- [Latest release](https://github.com/ampersoftware/Creators.TF-Community-Launcher/releases/latest)
-* [Changelogs](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/changelog.md)
-* [License](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/LICENSE)
-* [Code of Conduct](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/CODE_OF_CONDUCT.md) (TL;DR; common sense)
+* [Releases](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/releases) -- [Latest release](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/releases/latest)
+* [Changelogs](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/blob/master/changelog.md)
+* [License](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/blob/master/LICENSE)
+* [Code of Conduct](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/blob/master/CODE_OF_CONDUCT.md) (TL;DR; common sense)
 
 ### Maintainers
 * [Jota](https://github.com/jota11) - jota@creators.tf - UI and UX Lead
@@ -36,4 +36,4 @@ Clone the repository using git *(or download from this page)* and do `npm instal
 You can start the launcher for testing purposes without building via `npm run compileAndStart`.
 
 You can build for Windows or Linux via the included build scripts using `npm run buildWindows` or `npm run buildLinux`.
-If you need, you can edit these in [package.json](https://github.com/ampersoftware/Creators.TF-Community-Launcher/blob/master/package.json#L9) to build to your liking, but changes made to these should not be committed if you plan to make a PR.
+If you need, you can edit these in [package.json](https://github.com/CreatorsTF/Creators.TF-Community-Launcher/blob/master/package.json#L15-L16) to build to your liking, but changes made to these should not be committed if you plan to make a PR.

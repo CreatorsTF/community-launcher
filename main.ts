@@ -37,7 +37,7 @@ class Main {
         this.screenHeight = height;
         this.minWindowWidth = 960;
         this.minWindowHeight = 540;
-        this.icon = path.join(__dirname, "images/installer/256x256.png");
+        this.icon = path.join(__dirname, "..", "images/installer/256x256.png");
         try {
             Main.mainWindow = new BrowserWindow({
                 minWidth: this.minWindowWidth,
@@ -72,7 +72,8 @@ class Main {
                 this.config = c;
                 try {
                     mod_manager.Setup().then(() => {
-                        Main.mainWindow.loadFile(path.resolve(__dirname, "index.html"));
+                        Main.mainWindow.loadFile(path.join(__dirname, "..", "index.html"));
+                        delete require("electron").nativeImage.createThumbnailFromPath;
                     });
                 }
                 catch (e) {
